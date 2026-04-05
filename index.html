@@ -138,8 +138,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --tan:#C5B297;--charcoal:#3A3F44;--gold:#B69663;--cream:#EFEFE7;
-      --dark:#1F2935;--red:#c8102e;--red-dark:#a00d24;--white:#fff;--muted:#6b7585;
+      --tan:#E8A020;--charcoal:#3A3F44;--gold:#E8A020;--cream:#EFEFE7;
+      --dark:#1F2935;--red:#E8A020;--red-dark:#C8851A;--white:#fff;--muted:#6b7585;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
@@ -154,31 +154,31 @@
     .nav-cta{background:var(--red);color:#fff;padding:10px 22px;border-radius:4px;font-weight:700;text-decoration:none;font-size:.88rem;transition:background .2s;white-space:nowrap}
     .nav-cta:hover{background:var(--red-dark)}
     .hero{min-height:100vh;background:var(--dark);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:76px}
-    .hero-bg{position:absolute;inset:0;background-image:url('images/IMG_0771.jpg');background-size:cover;background-position:center top;opacity:.2}
+    .hero-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=80');background-size:cover;background-position:center top;opacity:.25}
     .hero-overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(31,41,53,.9) 0%,rgba(31,41,53,.45) 55%,rgba(31,41,53,.75) 100%)}
     .hero-accent{position:absolute;left:0;top:76px;bottom:0;width:5px;background:var(--gold)}
     .hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:80px 5%;display:grid;grid-template-columns:1fr 370px;gap:56px;align-items:center}
-    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(182,150,99,.15);border:1px solid rgba(182,150,99,.4);color:var(--gold);padding:6px 16px;border-radius:100px;font-size:.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:22px}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,.15);border:1px solid rgba(232,160,32,.4);color:var(--gold);padding:6px 16px;border-radius:100px;font-size:.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:22px}
     .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,6.5rem);color:var(--white);line-height:.93;letter-spacing:2px;margin-bottom:20px}
     .hero h1 em{color:var(--gold);font-style:normal}
     .hero-sub{font-size:1.05rem;color:#b0bec8;max-width:520px;line-height:1.7;margin-bottom:36px;font-weight:300}
     .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:52px}
     .btn-primary{background:var(--red);color:#fff;padding:15px 34px;border-radius:4px;font-weight:700;text-decoration:none;font-size:.95rem;transition:all .2s;display:inline-block}
-    .btn-primary:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,16,46,.35)}
+    .btn-primary:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,160,32,.35)}
     .btn-ghost{background:transparent;color:var(--white);padding:15px 34px;border-radius:4px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid rgba(255,255,255,.25);transition:all .2s;display:inline-block}
     .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
     .hero-stats{display:flex;gap:40px;flex-wrap:wrap}
     .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--white);line-height:1;letter-spacing:1px}
     .stat-num em{color:var(--gold);font-style:normal}
     .stat-label{color:#7a8a9a;font-size:.73rem;text-transform:uppercase;letter-spacing:1px;margin-top:3px}
-    .hero-card{background:rgba(255,255,255,.04);border:1px solid rgba(182,150,99,.25);border-radius:12px;padding:32px;backdrop-filter:blur(8px)}
-    .hero-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--gold);letter-spacing:1.5px;margin-bottom:18px;border-bottom:1px solid rgba(182,150,99,.2);padding-bottom:14px}
+    .hero-card{background:rgba(255,255,255,.04);border:1px solid rgba(232,160,32,.25);border-radius:12px;padding:32px;backdrop-filter:blur(8px)}
+    .hero-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--gold);letter-spacing:1.5px;margin-bottom:18px;border-bottom:1px solid rgba(232,160,32,.2);padding-bottom:14px}
     .hero-service-list{list-style:none;display:flex;flex-direction:column;gap:13px}
     .hero-service-list li{display:flex;align-items:center;gap:12px;color:#c8d0da;font-size:.9rem;font-weight:500}
     .hero-service-list li::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
-    .hero-card-cta{margin-top:24px;padding-top:20px;border-top:1px solid rgba(182,150,99,.2)}
+    .hero-card-cta{margin-top:24px;padding-top:20px;border-top:1px solid rgba(232,160,32,.2)}
     .hero-card-cta a{display:block;background:var(--gold);color:var(--dark);padding:13px;border-radius:4px;font-weight:700;text-decoration:none;font-size:.9rem;text-align:center;transition:background .2s}
-    .hero-card-cta a:hover{background:#c8a870}
+    .hero-card-cta a:hover{background:#C8851A}
     .hero-card-phone{color:#7a8a9a;font-size:.78rem;margin-top:10px;text-align:center}
     .trust-bar{background:var(--charcoal);padding:18px 5%;border-bottom:2px solid var(--gold)}
     .trust-bar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -194,7 +194,7 @@
     .service-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(31,41,53,.12);border-bottom-color:var(--gold)}
     .service-img{width:100%;height:210px;object-fit:cover;display:block}
     .service-body{padding:24px}
-    .service-icon-wrap{width:42px;height:42px;background:rgba(182,150,99,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+    .service-icon-wrap{width:42px;height:42px;background:rgba(232,160,32,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
     .service-icon-wrap svg{width:22px;height:22px;fill:var(--gold)}
     .service-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:var(--dark);letter-spacing:1px;margin-bottom:8px}
     .service-card p{color:var(--muted);font-size:.88rem;line-height:1.65}
@@ -212,10 +212,10 @@
     .why-check svg{width:13px;height:13px;fill:var(--dark)}
     .why-point h4{color:var(--white);font-weight:600;margin-bottom:4px;font-size:.93rem}
     .why-point p{color:#8a9ab0;font-size:.87rem;line-height:1.6}
-    .why-visual{background:rgba(255,255,255,.03);border:1px solid rgba(182,150,99,.2);border-radius:12px;padding:40px;text-align:center}
-    .why-visual img{width:110px;margin-bottom:32px;filter:drop-shadow(0 0 24px rgba(182,150,99,.25))}
+    .why-visual{background:rgba(255,255,255,.03);border:1px solid rgba(232,160,32,.2);border-radius:12px;padding:40px;text-align:center}
+    .why-visual img{width:110px;margin-bottom:32px;filter:drop-shadow(0 0 24px rgba(232,160,32,.25))}
     .why-stats{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .why-stat{background:rgba(182,150,99,.08);border:1px solid rgba(182,150,99,.15);border-radius:8px;padding:22px;text-align:center}
+    .why-stat{background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.15);border-radius:8px;padding:22px;text-align:center}
     .why-stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:var(--gold);line-height:1;letter-spacing:1px}
     .why-stat-label{color:#8a9ab0;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;margin-top:5px}
     .cities{padding:100px 5%;background:var(--white)}
@@ -225,13 +225,13 @@
     .county-tag{background:var(--gold);color:var(--dark);font-size:.68rem;padding:4px 10px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.5px}
     .city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px}
     .city-link{display:flex;align-items:center;gap:9px;padding:11px 15px;border:1px solid #dde0e8;border-radius:6px;text-decoration:none;color:var(--dark);font-size:.88rem;font-weight:500;transition:all .2s}
-    .city-link:hover{border-color:var(--gold);color:var(--gold);background:rgba(182,150,99,.04)}
+    .city-link:hover{border-color:var(--gold);color:var(--gold);background:rgba(232,160,32,.04)}
     .city-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
     .process{padding:100px 5%;background:var(--cream)}
     .process-inner{max-width:1200px;margin:0 auto}
     .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:52px}
     .step{background:var(--white);border-radius:10px;padding:32px 24px;text-align:center;box-shadow:0 2px 12px rgba(31,41,53,.06);border-top:3px solid var(--gold)}
-    .step-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:rgba(182,150,99,.15);line-height:1;margin-bottom:14px}
+    .step-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:rgba(232,160,32,.15);line-height:1;margin-bottom:14px}
     .step-icon{width:48px;height:48px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
     .step-icon svg{width:22px;height:22px;fill:var(--dark)}
     .step h4{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--dark);letter-spacing:1px;margin-bottom:8px}
@@ -262,7 +262,7 @@
     .quote-form label{font-size:.72rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
     .quote-form input,.quote-form select,.quote-form textarea{
       width:100%;padding:11px 14px;background:rgba(255,255,255,.06);
-      border:1px solid rgba(182,150,99,.3);border-radius:4px;
+      border:1px solid rgba(232,160,32,.3);border-radius:4px;
       color:#fff;font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s}
     .quote-form input::placeholder,.quote-form textarea::placeholder{color:rgba(255,255,255,.3)}
     .quote-form input:focus,.quote-form select:focus,.quote-form textarea:focus{border-color:var(--gold)}
@@ -271,7 +271,7 @@
     .form-submit-btn{width:100%;padding:14px;background:var(--gold);color:var(--dark);
       border:none;border-radius:4px;font-size:.92rem;font-weight:700;font-family:inherit;
       text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .2s;margin-top:4px}
-    .form-submit-btn:hover{background:#c8a870;transform:translateY(-1px)}
+    .form-submit-btn:hover{background:#C8851A;transform:translateY(-1px)}
     .form-submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
     .form-status{margin-top:12px;padding:12px 16px;border-radius:4px;font-size:.85rem;font-weight:600;text-align:center;display:none}
     .form-status.success{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:#4ade80;display:block}
@@ -280,13 +280,13 @@
     /* contact section */
     .contact-section{padding:80px 5%;background:var(--dark)}
     .contact-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
-    .contact-form-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(182,150,99,.2);border-radius:8px;padding:36px}
+    .contact-form-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(232,160,32,.2);border-radius:8px;padding:36px}
     .contact-form-wrap h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:1px;margin-bottom:6px}
     .contact-form-wrap p{color:var(--gold-light);font-size:.88rem;margin-bottom:24px}
     .contact-info h3{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;letter-spacing:1px;margin-bottom:16px}
     .contact-info p{color:#7a8a9a;font-size:.92rem;line-height:1.7;margin-bottom:28px}
     .contact-detail{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
-    .contact-detail-icon{width:40px;height:40px;background:rgba(182,150,99,.1);border:1px solid rgba(182,150,99,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .contact-detail-icon{width:40px;height:40px;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .contact-detail-icon svg{width:18px;height:18px;fill:var(--gold)}
     .contact-detail-text h4{color:#fff;font-weight:700;font-size:.9rem;margin-bottom:3px}
     .contact-detail-text a,.contact-detail-text span{color:#7a8a9a;font-size:.88rem;text-decoration:none}
