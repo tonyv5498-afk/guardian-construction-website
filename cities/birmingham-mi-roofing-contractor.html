@@ -118,6 +118,34 @@
       .city-intro-inner { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr; }
     }
+
+    .contact-band{padding:72px 5%;background:#141d27}
+    .contact-band-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+    .contact-info-col h3{font-family:'Barlow Condensed',sans-serif;font-size:2rem;color:#fff;letter-spacing:1px;font-weight:800;margin-bottom:12px}
+    .contact-info-col p{color:#7a8a9a;font-size:.9rem;line-height:1.7;margin-bottom:24px}
+    .cinfo-item{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .cinfo-icon{width:36px;height:36px;background:rgba(182,150,99,.12);border:1px solid rgba(182,150,99,.25);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .cinfo-icon svg{width:16px;height:16px;fill:#B69663}
+    .cinfo-text{color:#9ab0cc;font-size:.88rem}
+    .cinfo-text a{color:#9ab0cc;text-decoration:none}.cinfo-text a:hover{color:#B69663}
+    .city-quote-form{background:rgba(255,255,255,.03);border:1px solid rgba(182,150,99,.2);border-radius:8px;padding:32px}
+    .city-quote-form h3{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;color:#fff;letter-spacing:1px;font-weight:800;margin-bottom:6px}
+    .city-quote-form > p{color:#7a8a9a;font-size:.85rem;margin-bottom:20px}
+    .qf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .qf-group{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+    .qf-group label{font-size:.68rem;font-weight:700;color:#B69663;text-transform:uppercase;letter-spacing:1px}
+    .qf-group input,.qf-group select,.qf-group textarea{width:100%;padding:10px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(182,150,99,.25);border-radius:4px;color:#fff;font-size:.87rem;font-family:inherit;outline:none;transition:border-color .2s}
+    .qf-group input::placeholder,.qf-group textarea::placeholder{color:rgba(255,255,255,.28)}
+    .qf-group input:focus,.qf-group select:focus,.qf-group textarea:focus{border-color:#B69663}
+    .qf-group select option{background:#1F2935;color:#fff}
+    .qf-group textarea{resize:vertical;min-height:65px}
+    .qf-submit{width:100%;padding:13px;background:#B69663;color:#1F2935;border:none;border-radius:4px;font-size:.9rem;font-weight:700;font-family:inherit;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .2s;margin-top:4px}
+    .qf-submit:hover{background:#C5B297;transform:translateY(-1px)}
+    .qf-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .qf-status{margin-top:10px;padding:10px 14px;border-radius:4px;font-size:.83rem;font-weight:600;text-align:center;display:none}
+    .qf-status.success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#4ade80;display:block}
+    .qf-status.error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#f87171;display:block}
+    @media(max-width:680px){.contact-band-inner{grid-template-columns:1fr}.qf-row{grid-template-columns:1fr}}
   </style>
   <script type="application/ld+json">
   {
@@ -133,14 +161,24 @@
     "priceRange": "$$"
   }
   </script>
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function(){
+      var PUBLIC_KEY   = "YOUR_PUBLIC_KEY";
+      var SERVICE_ID   = "YOUR_SERVICE_ID";
+      var TEMPLATE_ID  = "YOUR_TEMPLATE_ID";
+      emailjs.init({ publicKey: PUBLIC_KEY });
+      window._ejs = { serviceId: SERVICE_ID, templateId: TEMPLATE_ID };
+    })();
+  </script>
 </head>
 <body>
 
 <nav>
   <a href="../index.html" class="nav-logo">
-    <div class="nav-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-    <span class="nav-logo-text">Guardian Construction</span>
-  </a>
+  <img src="logo.png" alt="Guardian Construction" style="height:46px;width:auto;mix-blend-mode:screen;">
+</a>
   <div style="display:flex;align-items:center;gap:16px;">
     <a href="tel:+15867150967" class="nav-phone">📞 (586) 715-0967</a>
     <a href="tel:+15867150967" class="nav-cta">Free Estimate</a>
@@ -182,8 +220,8 @@
       <h2 class="section-title">BIRMINGHAM ROOFING EXPERTS</h2>
       <p>Guardian Construction is proud to serve homeowners and businesses across Birmingham — a one of Michigan's most affluent cities with exceptional homes and high standards.</p>
       <p>Birmingham's premium real estate market demands roofing contractors who deliver exceptional quality and professionalism — that's the standard we hold ourselves to on every Birmingham project.</p>
-      <p>As a licensed Michigan Residential Builder, we carry full general liability and workers' compensation insurance on every project. Our crews are background-checked, trained, and dedicated to delivering the kind of work you'd be proud to show your neighbors.</p>
-      <p>We serve all of <strong>Birmingham's neighborhoods</strong> including Downtown Birmingham, Quarton Lake area, Cranbrook border, Shain Park neighborhood. Whether you need emergency repairs after a storm or a planned full replacement, Guardian Construction is your local Birmingham roofing expert.</p>
+      <p>As a licensed Michigan Residential Builder, we carry full general liability and workers' compensation  Our crews are background-checked, trained, and dedicated to delivering the kind of work you'd be proud to show your neighbors.</p>
+      <p>We serve all of <strong>Birmingham's neighborhoods</strong> including Downtown Birmingham, Quarton Lake area, Cranbrook border, Shain Park neighborhood. Whether you need emergency repairs  or a planned full replacement, Guardian Construction is your local Birmingham roofing expert.</p>
       <div class="cta-box">
         <h3>Get Your Free Birmingham Roofing Estimate</h3>
         <p>We respond same day. No pressure, no obligation — just an honest assessment of what your roof needs.</p>
@@ -210,18 +248,18 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=75" alt="Roof repair Birmingham Michigan" class="service-img" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=75" alt="Emergency roof repair Michigan" class="service-img" loading="lazy">
         <div class="service-body">
-          <h3>Roof Repair</h3>
-          <p>Fast, reliable repairs for leaks, missing shingles, damaged flashing, and storm damage throughout Birmingham. Emergency service available for active leaks.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <h3>Emergency Repairs</h3>
+          <p>Active leak? Missing shingles? We offer fast emergency repairs throughout Metro Detroit. Call us and we'll get someone out quickly to stop further damage.</p>
+          <a href="tel:+15867150967" class="service-link">Call Now →</a>
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=75" alt="Storm damage roofing Birmingham" class="service-img" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=75" alt=" roofing Birmingham" class="service-img" loading="lazy">
         <div class="service-body">
-          <h3>Storm Damage Restoration</h3>
-          <p>Michigan hail, wind, and ice storms cause real roof damage. We provide thorough inspections and complete restoration for Birmingham homeowners after storm events.</p>
+          <h3></h3>
+          <p>Michigan  cause real roof damage. We provide thorough inspections and complete restoration for Birmingham homeowners .</p>
           <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
         </div>
       </div>
@@ -279,14 +317,7 @@
         <div class="faq-q">How do you handle roofing on Birmingham's larger, complex homes? <span>+</span></div>
         <div class="faq-a">We have experienced project managers overseeing larger jobs with complex rooflines, multiple materials, and intricate flashing details. We've completed hundreds of premium projects across Oakland County.</div>
       </div>
-      <div class="faq-item">
-        <div class="faq-q">Do you match insurance estimates for Birmingham homes? <span>+</span></div>
-        <div class="faq-a">We review insurance scopes and ensure all storm-damaged items are included. If the scope is incomplete, we'll help document additional damage to supplement your claim appropriately.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">How do I protect my Birmingham landscaping during roofing? <span>+</span></div>
-        <div class="faq-a">We use plywood and tarps to protect plantings and hardscaping, take particular care around established trees and shrubs, and use magnetic rollers for nail cleanup throughout your entire property.</div>
-      </div>
+      
     </div>
   </div>
 </section>
@@ -315,12 +346,79 @@
   <a href="mailto:info@guardianconstructionmi.com" class="btn-outline-white">Email Us</a>
 </section>
 
+<!-- CONTACT FORM -->
+<section class="contact-band" id="contact">
+  <div class="contact-band-inner">
+    <div class="contact-info-col">
+      <div style="text-transform:uppercase;letter-spacing:3px;font-size:.7rem;font-weight:700;color:#B69663;margin-bottom:10px">Free Estimates</div>
+      <h3>GET A QUOTE FOR YOUR<br>BIRMINGHAM HOME</h3>
+      <p>Fill out the form and we will reach out same day. Prefer to talk? Call us directly.</p>
+      <div class="cinfo-item">
+        <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.7A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="cinfo-text"><a href="tel:+15867150967">(586) 715-0967</a></div>
+      </div>
+      <div class="cinfo-item">
+        <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="cinfo-text"><a href="mailto:info@guardianconstructionmi.com">info@guardianconstructionmi.com</a></div>
+      </div>
+      <div class="cinfo-item">
+        <div class="cinfo-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="cinfo-text">Same-day response · Mon–Sat 7am–7pm</div>
+      </div>
+      <div class="cinfo-item">
+        <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="cinfo-text">Licensed &amp; insured · License #2102213986</div>
+      </div>
+    </div>
+    <div class="city-quote-form">
+      <h3>REQUEST FREE ESTIMATE</h3>
+      <p>No obligation. We respond same day.</p>
+      <form id="cityQuoteForm" novalidate>
+        <div class="qf-row">
+          <div class="qf-group">
+            <label for="q_name">Full Name *</label>
+            <input type="text" id="q_name" name="from_name" placeholder="John Smith" required>
+          </div>
+          <div class="qf-group">
+            <label for="q_phone">Phone *</label>
+            <input type="tel" id="q_phone" name="phone" placeholder="(586) 555-0000" required>
+          </div>
+        </div>
+        <div class="qf-group">
+          <label for="q_email">Email Address</label>
+          <input type="email" id="q_email" name="reply_to" placeholder="you@email.com">
+        </div>
+        <div class="qf-group">
+          <label for="q_city">Your City *</label>
+          <input type="text" id="q_city" name="city" placeholder="Birmingham, MI" value="Birmingham, MI" required>
+        </div>
+        <div class="qf-group">
+          <label for="q_service">Service Needed *</label>
+          <select id="q_service" name="service" required>
+            <option value="">Select a service...</option>
+            <option>Roof Replacement</option>
+            <option>Roof Repair</option>
+            <option>Gutters</option>
+            <option>Siding</option>
+            <option>Free Roof Inspection</option>
+            <option>Other / Not Sure</option>
+          </select>
+        </div>
+        <div class="qf-group">
+          <label for="q_msg">Additional Details</label>
+          <textarea id="q_msg" name="message" placeholder="Roof age, issue description, best time to call..."></textarea>
+        </div>
+        <button type="submit" class="qf-submit" id="citySubmitBtn">Request Free Estimate →</button>
+        <div class="qf-status" id="cityFormStatus"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="../index.html" class="nav-logo" style="display:inline-flex;">
-        <img src="guardian_white_text.png" alt="Guardian Construction" style="height:40px;width:auto;">
-      </a>
+<img src="logo.png" alt="Guardian Construction" style="height:38px;width:auto;mix-blend-mode:screen;margin-bottom:12px;display:block;">
       <p>Metro Detroit's trusted roofing contractor. Serving Wayne, Oakland & Macomb County since 2009.</p>
     </div>
     <div class="footer-col">
@@ -328,7 +426,7 @@
       <ul>
         <li><a href="#services">Roof Replacement</a></li>
         <li><a href="#services">Roof Repair</a></li>
-        <li><a href="#services">Storm Damage</a></li>
+        <li><a href="#services"></a></li>
         <li><a href="#services">Gutters</a></li>
         <li><a href="#services">Free Inspection</a></li>
       </ul>
@@ -349,5 +447,25 @@
   </div>
 </footer>
 
+
+<script>
+(function(){
+  var form   = document.getElementById('cityQuoteForm');
+  var btn    = document.getElementById('citySubmitBtn');
+  var status = document.getElementById('cityFormStatus');
+  if (!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var req = form.querySelectorAll('[required]'), ok = true;
+    req.forEach(function(el){ if(!el.value.trim()){el.style.borderColor='#f87171';ok=false;}else{el.style.borderColor='';} });
+    if(!ok){ status.className='qf-status error'; status.textContent='Please fill in all required fields.'; return; }
+    var src=document.createElement('input'); src.type='hidden'; src.name='page_source'; src.value=window.location.href; form.appendChild(src);
+    btn.disabled=true; btn.textContent='Sending...'; status.className='qf-status'; status.textContent='';
+    emailjs.sendForm(window._ejs.serviceId, window._ejs.templateId, form)
+      .then(function(){ btn.textContent='Sent!'; status.className='qf-status success'; status.textContent='✓ Got it! We will be in touch same day.'; form.reset(); setTimeout(function(){btn.disabled=false;btn.textContent='Request Free Estimate →';},4000); },
+      function(err){ btn.disabled=false; btn.textContent='Request Free Estimate →'; status.className='qf-status error'; status.textContent='Something went wrong. Please call (586) 715-0967.'; console.error(err); });
+  });
+})();
+</script>
 </body>
 </html>
