@@ -146,6 +146,32 @@
     .qf-status.success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#4ade80;display:block}
     .qf-status.error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#f87171;display:block}
     @media(max-width:680px){.contact-band-inner{grid-template-columns:1fr}.qf-row{grid-template-columns:1fr}}
+
+    /* Logo black background removal */
+    .nav-logo-img {
+      height: 46px; width: auto; display: block;
+      mix-blend-mode: screen;
+      background: transparent;
+    }
+    .nav-logo-wrap {
+      background: #000;
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: flex;
+      align-items: center;
+    }
+    .footer-logo-img {
+      height: 40px; width: auto; display: block;
+      mix-blend-mode: screen;
+    }
+    .footer-logo-wrap {
+      background: #000;
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 14px;
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -177,7 +203,7 @@
 
 <nav>
   <a href="../index.html" class="nav-logo">
-  <img src="logo.png" alt="Guardian Construction" style="height:46px;width:auto;mix-blend-mode:lighten;mix-blend-mode:lighten;">
+  <div class="nav-logo-wrap"><img src="logo.png" alt="Guardian Construction" class="nav-logo-img"></div>
 </a>
   <div style="display:flex;align-items:center;gap:16px;">
     <a href="tel:+13132471064" class="nav-phone">📞 (313) 247-1064</a>
@@ -224,7 +250,7 @@
       <p>We serve all of <strong>West Bloomfield's neighborhoods</strong> including Downtown West Bloomfield, Quarton Lake area, Cranbrook border, Shain Park neighborhood. Whether you need or a planned full replacement, Guardian Construction is your local West Bloomfield roofing expert.</p>
       <div class="cta-box">
         <h3>Get Your Free West Bloomfield Roofing Estimate</h3>
-        <p>We respond same day. No pressure, no obligation — just an honest assessment of what your roof needs.</p>
+        <p>We respond within 24 hours. No pressure, no obligation — just an honest assessment of what your roof needs.</p>
         <a href="#contact">Get My Free Estimate</a>
       </div>
     </div>
@@ -295,8 +321,8 @@
   <div class="map-section-inner">
     <div class="section-label">Our Location</div>
     <h2 class="section-title">SERVING WEST BLOOMFIELD & SURROUNDING AREAS</h2>
-    <p style="color:#5a6a7e;margin-top:8px;">We serve all of West Bloomfield and the greater Oakland County area. Local crews, response, same-day estimates available.</p>
-    <iframe class="map-embed" src="https://maps.google.com/maps?q=West Bloomfield,+MI+48009&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    <p style="color:#5a6a7e;margin-top:8px;">We serve all of West Bloomfield and the greater Oakland County area. Local crews, response, 24-hour response guaranteed.</p>
+    <iframe class="map-embed" src="https://maps.google.com/maps?q=42.5534,-83.3771&z=13&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
     </iframe>
   </div>
 </section>
@@ -333,9 +359,9 @@
 
 <section class="cta-band">
   <h2>READY FOR A NEW ROOF IN WEST BLOOMFIELD?</h2>
-  <p>Get a free, no-obligation estimate from West Bloomfield's trusted roofing contractor. We respond same day.</p>
+  <p>Get a free, no-obligation estimate from West Bloomfield's trusted roofing contractor. We respond within 24 hours.</p>
   <a href="tel:+13132471064" class="btn-white">📞 Call (313) 247-1064</a>
-  <a href="mailto:info@guardianbuild.com" class="btn-outline-white">Email Us</a>
+  <a href="mailto:info@guardianbuild.com?subject=Free Estimate Request&body=Name:%0APhone:%0ACity:%0AService Needed:%0AMessage:" class="btn-outline-white">Email Us</a>
 </section>
 
 <!-- CONTACT FORM -->
@@ -344,7 +370,7 @@
     <div class="contact-info-col">
       <div style="text-transform:uppercase;letter-spacing:3px;font-size:.7rem;font-weight:700;color:#B69663;margin-bottom:10px">Free Estimates</div>
       <h3>GET A QUOTE FOR YOUR<br>WEST BLOOMFIELD HOME</h3>
-      <p>Fill out the form and we will reach out same day. Prefer to talk? Call us directly.</p>
+      <p>Fill out the form and we will reach out within 24 hours. Prefer to talk? Call us directly.</p>
       <div class="cinfo-item">
         <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.7A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
         <div class="cinfo-text"><a href="tel:+13132471064">(313) 247-1064</a></div>
@@ -355,7 +381,7 @@
       </div>
       <div class="cinfo-item">
         <div class="cinfo-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div class="cinfo-text">Same-day response · Mon–Sat 7am–7pm</div>
+        <div class="cinfo-text">Response within 24 hours · Mon–Sat 7am–7pm</div>
       </div>
       <div class="cinfo-item">
         <div class="cinfo-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
@@ -364,7 +390,7 @@
     </div>
     <div class="city-quote-form">
       <h3>REQUEST FREE ESTIMATE</h3>
-      <p>No obligation. We respond same day.</p>
+      <p>No obligation. We respond within 24 hours.</p>
       <form id="cityQuoteForm" novalidate>
         <div class="qf-row">
           <div class="qf-group">
@@ -454,7 +480,7 @@
     var src=document.createElement('input'); src.type='hidden'; src.name='page_source'; src.value=window.location.href; form.appendChild(src);
     btn.disabled=true; btn.textContent='Sending...'; status.className='qf-status'; status.textContent='';
     emailjs.sendForm(window._ejs.serviceId, window._ejs.templateId, form)
-      .then(function(){ btn.textContent='Sent!'; status.className='qf-status success'; status.textContent='✓ Got it! We will be in touch same day.'; form.reset(); setTimeout(function(){btn.disabled=false;btn.textContent='Request Free Estimate →';},4000); },
+      .then(function(){ btn.textContent='Sent!'; status.className='qf-status success'; status.textContent='✓ Got it! We will be in touch within 24 hours.'; form.reset(); setTimeout(function(){btn.disabled=false;btn.textContent='Request Free Estimate →';},4000); },
       function(err){ btn.disabled=false; btn.textContent='Request Free Estimate →'; status.className='qf-status error'; status.textContent='Something went wrong. Please call (313) 247-1064.'; console.error(err); });
   });
 })();

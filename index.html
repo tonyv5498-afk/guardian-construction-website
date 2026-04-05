@@ -170,6 +170,32 @@
       .contact-inner{grid-template-columns:1fr}
       .quote-form .form-row{grid-template-columns:1fr}
     }
+
+    /* Logo black background removal */
+    .nav-logo-img {
+      height: 46px; width: auto; display: block;
+      mix-blend-mode: screen;
+      background: transparent;
+    }
+    .nav-logo-wrap {
+      background: #000;
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: flex;
+      align-items: center;
+    }
+    .footer-logo-img {
+      height: 40px; width: auto; display: block;
+      mix-blend-mode: screen;
+    }
+    .footer-logo-wrap {
+      background: #000;
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 14px;
+    }
   </style>
   <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -188,7 +214,7 @@
 <body>
 <nav>
   <a href="/" class="nav-logo">
-  <img src="logo.png" alt="Guardian Construction" style="height:46px;width:auto;mix-blend-mode:lighten;mix-blend-mode:lighten;">
+  <div class="nav-logo-wrap"><img src="logo.png" alt="Guardian Construction" class="nav-logo-img"></div>
 </a>
   <ul class="nav-links">
     <li><a href="#services">Services</a></li>
@@ -330,6 +356,15 @@
           <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
+      <div class="service-card">
+        <img src="https://images.unsplash.com/photo-1503708928676-1cb796a0891e?w=600&q=75" alt="Window and door installation Metro Detroit" class="service-img" loading="lazy">
+        <div class="service-body">
+          <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
+          <h3>Windows &amp; Doors</h3>
+          <p>Energy-efficient window replacement and exterior door installation. Reduce drafts, lower energy bills, and improve your home's curb appeal with quality products and expert installation.</p>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -337,7 +372,7 @@
 <section class="why" id="about">
   <div class="why-inner">
     <div>
-      <div class="why-logo"><img src="images/guardian_white_text.png" alt="Guardian Construction"></div>
+      <div class="why-logo"><div class="footer-logo-wrap"><img src="images/guardian_white_text.png" alt="Guardian Construction" class="footer-logo-img"></div></div>
       <div class="section-label">Why Choose Us</div>
       <h2 class="section-title" style="color:var(--white)">LOCAL EXPERTS.<br>LASTING QUALITY.</h2>
       <p class="section-sub">We're a family-owned Metro Detroit contractor — not a franchise, not a national chain. We live here, work here, and stand behind every project with our name on it.</p>
@@ -436,17 +471,17 @@
 
 <section class="cta-band" id="contact">
   <h2>READY TO GET STARTED?</h2>
-  <p>Get a free, no-obligation estimate from Metro Detroit's most trusted general contractor. We respond same day.</p>
+  <p>Get a free, no-obligation estimate from Metro Detroit's most trusted general contractor. We respond within 24 hours.</p>
   <div class="cta-actions">
     <a href="tel:+13132471064" class="btn-white">📞 Call (313) 247-1064</a>
-    <a href="mailto:info@guardianbuild.com" class="btn-outline-white">Email Us</a>
+    <a href="mailto:info@guardianbuild.com?subject=Free Estimate Request&body=Name:%0APhone:%0ACity:%0AService Needed:%0AMessage:" class="btn-outline-white">Email Us</a>
   </div>
 </section>
 
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <div class="footer-logo"><img src="images/guardian_white_text.png" alt="Guardian Construction"></div>
+      <div class="footer-logo"><div class="footer-logo-wrap"><img src="images/guardian_white_text.png" alt="Guardian Construction" class="footer-logo-img"></div></div>
       <p>Metro Detroit's trusted general contractor since 2009. Roofing, siding, gutters, masonry, trim &amp; insulation across Wayne, Oakland &amp; Macomb County.</p>
     </div>
     <div class="footer-col">
@@ -528,7 +563,7 @@
         .then(function() {
           btn.textContent = 'Sent!';
           status.className = 'form-status success';
-          status.textContent = '✓ Message received! We will be in touch same day.';
+          status.textContent = '✓ Message received! We will be in touch within 24 hours.';
           form.reset();
           setTimeout(function() { btn.disabled = false; btn.textContent = form.id === 'heroQuoteForm' ? 'Request Free Estimate →' : 'Send Message →'; }, 4000);
         }, function(err) {
