@@ -120,7 +120,7 @@
     footer{background:var(--dark);color:#8a9ab0;padding:64px 5% 28px}
     .footer-top{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
     .footer-brand p{font-size:.86rem;line-height:1.75;margin-top:16px;max-width:290px}
-    .footer-logo img{height:48px;width:auto}
+    .footer-logo img{height:48px;width:auto;mix-blend-mode:lighten}
     .footer-col h4{color:var(--gold);font-weight:700;margin-bottom:16px;font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px}
     .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
     .footer-col ul li a{color:#8a9ab0;text-decoration:none;font-size:.86rem;transition:color .2s}
@@ -188,7 +188,7 @@
 <body>
 <nav>
   <a href="/" class="nav-logo">
-  <img src="logo.png" alt="Guardian Construction" style="height:46px;width:auto;mix-blend-mode:screen;">
+  <img src="logo.png" alt="Guardian Construction" style="height:46px;width:auto;mix-blend-mode:lighten;mix-blend-mode:lighten;">
 </a>
   <ul class="nav-links">
     <li><a href="#services">Services</a></li>
@@ -197,8 +197,8 @@
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <a href="tel:+15867150967" class="nav-phone">(586) 715-0967</a>
-    <a href="tel:+15867150967" class="nav-cta">Free Estimate</a>
+    <a href="tel:+13132471064" class="nav-phone">(313) 247-1064</a>
+    <a href="#contact" class="nav-cta">Free Estimate</a>
   </div>
 </nav>
 
@@ -212,13 +212,13 @@
       <h1>BUILT TO<br><em>PROTECT.</em><br>BUILT TO<br>LAST.</h1>
       <p class="hero-sub">Roofing, siding, gutters, masonry, trim &amp; insulation — done right the first time by Metro Detroit's most trusted general contractor.</p>
       <div class="hero-actions">
-        <a href="tel:+15867150967" class="btn-primary">Get a Free Estimate</a>
+        <a href="#contact" class="btn-primary">Get a Free Estimate</a>
         <a href="#services" class="btn-ghost">Our Services</a>
       </div>
       <div class="hero-stats">
         <div><div class="stat-num">15<em>+</em></div><div class="stat-label">Years in Business</div></div>
         <div><div class="stat-num">2<em>,</em>400<em>+</em></div><div class="stat-label">Projects Completed</div></div>
-        <div><div class="stat-num">33</div><div class="stat-label">Cities Served</div></div>
+        <div><div class="stat-num">59</div><div class="stat-label">Cities Served</div></div>
         <div><div class="stat-num">5<em>★</em></div><div class="stat-label">Google Rating</div></div>
       </div>
     </div>
@@ -262,7 +262,7 @@
         <button type="submit" class="form-submit-btn" id="heroSubmitBtn">Request Free Estimate →</button>
         <div class="form-status" id="heroFormStatus"></div>
       </form>
-      <p class="hero-card-phone">📞 Or call direct: (586) 715-0967</p>
+      <p class="hero-card-phone">📞 Or call direct: <a href="tel:+13132471064" style="color:var(--gold-light);text-decoration:none;">(313) 247-1064</a></p>
     </div>
   </div>
 </section>
@@ -270,7 +270,7 @@
 <div class="trust-bar">
   <div class="trust-bar-inner">
     <div class="trust-item"><div class="trust-dot"></div>Michigan Licensed &amp; Insured</div>
-    <div class="trust-item"><div class="trust-dot"></div>GAF &amp; Owens Corning Certified</div>
+    <div class="trust-item"><div class="trust-dot"></div>GAF, Owens Corning &amp; CertainTeed Certified</div>
     <div class="trust-item"><div class="trust-dot"></div>Lifetime Workmanship Warranty</div>
     <div class="trust-item"><div class="trust-dot"></div>Free Inspections &amp; Estimates</div>
     <div class="trust-item"><div class="trust-dot"></div>Local Family-Owned Business</div>
@@ -290,7 +290,7 @@
           <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
           <h3>Roofing</h3>
           <p>Full roof replacements, targeted repairs, and new construction installs. Architectural shingles, impact-resistant systems, and metal roofing built for Michigan weather.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
       <div class="service-card">
@@ -299,24 +299,17 @@
           <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div>
           <h3>Siding</h3>
           <p>Vinyl, fiber cement, and composite siding installation and replacement. New siding transforms curb appeal, improves energy efficiency, and seals your home against the elements.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
-      <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=75" alt="Emergency roof repair Michigan" class="service-img" loading="lazy">
-        <div class="service-body">
-          <h3>Emergency Repairs</h3>
-          <p>Active leak? Missing shingles? We offer fast emergency repairs throughout Metro Detroit. Call us and we'll get someone out quickly to stop further damage.</p>
-          <a href="tel:+15867150967" class="service-link">Call Now →</a>
-        </div>
-      </div>
+      
       <div class="service-card">
         <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=600&q=75" alt="Gutter installation Metro Detroit" class="service-img" loading="lazy">
         <div class="service-body">
           <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
           <h3>Gutters</h3>
           <p>Seamless gutter installation, repair, and guard systems. Proper drainage protects your foundation, siding, and landscaping from water damage every season.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
       <div class="service-card">
@@ -325,7 +318,7 @@
           <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></div>
           <h3>Masonry</h3>
           <p>Brick, block, and stone work including chimney repair, tuckpointing, retaining walls, and decorative masonry. Solid craftsmanship that stands for decades.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
       <div class="service-card">
@@ -334,7 +327,7 @@
           <div class="service-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
           <h3>Insulation</h3>
           <p>Attic and wall insulation that cuts energy bills and improves year-round comfort. Proper insulation also extends roof life by controlling attic temperatures and preventing ice dams.</p>
-          <a href="tel:+15867150967" class="service-link">Get Free Quote →</a>
+          <a href="#contact" class="service-link">Get Free Quote →</a>
         </div>
       </div>
     </div>
@@ -347,13 +340,14 @@
       <div class="why-logo"><img src="images/guardian_white_text.png" alt="Guardian Construction"></div>
       <div class="section-label">Why Choose Us</div>
       <h2 class="section-title" style="color:var(--white)">LOCAL EXPERTS.<br>LASTING QUALITY.</h2>
-      <p class="section-sub">We're a family-owned Metro Detroit contractor — not a franchise, not a  We live here, work here, and stand behind every project with our name on it.</p>
+      <p class="section-sub">We're a family-owned Metro Detroit contractor — not a franchise, not a national chain. We live here, work here, and stand behind every project with our name on it.</p>
       <ul class="why-points">
         <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>Michigan-Licensed General Contractor</h4><p>Full general liability and workers' comp on every project. You're protected, no exceptions.</p></div></li>
-        <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>GAF &amp; Owens Corning Certified</h4><p>Factory-certified installer status means better manufacturer warranties and access to premium products.</p></div></li>
+        <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>GAF, Owens Corning &amp; CertainTeed Certified</h4><p>Factory-certified installer status with three of the industry's top manufacturers — meaning better warranties, premium products, and installation that meets the highest standards.</p></div></li>
         <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>Upfront Written Quotes</h4><p>Itemized pricing, no hidden fees. You know exactly what you're getting before we start.</p></div></li>
         <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>Lifetime Workmanship Warranty</h4><p>We stand behind every project long after completion. If something isn't right, we fix it.</p></div></li>
         <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>Clean Jobsite, Professional Crew</h4><p>Magnetic nail sweeps, daily cleanup, and crews who treat your property with genuine respect.</p></div></li>
+        <li class="why-point"><div class="why-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><h4>You Choose Your Materials</h4><p>We never push a single brand or product line. You choose the shingle style, siding brand, color, and finish — we present options at every price point and install whatever you decide is right for your home.</p></div></li>
       </ul>
     </div>
     <div class="why-visual">
@@ -362,7 +356,7 @@
         <div class="why-stat"><div class="why-stat-num">15+</div><div class="why-stat-label">Years in Metro Detroit</div></div>
         <div class="why-stat"><div class="why-stat-num">A+</div><div class="why-stat-label">BBB Rating</div></div>
         <div class="why-stat"><div class="why-stat-num">2,400+</div><div class="why-stat-label">Projects Completed</div></div>
-        <div class="why-stat"><div class="why-stat-num">33</div><div class="why-stat-label">Cities Served</div></div>
+        <div class="why-stat"><div class="why-stat-num">59</div><div class="why-stat-label">Cities Served</div></div>
       </div>
     </div>
   </div>
@@ -444,8 +438,8 @@
   <h2>READY TO GET STARTED?</h2>
   <p>Get a free, no-obligation estimate from Metro Detroit's most trusted general contractor. We respond same day.</p>
   <div class="cta-actions">
-    <a href="tel:+15867150967" class="btn-white">📞 Call (586) 715-0967</a>
-    <a href="mailto:info@guardianconstructionmi.com" class="btn-outline-white">Email Us</a>
+    <a href="tel:+13132471064" class="btn-white">📞 Call (313) 247-1064</a>
+    <a href="mailto:info@guardianbuild.com" class="btn-outline-white">Email Us</a>
   </div>
 </section>
 
@@ -480,8 +474,8 @@
     <div class="footer-col">
       <h4>Contact</h4>
       <ul>
-        <li><a href="tel:+15867150967">(586) 715-0967</a></li>
-        <li><a href="mailto:info@guardianconstructionmi.com">Email Us</a></li>
+        <li><a href="tel:+13132471064">(313) 247-1064</a></li>
+        <li><a href="mailto:info@guardianbuild.com">info@guardianbuild.com</a></li>
         <li><a href="#cities">Service Areas</a></li>
         <li><a href="#about">About Us</a></li>
       </ul>
@@ -541,7 +535,7 @@
           btn.disabled = false;
           btn.textContent = form.id === 'heroQuoteForm' ? 'Request Free Estimate →' : 'Send Message →';
           status.className = 'form-status error';
-          status.textContent = 'Something went wrong. Please call us at (586) 715-0967.';
+          status.textContent = 'Something went wrong. Please call us at (313) 247-1064.';
           console.error('EmailJS error:', err);
         });
     });
