@@ -232,7 +232,7 @@
     .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px; }
     .service-card { background: var(--gray-light); border-radius: 8px; overflow: hidden; transition: all 0.3s; }
     .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
-    .service-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .service-img { width: 100%; height: 200px; background-size: cover; background-position: center; background-repeat: no-repeat; display: block; overflow: hidden; }
     .service-body { padding: 20px; }
     .service-card h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; color: var(--navy); letter-spacing: 1px; margin-bottom: 8px; }
     .service-card p { color: #5a6a7e; font-size: 0.88rem; line-height: 1.6; margin-bottom: 12px; }
@@ -352,7 +352,7 @@
       .cta-box a { display: block; text-align: center; padding: 13px; font-size: 0.9rem; }
       .services { padding: 44px 5%; }
       .services-grid { grid-template-columns: 1fr; gap: 14px; }
-      .service-img { height: 175px; }
+      .service-img { height: 175px; background-size: cover; background-position: center; }
       .service-body { padding: 16px; }
       .service-card h3 { font-size: 1.2rem; }
       .service-card p { font-size: 0.86rem; }
@@ -403,6 +403,7 @@
       window._ejs = { serviceId: SERVICE_ID, templateId: TEMPLATE_ID };
     })();
   </script>
+  <link rel="stylesheet" href="../svc.css">
 </head>
 <body>
 
@@ -471,7 +472,7 @@
     <h2 class="section-title">EXTERIOR SERVICES IN EASTPOINTE</h2>
     <div class="services-grid">
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1601760561441-16420502c7e0?w=600&q=75" alt="Roofing contractor Eastpointe MI" class="service-img" loading="lazy">
+        <div class="service-img svc-roofing" role="img" aria-label="Roofing contractor Eastpointe MI"></div>
         <div class="service-body">
           <h3>Roofing</h3>
           <p>Full roof replacements, repairs, and new construction installs for Eastpointe homeowners. Architectural shingles, metal roofing, and impact-resistant systems built for Michigan weather.</p>
@@ -479,7 +480,7 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=75" alt="Siding contractor Eastpointe" class="service-img" loading="lazy">
+        <div class="service-img svc-siding" role="img" aria-label="Siding contractor Eastpointe"></div>
         <div class="service-body">
           <h3>Siding</h3>
           <p>Vinyl, fiber cement, and composite siding installation and replacement. New siding transforms your Eastpointe home's curb appeal while improving energy efficiency.</p>
@@ -487,7 +488,7 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=75" alt="Gutter installation Eastpointe" class="service-img" loading="lazy">
+        <div class="service-img svc-gutters" role="img" aria-label="Gutter installation Eastpointe" ></div>
         <div class="service-body">
           <h3>Gutters</h3>
           <p>Seamless gutter installation, repair, and guard systems throughout Eastpointe. Proper drainage protects your foundation and complements your exterior investment.</p>
@@ -495,7 +496,7 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1590725140246-20acddc1ec6d?w=600&q=75" alt="Masonry contractor Eastpointe" class="service-img" loading="lazy">
+        <div class="service-img svc-masonry" role="img" aria-label="Masonry contractor Eastpointe"></div>
         <div class="service-body">
           <h3>Masonry</h3>
           <p>Brick, block, and stone work including chimney repair, tuckpointing, retaining walls, and decorative masonry. Solid craftsmanship that stands for decades.</p>
@@ -503,7 +504,7 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=75" alt="Insulation contractor Eastpointe" class="service-img" loading="lazy">
+        <div class="service-img svc-insulation" role="img" aria-label="Insulation contractor Eastpointe"></div>
         <div class="service-body">
           <h3>Insulation</h3>
           <p>Attic, wall, and crawl space insulation that slashes energy bills and keeps your home comfortable year-round. We use blown-in, batt, and spray foam systems — and proper insulation prevents ice dams while extending the life of your roof.</p>
@@ -511,7 +512,7 @@
         </div>
       </div>
       <div class="service-card">
-        <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&q=75" alt="Window installation Eastpointe" class="service-img" loading="lazy">
+        <div class="service-img svc-windows" role="img" aria-label="Window installation Eastpointe" ></div>
         <div class="service-body">
           <h3>Windows &amp; Doors</h3>
           <p>Energy-efficient window replacement and exterior door installation. Reduce drafts, lower energy bills, and improve curb appeal with quality products and expert installation.</p>
