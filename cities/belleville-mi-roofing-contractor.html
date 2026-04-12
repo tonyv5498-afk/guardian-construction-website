@@ -193,11 +193,7 @@
       min-height: 60vh; background: linear-gradient(165deg, var(--navy) 0%, var(--navy-mid) 60%, #1a0a0a 100%);
       display: flex; align-items: center; padding-top: 72px; position: relative; overflow: hidden;
     }
-    .city-hero::before {
-      content: ''; position: absolute; inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1400&q=80');
-      background-size: cover; background-position: center; opacity: 0.15;
-    }
+    .city-hero::before { display: none; }
     .city-hero-content { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 60px 5%; }
     .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
     .breadcrumb a { color: var(--gray-mid); text-decoration: none; font-size: 0.85rem; }
