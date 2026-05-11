@@ -1,0 +1,7 @@
+# Netlify Redirects
+
+# Redirect www to non-www
+https://www.guardianbuild.com/* https://guardianbuild.com/:splat 301!
+
+# 404 fallback
+/*    /index.html   200
