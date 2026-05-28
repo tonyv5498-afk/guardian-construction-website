@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGMD CRM — Restoration Group of Metro Detroit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        [x-cloak] { display: none; }
+        .panel-slide { transform: translateX(100%); transition: transform 0.25s ease; }
+        .panel-slide.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen antialiased">
+
+<!-- ─── Loading ───────────────────────────────────────────── -->
+<div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+    <div class="text-center">
+        <div class="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+        <p class="text-gray-400 text-sm">Loading…</p>
+    </div>
+</div>
+
+<!-- ─── Sign-In ────────────────────────────────────────────── -->
+<div id="auth-screen" class="hidden fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
+        <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">RGMD CRM</h1>
+        <p class="text-gray-500 text-sm mb-8">Restoration Group of Metro Detroit</p>
+        <button id="google-signin-btn"
+            class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-orange-400 hover:bg-orange-50 text-gray-700 font-semibold py-3 px-5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Sign in with Google
+        </button>
+        <p class="text-xs text-gray-400 mt-5">Authorized team members only</p>
+    </div>
+</div>
+
+<!-- ─── Main App ───────────────────────────────────────────── -->
+<div id="app" class="hidden min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <div class="hidden sm:block">
+                <div class="font-bold text-sm leading-tight">RGMD CRM</div>
+                <div class="text-slate-400 text-xs leading-tight">Restoration Group of Metro Detroit</div>
+            </div>
+            <div class="sm:hidden font-bold text-sm">RGMD CRM</div>
+        </div>
+        <div class="flex items-center gap-3">
+            <img id="user-photo" src="" alt="" class="w-7 h-7 rounded-full hidden flex-shrink-0">
+            <span id="user-name" class="text-sm text-slate-300 hidden sm:block"></span>
+            <button id="sign-out-btn"
+                class="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-all">
+                Sign Out
+            </button>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
+
+        <!-- Page header -->
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">Jobs</h2>
+                <p class="text-gray-500 text-xs mt-0.5">Track and manage all projects</p>
+            </div>
+            <button id="add-job-btn"
+                class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="hidden sm:inline">Add New Job</span>
+                <span class="sm:hidden">Add</span>
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="text-2xl font-bold text-gray-900" id="stat-total">—</div>
+                <div class="text-xs text-gray-500 mt-0.5">Total Jobs</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="text-2xl font-bold text-orange-500" id="stat-active">—</div>
+                <div class="text-xs text-gray-500 mt-0.5">Active</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="text-2xl font-bold text-green-500" id="stat-production">—</div>
+                <div class="text-xs text-gray-500 mt-0.5">In Production</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="text-2xl font-bold text-blue-500" id="stat-month">—</div>
+                <div class="text-xs text-gray-500 mt-0.5">This Month</div>
+            </div>
+        </div>
+
+        <!-- Status filter pills -->
+        <div class="flex flex-wrap gap-2 mb-3" id="status-filters">
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-900 text-white" data-status="all">All</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="assessment">Assessment</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="estimate_sent">Estimate Sent</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="followup_1">Follow-up 1</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="followup_2">Follow-up 2</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="scheduled">Scheduled</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="production">Production</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="invoiced">Invoiced</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="closed">Closed</button>
+        </div>
+
+        <!-- Search -->
+        <div class="relative mb-4">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input id="search-input" type="text"
+                placeholder="Search by name, address, email, or phone…"
+                class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+        </div>
+
+        <!-- Jobs table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Empty state -->
+            <div id="jobs-empty" class="hidden text-center py-16">
+                <svg class="w-12 h-12 mx-auto mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p class="text-gray-500 font-medium text-sm">No jobs found</p>
+                <p class="text-gray-400 text-xs mt-1">Add your first job to get started</p>
+            </div>
+            <div class="overflow-x-auto" id="table-wrapper">
+                <table class="w-full min-w-[640px]" id="jobs-table">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Client</th>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Contact</th>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Project Type</th>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Status</th>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Created</th>
+                            <th class="px-5 py-3 w-16"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs-tbody" class="divide-y divide-gray-50"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ─── Add / Edit Modal ──────────────────────────────────── -->
+<div id="modal-overlay" class="hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4"
+    style="background:rgba(0,0,0,.45)">
+    <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[95vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+            <h3 id="modal-title" class="text-base font-bold text-gray-900">Add New Job</h3>
+            <button id="modal-close-btn" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="job-form" class="px-6 py-5 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Client Name <span class="text-red-400 normal-case font-normal tracking-normal">required</span></label>
+                <input id="f-name" type="text" required
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                    placeholder="John Smith">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Address</label>
+                <input id="f-address" type="text"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                    placeholder="123 Main St, Detroit, MI 48201">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Email</label>
+                    <input id="f-email" type="email"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                        placeholder="john@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Phone</label>
+                    <input id="f-phone" type="tel"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                        placeholder="(555) 123-4567">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Project Type</label>
+                    <select id="f-project-type"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">Select type…</option>
+                        <option>Roofing</option>
+                        <option>Siding</option>
+                        <option>Windows</option>
+                        <option>Gutters</option>
+                        <option>Insulation</option>
+                        <option>Drywall</option>
+                        <option>Flooring</option>
+                        <option>Masonry</option>
+                        <option>Basement</option>
+                        <option>Bathroom</option>
+                        <option>Kitchen</option>
+                        <option>Garage</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Status</label>
+                    <select id="f-status"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="assessment">Assessment</option>
+                        <option value="estimate_sent">Estimate Sent</option>
+                        <option value="followup_1">Follow-up 1</option>
+                        <option value="followup_2">Follow-up 2</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="production">Production</option>
+                        <option value="invoiced">Invoiced</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Notes</label>
+                <textarea id="f-notes" rows="3"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                    placeholder="Any additional notes about this job…"></textarea>
+            </div>
+            <div class="flex gap-3 pt-1 pb-2">
+                <button type="button" id="form-cancel-btn"
+                    class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+                    <span id="form-submit-text">Save Job</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── Job Detail Side Panel ──────────────────────────────── -->
+<div id="detail-panel"
+    class="fixed inset-y-0 right-0 w-full sm:w-96 bg-white shadow-2xl z-30 flex flex-col panel-slide">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+        <div class="min-w-0 mr-3">
+            <h3 id="detail-name" class="text-base font-bold text-gray-900 truncate">Job Details</h3>
+            <p id="detail-type" class="text-xs text-gray-400 mt-0.5"></p>
+        </div>
+        <button id="detail-close-btn" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+        <!-- Status selector -->
+        <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">Status</label>
+            <select id="detail-status"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                <option value="assessment">Assessment</option>
+                <option value="estimate_sent">Estimate Sent</option>
+                <option value="followup_1">Follow-up 1</option>
+                <option value="followup_2">Follow-up 2</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="production">Production</option>
+                <option value="invoiced">Invoiced</option>
+                <option value="closed">Closed</option>
+            </select>
+        </div>
+
+        <!-- Contact info -->
+        <div class="grid grid-cols-1 gap-3" id="detail-fields">
+            <!-- Populated dynamically -->
+        </div>
+
+        <!-- Notes -->
+        <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">Notes</label>
+            <textarea id="detail-notes" rows="4"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                placeholder="Add notes here…"></textarea>
+            <button id="save-notes-btn"
+                class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                Save Notes
+            </button>
+        </div>
+
+        <!-- Meta -->
+        <div id="detail-meta" class="text-xs text-gray-400 space-y-0.5 pt-1 border-t border-gray-100">
+        </div>
+    </div>
+
+    <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+        <button id="detail-edit-btn"
+            class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            Edit Job
+        </button>
+        <button id="detail-delete-btn"
+            class="px-4 border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            Delete
+        </button>
+    </div>
+</div>
+
+<!-- Panel backdrop -->
+<div id="panel-backdrop" class="hidden fixed inset-0 z-20 bg-black/30" id="panel-backdrop"></div>
+
+<!-- ─── Delete Confirm ─────────────────────────────────────── -->
+<div id="confirm-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background:rgba(0,0,0,.5)">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-xs w-full text-center">
+        <div class="w-11 h-11 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Delete this job?</h3>
+        <p class="text-gray-400 text-sm mb-5">This cannot be undone.</p>
+        <div class="flex gap-3">
+            <button id="confirm-cancel-btn"
+                class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                Cancel
+            </button>
+            <button id="confirm-delete-btn"
+                class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-xl transition-colors text-sm">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Toast ──────────────────────────────────────────────── -->
+<div id="toast"
+    class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 min-w-[200px] justify-center">
+    <svg id="toast-icon-ok" class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+    </svg>
+    <svg id="toast-icon-err" class="hidden w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+    <span id="toast-text"></span>
+</div>
+
+<!-- ─── Firebase Config Banner (shown when unconfigured) ───── -->
+<div id="config-banner" class="hidden fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-6">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <h2 class="text-lg font-bold text-gray-900">Firebase Setup Required</h2>
+        </div>
+        <p class="text-gray-600 text-sm mb-5 leading-relaxed">
+            To use this CRM, you need a free Firebase project. Follow these steps:
+        </p>
+        <ol class="text-sm text-gray-700 space-y-3 mb-6">
+            <li class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">1</span>
+                <span>Go to <strong>console.firebase.google.com</strong> → Create a project</span>
+            </li>
+            <li class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">2</span>
+                <span>Enable <strong>Authentication</strong> → Sign-in method → Google</span>
+            </li>
+            <li class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">3</span>
+                <span>Create a <strong>Firestore Database</strong> (start in production mode)</span>
+            </li>
+            <li class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">4</span>
+                <span>In Firestore <strong>Rules</strong>, paste: <code class="bg-gray-100 px-1 rounded text-xs">allow read, write: if request.auth != null;</code></span>
+            </li>
+            <li class="flex gap-3">
+                <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">5</span>
+                <span>In Project Settings → Your apps → Add a <strong>Web App</strong> → copy the config object into <strong>index.html</strong> at the <code class="bg-gray-100 px-1 rounded text-xs">firebaseConfig</code> section</span>
+            </li>
+        </ol>
+        <p class="text-xs text-gray-400">Firebase free tier (Spark plan) is more than enough for a small CRM.</p>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     APPLICATION SCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+
+// ────────────────────────────────────────────────────────────
+// FIREBASE CONFIG  ← Replace these values with your own
+// ────────────────────────────────────────────────────────────
+const firebaseConfig = {
+    apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+    authDomain:        "REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com",
+    projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+    storageBucket:     "REPLACE_WITH_YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+    appId:             "REPLACE_WITH_YOUR_APP_ID"
+};
+
+// ────────────────────────────────────────────────────────────
+// STATUS CONFIG
+// ────────────────────────────────────────────────────────────
+const STATUS = {
+    assessment:    { label: 'Assessment',    pill: 'bg-blue-100 text-blue-700' },
+    estimate_sent: { label: 'Estimate Sent', pill: 'bg-yellow-100 text-yellow-700' },
+    followup_1:    { label: 'Follow-up 1',   pill: 'bg-orange-100 text-orange-700' },
+    followup_2:    { label: 'Follow-up 2',   pill: 'bg-rose-100 text-rose-700' },
+    scheduled:     { label: 'Scheduled',     pill: 'bg-purple-100 text-purple-700' },
+    production:    { label: 'Production',    pill: 'bg-green-100 text-green-700' },
+    invoiced:      { label: 'Invoiced',      pill: 'bg-teal-100 text-teal-700' },
+    closed:        { label: 'Closed',        pill: 'bg-gray-100 text-gray-500' },
+};
+
+// ────────────────────────────────────────────────────────────
+// INIT CHECK — show setup banner if config is placeholder
+// ────────────────────────────────────────────────────────────
+if (firebaseConfig.apiKey.startsWith('REPLACE')) {
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('config-banner').classList.remove('hidden');
+} else {
+    firebase.initializeApp(firebaseConfig);
+    initApp();
+}
+
+// ────────────────────────────────────────────────────────────
+// APP INIT
+// ────────────────────────────────────────────────────────────
+function initApp() {
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // ── State ──────────────────────────────────────────────
+    let currentUser   = null;
+    let jobs          = [];
+    let selectedJobId = null;
+    let pendingDelete = null;
+    let unsubJobs     = null;
+    let statusFilter  = 'all';
+    let searchQuery   = '';
+
+    // ── Auth ───────────────────────────────────────────────
+    auth.onAuthStateChanged(user => {
+        document.getElementById('loading-screen').classList.add('hidden');
+        currentUser = user;
+        if (user) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('user-name').textContent = user.displayName || user.email;
+            const photo = document.getElementById('user-photo');
+            if (user.photoURL) { photo.src = user.photoURL; photo.classList.remove('hidden'); }
+            startListener();
+        } else {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('app').classList.add('hidden');
+            jobs = [];
+            if (unsubJobs) { unsubJobs(); unsubJobs = null; }
+        }
+    });
+
+    document.getElementById('google-signin-btn').addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(err => toast('Sign-in failed: ' + err.message, true));
+    });
+
+    document.getElementById('sign-out-btn').addEventListener('click', () => auth.signOut());
+
+    // ── Firestore listener ─────────────────────────────────
+    function startListener() {
+        if (unsubJobs) unsubJobs();
+        unsubJobs = db.collection('jobs')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(
+                snap => {
+                    jobs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderJobs();
+                    updateStats();
+                    if (selectedJobId) refreshDetailPanel();
+                },
+                err => toast('Data error: ' + err.message, true)
+            );
+    }
+
+    // ── CRUD ───────────────────────────────────────────────
+    async function saveJob(data) {
+        const ts = firebase.firestore.FieldValue.serverTimestamp();
+        if (data.id) {
+            const { id, ...rest } = data;
+            await db.collection('jobs').doc(id).update({ ...rest, updatedAt: ts });
+            toast('Job updated');
+        } else {
+            await db.collection('jobs').add({ ...data, createdAt: ts, updatedAt: ts, createdBy: currentUser.email });
+            toast('Job created');
+        }
+    }
+
+    async function deleteJobById(id) {
+        await db.collection('jobs').doc(id).delete();
+        toast('Job deleted');
+    }
+
+    async function patchJob(id, fields) {
+        await db.collection('jobs').doc(id).update({
+            ...fields,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+    }
+
+    // ── Filtering ──────────────────────────────────────────
+    function filtered() {
+        return jobs.filter(j => {
+            if (statusFilter !== 'all' && j.status !== statusFilter) return false;
+            if (!searchQuery) return true;
+            const q = searchQuery.toLowerCase();
+            return ['clientName','address','email','phone'].some(k => (j[k] || '').toLowerCase().includes(q));
+        });
+    }
+
+    // ── Stats ──────────────────────────────────────────────
+    function updateStats() {
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        $('stat-total').textContent      = jobs.length;
+        $('stat-active').textContent     = jobs.filter(j => j.status !== 'closed').length;
+        $('stat-production').textContent = jobs.filter(j => j.status === 'production').length;
+        $('stat-month').textContent      = jobs.filter(j => j.createdAt && new Date(j.createdAt.seconds * 1000) >= monthStart).length;
+    }
+
+    // ── Render jobs table ──────────────────────────────────
+    function renderJobs() {
+        const list  = filtered();
+        const tbody = $('jobs-tbody');
+        const empty = $('jobs-empty');
+        const wrap  = $('table-wrapper');
+
+        if (list.length === 0) {
+            empty.classList.remove('hidden');
+            wrap.classList.add('hidden');
+            return;
+        }
+        empty.classList.add('hidden');
+        wrap.classList.remove('hidden');
+
+        tbody.innerHTML = list.map(j => {
+            const s    = STATUS[j.status] || STATUS.assessment;
+            const date = j.createdAt
+                ? new Date(j.createdAt.seconds * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : '—';
+            return `<tr class="hover:bg-orange-50/60 cursor-pointer transition-colors group" data-id="${j.id}">
+                <td class="px-5 py-3.5">
+                    <div class="font-semibold text-gray-900 text-sm">${esc(j.clientName)}</div>
+                    <div class="text-gray-400 text-xs mt-0.5 truncate max-w-[180px]">${esc(j.address)}</div>
+                </td>
+                <td class="px-5 py-3.5">
+                    <div class="text-sm text-gray-700">${esc(j.phone) || '—'}</div>
+                    <div class="text-xs text-gray-400 mt-0.5">${esc(j.email)}</div>
+                </td>
+                <td class="px-5 py-3.5">
+                    <span class="text-sm text-gray-600">${esc(j.projectType) || '—'}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${s.pill}">${s.label}</span>
+                </td>
+                <td class="px-5 py-3.5">
+                    <span class="text-xs text-gray-400">${date}</span>
+                </td>
+                <td class="px-5 py-3.5 text-right">
+                    <button class="edit-row-btn text-xs text-orange-500 hover:text-orange-700 font-semibold opacity-0 group-hover:opacity-100 transition-opacity" data-id="${j.id}">Edit</button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('tr[data-id]').forEach(row => {
+            row.addEventListener('click', e => {
+                const id = e.currentTarget.dataset.id;
+                if (e.target.classList.contains('edit-row-btn')) {
+                    openEditModal(e.target.dataset.id);
+                } else {
+                    openDetailPanel(id);
+                }
+            });
+        });
+    }
+
+    // ── Detail Panel ───────────────────────────────────────
+    function openDetailPanel(jobId) {
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        selectedJobId = jobId;
+        populateDetailPanel(job);
+        $('detail-panel').classList.add('open');
+        $('panel-backdrop').classList.remove('hidden');
+    }
+
+    function populateDetailPanel(job) {
+        $('detail-name').textContent   = job.clientName || 'Unnamed Job';
+        $('detail-type').textContent   = job.projectType || '';
+        $('detail-status').value       = job.status || 'assessment';
+        $('detail-notes').value        = job.notes || '';
+
+        const rows = [
+            { label: 'Address', value: job.address },
+            { label: 'Email',   value: job.email   },
+            { label: 'Phone',   value: job.phone   },
+        ].filter(r => r.value);
+
+        $('detail-fields').innerHTML = rows.map(r => `
+            <div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">${r.label}</p>
+                <p class="text-sm text-gray-800 mt-0.5">${esc(r.value)}</p>
+            </div>`).join('');
+
+        const created = job.createdAt
+            ? new Date(job.createdAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+            : '';
+        $('detail-meta').innerHTML = [
+            created ? `<p>Created: ${created}</p>` : '',
+            job.createdBy ? `<p>By: ${esc(job.createdBy)}</p>` : '',
+        ].join('');
+    }
+
+    function refreshDetailPanel() {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (job) populateDetailPanel(job);
+    }
+
+    function closeDetailPanel() {
+        $('detail-panel').classList.remove('open');
+        $('panel-backdrop').classList.add('hidden');
+        selectedJobId = null;
+    }
+
+    $('detail-close-btn').addEventListener('click', closeDetailPanel);
+    $('panel-backdrop').addEventListener('click', closeDetailPanel);
+
+    $('detail-status').addEventListener('change', async e => {
+        if (selectedJobId) {
+            await patchJob(selectedJobId, { status: e.target.value });
+            toast('Status updated');
+        }
+    });
+
+    $('save-notes-btn').addEventListener('click', async () => {
+        if (selectedJobId) {
+            await patchJob(selectedJobId, { notes: $('detail-notes').value });
+            toast('Notes saved');
+        }
+    });
+
+    $('detail-edit-btn').addEventListener('click', () => {
+        if (selectedJobId) { closeDetailPanel(); openEditModal(selectedJobId); }
+    });
+
+    $('detail-delete-btn').addEventListener('click', () => {
+        if (selectedJobId) { pendingDelete = selectedJobId; $('confirm-overlay').classList.remove('hidden'); }
+    });
+
+    // ── Add / Edit Modal ───────────────────────────────────
+    function openAddModal() {
+        $('modal-title').textContent      = 'Add New Job';
+        $('form-submit-text').textContent = 'Save Job';
+        $('job-form').reset();
+        $('job-form').dataset.editId = '';
+        $('modal-overlay').classList.remove('hidden');
+        setTimeout(() => $('f-name').focus(), 50);
+    }
+
+    function openEditModal(jobId) {
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        $('modal-title').textContent      = 'Edit Job';
+        $('form-submit-text').textContent = 'Save Changes';
+        $('f-name').value         = job.clientName || '';
+        $('f-address').value      = job.address    || '';
+        $('f-email').value        = job.email      || '';
+        $('f-phone').value        = job.phone      || '';
+        $('f-project-type').value = job.projectType || '';
+        $('f-status').value       = job.status     || 'assessment';
+        $('f-notes').value        = job.notes      || '';
+        $('job-form').dataset.editId = jobId;
+        $('modal-overlay').classList.remove('hidden');
+    }
+
+    function closeModal() { $('modal-overlay').classList.add('hidden'); }
+
+    $('add-job-btn').addEventListener('click', openAddModal);
+    $('modal-close-btn').addEventListener('click', closeModal);
+    $('form-cancel-btn').addEventListener('click', closeModal);
+    $('modal-overlay').addEventListener('click', e => { if (e.target === $('modal-overlay')) closeModal(); });
+
+    $('job-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn  = e.submitter || e.target.querySelector('[type=submit]');
+        const orig = $('form-submit-text').textContent;
+        $('form-submit-text').textContent = 'Saving…';
+        btn && (btn.disabled = true);
+        try {
+            const data = {
+                clientName:  $('f-name').value.trim(),
+                address:     $('f-address').value.trim(),
+                email:       $('f-email').value.trim(),
+                phone:       $('f-phone').value.trim(),
+                projectType: $('f-project-type').value,
+                status:      $('f-status').value,
+                notes:       $('f-notes').value.trim(),
+            };
+            const editId = $('job-form').dataset.editId;
+            if (editId) data.id = editId;
+            await saveJob(data);
+            closeModal();
+        } catch (err) {
+            toast('Error: ' + err.message, true);
+        } finally {
+            $('form-submit-text').textContent = orig;
+            btn && (btn.disabled = false);
+        }
+    });
+
+    // ── Delete confirm ─────────────────────────────────────
+    $('confirm-cancel-btn').addEventListener('click', () => {
+        $('confirm-overlay').classList.add('hidden');
+        pendingDelete = null;
+    });
+
+    $('confirm-delete-btn').addEventListener('click', async () => {
+        if (pendingDelete) {
+            await deleteJobById(pendingDelete);
+            $('confirm-overlay').classList.add('hidden');
+            closeDetailPanel();
+            pendingDelete = null;
+        }
+    });
+
+    // ── Filters ────────────────────────────────────────────
+    $('search-input').addEventListener('input', e => { searchQuery = e.target.value; renderJobs(); });
+
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.status-filter-btn').forEach(b => {
+                b.classList.remove('bg-slate-900','text-white');
+                b.classList.add('bg-gray-100','text-gray-600');
+            });
+            btn.classList.add('bg-slate-900','text-white');
+            btn.classList.remove('bg-gray-100','text-gray-600');
+            statusFilter = btn.dataset.status;
+            renderJobs();
+        });
+    });
+}
+
+// ────────────────────────────────────────────────────────────
+// UTILITIES
+// ────────────────────────────────────────────────────────────
+function $(id) { return document.getElementById(id); }
+
+function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let _toastTimer;
+function toast(msg, isErr = false) {
+    const el = $('toast');
+    $('toast-text').textContent = msg;
+    el.className = `fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 min-w-[200px] justify-center ${isErr ? 'bg-red-600' : 'bg-slate-800'} text-white`;
+    $('toast-icon-ok').classList.toggle('hidden', isErr);
+    $('toast-icon-err').classList.toggle('hidden', !isErr);
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.add('hidden'), 3200);
+}
+</script>
+</body>
+</html>
