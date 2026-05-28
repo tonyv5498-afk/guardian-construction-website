@@ -212,18 +212,12 @@
                     <select id="f-project-type"
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
                         <option value="">Select type…</option>
-                        <option>Roofing</option>
-                        <option>Siding</option>
-                        <option>Windows</option>
-                        <option>Gutters</option>
-                        <option>Insulation</option>
-                        <option>Drywall</option>
-                        <option>Flooring</option>
-                        <option>Masonry</option>
-                        <option>Basement</option>
-                        <option>Bathroom</option>
-                        <option>Kitchen</option>
-                        <option>Garage</option>
+                        <option>Water Damage</option>
+                        <option>Mold</option>
+                        <option>Fire</option>
+                        <option>Smoke</option>
+                        <option>Odor</option>
+                        <option>Reconstruction</option>
                         <option>Other</option>
                     </select>
                 </div>
@@ -241,6 +235,12 @@
                         <option value="closed">Closed</option>
                     </select>
                 </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Sub-Category</label>
+                <input id="f-subcategory" type="text"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                    placeholder="e.g. Basement flood, Attic mold, Kitchen fire…">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Notes</label>
@@ -293,6 +293,18 @@
                 <option value="invoiced">Invoiced</option>
                 <option value="closed">Closed</option>
             </select>
+        </div>
+
+        <!-- Sub-category -->
+        <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">Sub-Category</label>
+            <input id="detail-subcategory" type="text"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                placeholder="e.g. Basement flood, Attic mold…">
+            <button id="save-subcategory-btn"
+                class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                Save Sub-Category
+            </button>
         </div>
 
         <!-- Contact info -->
@@ -584,7 +596,8 @@ function initApp() {
                     <div class="text-xs text-gray-400 mt-0.5">${esc(j.email)}</div>
                 </td>
                 <td class="px-5 py-3.5">
-                    <span class="text-sm text-gray-600">${esc(j.projectType) || '—'}</span>
+                    <div class="text-sm text-gray-600">${esc(j.projectType) || '—'}</div>
+                    ${j.subCategory ? `<div class="text-xs text-gray-400 mt-0.5">${esc(j.subCategory)}</div>` : ''}
                 </td>
                 <td class="px-5 py-3.5">
                     <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${s.pill}">${s.label}</span>
@@ -621,10 +634,11 @@ function initApp() {
     }
 
     function populateDetailPanel(job) {
-        $('detail-name').textContent   = job.clientName || 'Unnamed Job';
-        $('detail-type').textContent   = job.projectType || '';
-        $('detail-status').value       = job.status || 'assessment';
-        $('detail-notes').value        = job.notes || '';
+        $('detail-name').textContent      = job.clientName || 'Unnamed Job';
+        $('detail-type').textContent      = job.projectType ? (job.subCategory ? `${job.projectType} — ${job.subCategory}` : job.projectType) : '';
+        $('detail-status').value          = job.status || 'assessment';
+        $('detail-notes').value           = job.notes || '';
+        $('detail-subcategory').value     = job.subCategory || '';
 
         const rows = [
             { label: 'Address', value: job.address },
@@ -675,6 +689,13 @@ function initApp() {
         }
     });
 
+    $('save-subcategory-btn').addEventListener('click', async () => {
+        if (selectedJobId) {
+            await patchJob(selectedJobId, { subCategory: $('detail-subcategory').value.trim() });
+            toast('Sub-category saved');
+        }
+    });
+
     $('detail-edit-btn').addEventListener('click', () => {
         if (selectedJobId) { closeDetailPanel(); openEditModal(selectedJobId); }
     });
@@ -698,13 +719,14 @@ function initApp() {
         if (!job) return;
         $('modal-title').textContent      = 'Edit Job';
         $('form-submit-text').textContent = 'Save Changes';
-        $('f-name').value         = job.clientName || '';
-        $('f-address').value      = job.address    || '';
-        $('f-email').value        = job.email      || '';
-        $('f-phone').value        = job.phone      || '';
+        $('f-name').value         = job.clientName  || '';
+        $('f-address').value      = job.address     || '';
+        $('f-email').value        = job.email       || '';
+        $('f-phone').value        = job.phone       || '';
         $('f-project-type').value = job.projectType || '';
-        $('f-status').value       = job.status     || 'assessment';
-        $('f-notes').value        = job.notes      || '';
+        $('f-subcategory').value  = job.subCategory || '';
+        $('f-status').value       = job.status      || 'assessment';
+        $('f-notes').value        = job.notes       || '';
         $('job-form').dataset.editId = jobId;
         $('modal-overlay').classList.remove('hidden');
     }
@@ -729,6 +751,7 @@ function initApp() {
                 email:       $('f-email').value.trim(),
                 phone:       $('f-phone').value.trim(),
                 projectType: $('f-project-type').value,
+                subCategory: $('f-subcategory').value.trim(),
                 status:      $('f-status').value,
                 notes:       $('f-notes').value.trim(),
             };
