@@ -25,13 +25,9 @@
 </div>
 
 <!-- ─── Sign-In ────────────────────────────────────────────── -->
-<div id="auth-screen" class="hidden fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+<div id="auth-screen" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background:linear-gradient(135deg,#1B3A6B 0%,#152d54 100%);">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
-        <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
-        </div>
+        <img src="logo.png" alt="RGMD" class="w-24 h-24 rounded-full object-cover mx-auto mb-5 ring-4 shadow-lg" style="ring-color:#1B3A6B;">
         <h1 class="text-2xl font-bold text-gray-900 mb-1">RGMD CRM</h1>
         <p class="text-gray-500 text-sm mb-8">Restoration Group of Metro Detroit</p>
         <button id="google-signin-btn"
@@ -52,24 +48,20 @@
 <div id="app" class="hidden min-h-screen flex flex-col">
 
     <!-- Navbar -->
-    <nav class="bg-slate-900 text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
+    <nav class="text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0" style="background:#1B3A6B;">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
+            <img src="logo.png" alt="RGMD" class="w-10 h-10 rounded-full object-cover flex-shrink-0 ring-2 ring-white/20">
             <div class="hidden sm:block">
                 <div class="font-bold text-sm leading-tight">RGMD CRM</div>
-                <div class="text-slate-400 text-xs leading-tight">Restoration Group of Metro Detroit</div>
+                <div class="text-blue-200 text-xs leading-tight">Restoration Group of Metro Detroit</div>
             </div>
             <div class="sm:hidden font-bold text-sm">RGMD CRM</div>
         </div>
         <div class="flex items-center gap-3">
             <img id="user-photo" src="" alt="" class="w-7 h-7 rounded-full hidden flex-shrink-0">
-            <span id="user-name" class="text-sm text-slate-300 hidden sm:block"></span>
+            <span id="user-name" class="text-sm text-blue-200 hidden sm:block"></span>
             <button id="sign-out-btn"
-                class="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-all">
+                class="text-xs text-blue-200 hover:text-white border border-blue-700 hover:border-blue-400 px-3 py-1.5 rounded-lg transition-all">
                 Sign Out
             </button>
         </div>
@@ -116,7 +108,7 @@
 
         <!-- Status filter pills -->
         <div class="flex flex-wrap gap-2 mb-3" id="status-filters">
-            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-900 text-white" data-status="all">All</button>
+            <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background:#1B3A6B;" data-status="all">All</button>
             <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="assessment">Assessment</button>
             <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="estimate_sent">Estimate Sent</button>
             <button class="status-filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" data-status="followup_1">Follow-up 1</button>
@@ -242,6 +234,30 @@
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                     placeholder="e.g. Basement flood, Attic mold, Kitchen fire…">
             </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Referral Source</label>
+                    <select id="f-referral-source"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">Select source…</option>
+                        <option>Social Media</option>
+                        <option>Google</option>
+                        <option>Realtor</option>
+                        <option>Testing Company</option>
+                        <option>Home Inspector</option>
+                        <option>Plumber</option>
+                        <option>Property Manager</option>
+                        <option>Contractor</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Referral Name</label>
+                    <input id="f-referral-name" type="text"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                        placeholder="e.g. John Smith Realty">
+                </div>
+            </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Notes</label>
                 <textarea id="f-notes" rows="3"
@@ -304,6 +320,33 @@
             <button id="save-subcategory-btn"
                 class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
                 Save Sub-Category
+            </button>
+        </div>
+
+        <!-- Referral -->
+        <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">Referral</label>
+            <div class="grid grid-cols-2 gap-2">
+                <select id="detail-referral-source"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                    <option value="">Source…</option>
+                    <option>Social Media</option>
+                    <option>Google</option>
+                    <option>Realtor</option>
+                    <option>Testing Company</option>
+                    <option>Home Inspector</option>
+                    <option>Plumber</option>
+                    <option>Property Manager</option>
+                    <option>Contractor</option>
+                    <option>Other</option>
+                </select>
+                <input id="detail-referral-name" type="text"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    placeholder="Name…">
+            </div>
+            <button id="save-referral-btn"
+                class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                Save Referral
             </button>
         </div>
 
@@ -634,11 +677,13 @@ function initApp() {
     }
 
     function populateDetailPanel(job) {
-        $('detail-name').textContent      = job.clientName || 'Unnamed Job';
-        $('detail-type').textContent      = job.projectType ? (job.subCategory ? `${job.projectType} — ${job.subCategory}` : job.projectType) : '';
-        $('detail-status').value          = job.status || 'assessment';
-        $('detail-notes').value           = job.notes || '';
-        $('detail-subcategory').value     = job.subCategory || '';
+        $('detail-name').textContent          = job.clientName || 'Unnamed Job';
+        $('detail-type').textContent          = job.projectType ? (job.subCategory ? `${job.projectType} — ${job.subCategory}` : job.projectType) : '';
+        $('detail-status').value              = job.status || 'assessment';
+        $('detail-notes').value               = job.notes || '';
+        $('detail-subcategory').value         = job.subCategory || '';
+        $('detail-referral-source').value     = job.referralSource || '';
+        $('detail-referral-name').value       = job.referralName || '';
 
         const rows = [
             { label: 'Address', value: job.address },
@@ -696,6 +741,16 @@ function initApp() {
         }
     });
 
+    $('save-referral-btn').addEventListener('click', async () => {
+        if (selectedJobId) {
+            await patchJob(selectedJobId, {
+                referralSource: $('detail-referral-source').value,
+                referralName:   $('detail-referral-name').value.trim(),
+            });
+            toast('Referral saved');
+        }
+    });
+
     $('detail-edit-btn').addEventListener('click', () => {
         if (selectedJobId) { closeDetailPanel(); openEditModal(selectedJobId); }
     });
@@ -719,14 +774,16 @@ function initApp() {
         if (!job) return;
         $('modal-title').textContent      = 'Edit Job';
         $('form-submit-text').textContent = 'Save Changes';
-        $('f-name').value         = job.clientName  || '';
-        $('f-address').value      = job.address     || '';
-        $('f-email').value        = job.email       || '';
-        $('f-phone').value        = job.phone       || '';
-        $('f-project-type').value = job.projectType || '';
-        $('f-subcategory').value  = job.subCategory || '';
-        $('f-status').value       = job.status      || 'assessment';
-        $('f-notes').value        = job.notes       || '';
+        $('f-name').value             = job.clientName    || '';
+        $('f-address').value          = job.address       || '';
+        $('f-email').value            = job.email         || '';
+        $('f-phone').value            = job.phone         || '';
+        $('f-project-type').value     = job.projectType   || '';
+        $('f-subcategory').value      = job.subCategory   || '';
+        $('f-status').value           = job.status        || 'assessment';
+        $('f-referral-source').value  = job.referralSource || '';
+        $('f-referral-name').value    = job.referralName  || '';
+        $('f-notes').value            = job.notes         || '';
         $('job-form').dataset.editId = jobId;
         $('modal-overlay').classList.remove('hidden');
     }
@@ -746,14 +803,16 @@ function initApp() {
         btn && (btn.disabled = true);
         try {
             const data = {
-                clientName:  $('f-name').value.trim(),
-                address:     $('f-address').value.trim(),
-                email:       $('f-email').value.trim(),
-                phone:       $('f-phone').value.trim(),
-                projectType: $('f-project-type').value,
-                subCategory: $('f-subcategory').value.trim(),
-                status:      $('f-status').value,
-                notes:       $('f-notes').value.trim(),
+                clientName:     $('f-name').value.trim(),
+                address:        $('f-address').value.trim(),
+                email:          $('f-email').value.trim(),
+                phone:          $('f-phone').value.trim(),
+                projectType:    $('f-project-type').value,
+                subCategory:    $('f-subcategory').value.trim(),
+                status:         $('f-status').value,
+                referralSource: $('f-referral-source').value,
+                referralName:   $('f-referral-name').value.trim(),
+                notes:          $('f-notes').value.trim(),
             };
             const editId = $('job-form').dataset.editId;
             if (editId) data.id = editId;
@@ -788,10 +847,12 @@ function initApp() {
     document.querySelectorAll('.status-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.status-filter-btn').forEach(b => {
-                b.classList.remove('bg-slate-900','text-white');
+                b.style.background = '';
+                b.classList.remove('text-white');
                 b.classList.add('bg-gray-100','text-gray-600');
             });
-            btn.classList.add('bg-slate-900','text-white');
+            btn.style.background = '#1B3A6B';
+            btn.classList.add('text-white');
             btn.classList.remove('bg-gray-100','text-gray-600');
             statusFilter = btn.dataset.status;
             renderJobs();
@@ -813,7 +874,8 @@ let _toastTimer;
 function toast(msg, isErr = false) {
     const el = $('toast');
     $('toast-text').textContent = msg;
-    el.className = `fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 min-w-[200px] justify-center ${isErr ? 'bg-red-600' : 'bg-slate-800'} text-white`;
+    el.className = `fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 min-w-[200px] justify-center ${isErr ? 'bg-red-600' : ''} text-white`;
+    if (!isErr) el.style.background = '#1B3A6B'; else el.style.background = '';
     $('toast-icon-ok').classList.toggle('hidden', isErr);
     $('toast-icon-err').classList.toggle('hidden', !isErr);
     clearTimeout(_toastTimer);
