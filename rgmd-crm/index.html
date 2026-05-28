@@ -264,6 +264,61 @@
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
                     placeholder="Any additional notes about this job…"></textarea>
             </div>
+            <!-- Insurance -->
+            <div class="border-t border-gray-100 pt-4">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Insurance Information</p>
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Carrier</label>
+                            <input id="f-ins-carrier" type="text"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="State Farm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Claim Number</label>
+                            <input id="f-ins-claim" type="text"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="CLM-00123">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Policy Number</label>
+                            <input id="f-ins-policy" type="text"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="POL-456789">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Deductible</label>
+                            <input id="f-ins-deductible" type="text"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="$1,000">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Adjuster Name</label>
+                        <input id="f-ins-adjuster-name" type="text"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                            placeholder="Jane Doe">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Adjuster Phone</label>
+                            <input id="f-ins-adjuster-phone" type="tel"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="(555) 987-6543">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Adjuster Email</label>
+                            <input id="f-ins-adjuster-email" type="email"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                placeholder="jane@statefarm.com">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex gap-3 pt-1 pb-2">
                 <button type="button" id="form-cancel-btn"
                     class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
@@ -353,6 +408,51 @@
         <!-- Contact info -->
         <div class="grid grid-cols-1 gap-3" id="detail-fields">
             <!-- Populated dynamically -->
+        </div>
+
+        <!-- Insurance -->
+        <div class="border-t border-gray-100 pt-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Insurance</p>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Carrier</label>
+                        <input id="detail-ins-carrier" type="text" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="State Farm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Claim #</label>
+                        <input id="detail-ins-claim" type="text" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="CLM-00123">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Policy #</label>
+                        <input id="detail-ins-policy" type="text" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="POL-456789">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Deductible</label>
+                        <input id="detail-ins-deductible" type="text" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="$1,000">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Adjuster Name</label>
+                    <input id="detail-ins-adjuster-name" type="text" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="Jane Doe">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Adjuster Phone</label>
+                        <input id="detail-ins-adjuster-phone" type="tel" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="(555) 987-6543">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Adjuster Email</label>
+                        <input id="detail-ins-adjuster-email" type="email" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="jane@ins.com">
+                    </div>
+                </div>
+                <button id="save-insurance-btn"
+                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                    Save Insurance
+                </button>
+            </div>
         </div>
 
         <!-- Notes -->
@@ -684,6 +784,13 @@ function initApp() {
         $('detail-subcategory').value         = job.subCategory || '';
         $('detail-referral-source').value     = job.referralSource || '';
         $('detail-referral-name').value       = job.referralName || '';
+        $('detail-ins-carrier').value         = job.insCarrier || '';
+        $('detail-ins-claim').value           = job.insClaim || '';
+        $('detail-ins-policy').value          = job.insPolicy || '';
+        $('detail-ins-deductible').value      = job.insDeductible || '';
+        $('detail-ins-adjuster-name').value   = job.insAdjusterName || '';
+        $('detail-ins-adjuster-phone').value  = job.insAdjusterPhone || '';
+        $('detail-ins-adjuster-email').value  = job.insAdjusterEmail || '';
 
         const rows = [
             { label: 'Address', value: job.address },
@@ -751,6 +858,21 @@ function initApp() {
         }
     });
 
+    $('save-insurance-btn').addEventListener('click', async () => {
+        if (selectedJobId) {
+            await patchJob(selectedJobId, {
+                insCarrier:       $('detail-ins-carrier').value.trim(),
+                insClaim:         $('detail-ins-claim').value.trim(),
+                insPolicy:        $('detail-ins-policy').value.trim(),
+                insDeductible:    $('detail-ins-deductible').value.trim(),
+                insAdjusterName:  $('detail-ins-adjuster-name').value.trim(),
+                insAdjusterPhone: $('detail-ins-adjuster-phone').value.trim(),
+                insAdjusterEmail: $('detail-ins-adjuster-email').value.trim(),
+            });
+            toast('Insurance info saved');
+        }
+    });
+
     $('detail-edit-btn').addEventListener('click', () => {
         if (selectedJobId) { closeDetailPanel(); openEditModal(selectedJobId); }
     });
@@ -774,16 +896,23 @@ function initApp() {
         if (!job) return;
         $('modal-title').textContent      = 'Edit Job';
         $('form-submit-text').textContent = 'Save Changes';
-        $('f-name').value             = job.clientName    || '';
-        $('f-address').value          = job.address       || '';
-        $('f-email').value            = job.email         || '';
-        $('f-phone').value            = job.phone         || '';
-        $('f-project-type').value     = job.projectType   || '';
-        $('f-subcategory').value      = job.subCategory   || '';
-        $('f-status').value           = job.status        || 'assessment';
-        $('f-referral-source').value  = job.referralSource || '';
-        $('f-referral-name').value    = job.referralName  || '';
-        $('f-notes').value            = job.notes         || '';
+        $('f-name').value                 = job.clientName       || '';
+        $('f-address').value              = job.address          || '';
+        $('f-email').value                = job.email            || '';
+        $('f-phone').value                = job.phone            || '';
+        $('f-project-type').value         = job.projectType      || '';
+        $('f-subcategory').value          = job.subCategory      || '';
+        $('f-status').value               = job.status           || 'assessment';
+        $('f-referral-source').value      = job.referralSource   || '';
+        $('f-referral-name').value        = job.referralName     || '';
+        $('f-ins-carrier').value          = job.insCarrier       || '';
+        $('f-ins-claim').value            = job.insClaim         || '';
+        $('f-ins-policy').value           = job.insPolicy        || '';
+        $('f-ins-deductible').value       = job.insDeductible    || '';
+        $('f-ins-adjuster-name').value    = job.insAdjusterName  || '';
+        $('f-ins-adjuster-phone').value   = job.insAdjusterPhone || '';
+        $('f-ins-adjuster-email').value   = job.insAdjusterEmail || '';
+        $('f-notes').value                = job.notes            || '';
         $('job-form').dataset.editId = jobId;
         $('modal-overlay').classList.remove('hidden');
     }
@@ -803,16 +932,23 @@ function initApp() {
         btn && (btn.disabled = true);
         try {
             const data = {
-                clientName:     $('f-name').value.trim(),
-                address:        $('f-address').value.trim(),
-                email:          $('f-email').value.trim(),
-                phone:          $('f-phone').value.trim(),
-                projectType:    $('f-project-type').value,
-                subCategory:    $('f-subcategory').value.trim(),
-                status:         $('f-status').value,
-                referralSource: $('f-referral-source').value,
-                referralName:   $('f-referral-name').value.trim(),
-                notes:          $('f-notes').value.trim(),
+                clientName:       $('f-name').value.trim(),
+                address:          $('f-address').value.trim(),
+                email:            $('f-email').value.trim(),
+                phone:            $('f-phone').value.trim(),
+                projectType:      $('f-project-type').value,
+                subCategory:      $('f-subcategory').value.trim(),
+                status:           $('f-status').value,
+                referralSource:   $('f-referral-source').value,
+                referralName:     $('f-referral-name').value.trim(),
+                insCarrier:       $('f-ins-carrier').value.trim(),
+                insClaim:         $('f-ins-claim').value.trim(),
+                insPolicy:        $('f-ins-policy').value.trim(),
+                insDeductible:    $('f-ins-deductible').value.trim(),
+                insAdjusterName:  $('f-ins-adjuster-name').value.trim(),
+                insAdjusterPhone: $('f-ins-adjuster-phone').value.trim(),
+                insAdjusterEmail: $('f-ins-adjuster-email').value.trim(),
+                notes:            $('f-notes').value.trim(),
             };
             const editId = $('job-form').dataset.editId;
             if (editId) data.id = editId;
