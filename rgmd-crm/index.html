@@ -715,7 +715,7 @@ function initApp() {
 
     document.getElementById('google-signin-btn').addEventListener('click', () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/drive');
+        provider.addScope('https://www.googleapis.com/auth/drive.file');
         auth.signInWithPopup(provider).then(result => {
             driveToken = result.credential.accessToken;
             if (driveToken) sessionStorage.setItem('driveToken', driveToken);
@@ -1137,7 +1137,7 @@ function initApp() {
     // ── Reconnect Drive ────────────────────────────────────
     $('reconnect-drive-btn').addEventListener('click', async () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/drive');
+        provider.addScope('https://www.googleapis.com/auth/drive.file');
         try {
             const result = await auth.signInWithPopup(provider);
             driveToken = result.credential.accessToken;
