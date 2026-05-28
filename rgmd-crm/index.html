@@ -467,6 +467,74 @@
             </button>
         </div>
 
+        <!-- ─── Files (Google Drive) ───────────────────── -->
+        <div class="border-t border-gray-100 pt-4">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Files</p>
+                <a id="drive-folder-link" href="#" target="_blank"
+                    class="hidden text-xs text-blue-500 hover:text-blue-700 font-medium flex items-center gap-1">
+                    Open in Drive
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+            </div>
+
+            <!-- Drive not connected warning -->
+            <div id="drive-reconnect-box" class="hidden mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p class="text-xs text-amber-700 mb-2">Google Drive access expired. Reconnect to view and upload files.</p>
+                <button id="reconnect-drive-btn"
+                    class="w-full text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 py-1.5 rounded-lg transition-colors">
+                    Reconnect Google Drive
+                </button>
+            </div>
+
+            <!-- Drive folders not yet created -->
+            <div id="drive-create-folders-box" class="hidden mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                <p class="text-xs text-blue-700 mb-2">No Drive folders linked to this job yet.</p>
+                <button id="create-folders-btn"
+                    class="w-full text-xs font-semibold py-1.5 rounded-lg transition-colors text-white" style="background:#1B3A6B;">
+                    Create Drive Folders
+                </button>
+            </div>
+
+            <!-- Tab buttons -->
+            <div class="flex gap-1 mb-3" id="drive-tabs-row">
+                <button id="tab-btn-photos"
+                    class="drive-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors text-white"
+                    style="background:#1B3A6B;" data-tab="photos">
+                    Photos
+                </button>
+                <button id="tab-btn-documents"
+                    class="drive-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-tab="documents">
+                    Documents
+                </button>
+            </div>
+
+            <!-- Photos tab -->
+            <div id="drive-tab-photos">
+                <div id="drive-photos-list" class="space-y-0.5 mb-2 max-h-44 overflow-y-auto rounded-lg">
+                    <p class="text-xs text-gray-400 italic py-2 text-center">No photos yet</p>
+                </div>
+                <label class="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-orange-400 hover:bg-orange-50 text-gray-500 text-xs font-semibold py-2.5 rounded-lg transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Upload Photo
+                    <input type="file" id="upload-photo-input" class="hidden" accept="image/*" multiple>
+                </label>
+            </div>
+
+            <!-- Documents tab -->
+            <div id="drive-tab-documents" class="hidden">
+                <div id="drive-docs-list" class="space-y-0.5 mb-2 max-h-44 overflow-y-auto rounded-lg">
+                    <p class="text-xs text-gray-400 italic py-2 text-center">No documents yet</p>
+                </div>
+                <label class="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-orange-400 hover:bg-orange-50 text-gray-500 text-xs font-semibold py-2.5 rounded-lg transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Upload Document
+                    <input type="file" id="upload-doc-input" class="hidden" multiple>
+                </label>
+            </div>
+        </div>
+
         <!-- Meta -->
         <div id="detail-meta" class="text-xs text-gray-400 space-y-0.5 pt-1 border-t border-gray-100">
         </div>
@@ -485,7 +553,7 @@
 </div>
 
 <!-- Panel backdrop -->
-<div id="panel-backdrop" class="hidden fixed inset-0 z-20 bg-black/30" id="panel-backdrop"></div>
+<div id="panel-backdrop" class="hidden fixed inset-0 z-20 bg-black/30"></div>
 
 <!-- ─── Delete Confirm ─────────────────────────────────────── -->
 <div id="confirm-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -523,7 +591,7 @@
     <span id="toast-text"></span>
 </div>
 
-<!-- ─── Firebase Config Banner (shown when unconfigured) ───── -->
+<!-- ─── Firebase Config Banner ──────────────────────────────── -->
 <div id="config-banner" class="hidden fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-6">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
         <div class="flex items-center gap-3 mb-5">
@@ -556,7 +624,7 @@
             </li>
             <li class="flex gap-3">
                 <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">5</span>
-                <span>In Project Settings → Your apps → Add a <strong>Web App</strong> → copy the config object into <strong>index.html</strong> at the <code class="bg-gray-100 px-1 rounded text-xs">firebaseConfig</code> section</span>
+                <span>Copy the Firebase config into <strong>index.html</strong></span>
             </li>
         </ol>
         <p class="text-xs text-gray-400">Firebase free tier (Spark plan) is more than enough for a small CRM.</p>
@@ -570,7 +638,7 @@
 <script>
 
 // ────────────────────────────────────────────────────────────
-// FIREBASE CONFIG  ← Replace these values with your own
+// FIREBASE CONFIG
 // ────────────────────────────────────────────────────────────
 const firebaseConfig = {
     apiKey:            "AIzaSyD9huYJE69gbk4JWm3Q24tcXcZCDCK48bU",
@@ -596,7 +664,7 @@ const STATUS = {
 };
 
 // ────────────────────────────────────────────────────────────
-// INIT CHECK — show setup banner if config is placeholder
+// INIT CHECK
 // ────────────────────────────────────────────────────────────
 if (firebaseConfig.apiKey.startsWith('REPLACE')) {
     document.getElementById('loading-screen').classList.add('hidden');
@@ -621,6 +689,8 @@ function initApp() {
     let unsubJobs     = null;
     let statusFilter  = 'all';
     let searchQuery   = '';
+    let driveToken    = sessionStorage.getItem('driveToken') || null;
+    let activeDriveTab = 'photos';
 
     // ── Auth ───────────────────────────────────────────────
     auth.onAuthStateChanged(user => {
@@ -637,13 +707,19 @@ function initApp() {
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('app').classList.add('hidden');
             jobs = [];
+            driveToken = null;
+            sessionStorage.removeItem('driveToken');
             if (unsubJobs) { unsubJobs(); unsubJobs = null; }
         }
     });
 
     document.getElementById('google-signin-btn').addEventListener('click', () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => toast('Sign-in failed: ' + err.message, true));
+        provider.addScope('https://www.googleapis.com/auth/drive');
+        auth.signInWithPopup(provider).then(result => {
+            driveToken = result.credential.accessToken;
+            if (driveToken) sessionStorage.setItem('driveToken', driveToken);
+        }).catch(err => toast('Sign-in failed: ' + err.message, true));
     });
 
     document.getElementById('sign-out-btn').addEventListener('click', () => auth.signOut());
@@ -671,9 +747,11 @@ function initApp() {
             const { id, ...rest } = data;
             await db.collection('jobs').doc(id).update({ ...rest, updatedAt: ts });
             toast('Job updated');
+            return id;
         } else {
-            await db.collection('jobs').add({ ...data, createdAt: ts, updatedAt: ts, createdBy: currentUser.email });
+            const ref = await db.collection('jobs').add({ ...data, createdAt: ts, updatedAt: ts, createdBy: currentUser.email });
             toast('Job created');
+            return ref.id;
         }
     }
 
@@ -771,9 +849,11 @@ function initApp() {
         const job = jobs.find(j => j.id === jobId);
         if (!job) return;
         selectedJobId = jobId;
+        activeDriveTab = 'photos';
         populateDetailPanel(job);
         $('detail-panel').classList.add('open');
         $('panel-backdrop').classList.remove('hidden');
+        loadDriveSection(job);
     }
 
     function populateDetailPanel(job) {
@@ -952,8 +1032,12 @@ function initApp() {
             };
             const editId = $('job-form').dataset.editId;
             if (editId) data.id = editId;
-            await saveJob(data);
+            const savedId = await saveJob(data);
             closeModal();
+            // Auto-create Drive folders for new jobs
+            if (!editId && savedId) {
+                createJobFolders(savedId, data.clientName);
+            }
         } catch (err) {
             toast('Error: ' + err.message, true);
         } finally {
@@ -994,6 +1078,292 @@ function initApp() {
             renderJobs();
         });
     });
+
+    // ── Drive Tab Switching ────────────────────────────────
+    document.querySelectorAll('.drive-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            activeDriveTab = btn.dataset.tab;
+            document.querySelectorAll('.drive-tab-btn').forEach(b => {
+                b.style.background = '';
+                b.classList.remove('text-white');
+                b.classList.add('bg-gray-100','text-gray-600');
+            });
+            btn.style.background = '#1B3A6B';
+            btn.classList.add('text-white');
+            btn.classList.remove('bg-gray-100','text-gray-600');
+            $('drive-tab-photos').classList.toggle('hidden', activeDriveTab !== 'photos');
+            $('drive-tab-documents').classList.toggle('hidden', activeDriveTab !== 'documents');
+        });
+    });
+
+    // ── Upload handlers ────────────────────────────────────
+    $('upload-photo-input').addEventListener('change', async e => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job || !job.driveFolderPhotoId) {
+            toast('Drive folders not ready yet', true); return;
+        }
+        await handleUpload(e.target.files, job.driveFolderPhotoId, 'drive-photos-list');
+        e.target.value = '';
+    });
+
+    $('upload-doc-input').addEventListener('change', async e => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job || !job.driveFolderDocId) {
+            toast('Drive folders not ready yet', true); return;
+        }
+        await handleUpload(e.target.files, job.driveFolderDocId, 'drive-docs-list');
+        e.target.value = '';
+    });
+
+    async function handleUpload(files, folderId, listId) {
+        if (!files || !files.length) return;
+        const listEl = $(listId);
+        listEl.innerHTML = `<p class="text-xs text-gray-400 italic py-2 text-center">Uploading ${files.length} file(s)…</p>`;
+        try {
+            for (const file of Array.from(files)) {
+                await uploadToDrive(folderId, file);
+            }
+            toast(`${files.length} file(s) uploaded`);
+            await refreshFileList(folderId, listId);
+        } catch (err) {
+            if (err.message === 'token_expired' || err.message === 'no_token') {
+                showDriveReconnect(true);
+            } else {
+                toast('Upload error: ' + err.message, true);
+            }
+        }
+    }
+
+    // ── Reconnect Drive ────────────────────────────────────
+    $('reconnect-drive-btn').addEventListener('click', async () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('https://www.googleapis.com/auth/drive');
+        try {
+            const result = await auth.signInWithPopup(provider);
+            driveToken = result.credential.accessToken;
+            if (driveToken) {
+                sessionStorage.setItem('driveToken', driveToken);
+                showDriveReconnect(false);
+                const job = jobs.find(j => j.id === selectedJobId);
+                if (job) loadDriveSection(job);
+            }
+        } catch (err) {
+            toast('Reconnect failed: ' + err.message, true);
+        }
+    });
+
+    // ── Create folders button (for older jobs) ─────────────
+    $('create-folders-btn').addEventListener('click', async () => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job) return;
+        $('create-folders-btn').textContent = 'Creating…';
+        $('create-folders-btn').disabled = true;
+        await createJobFolders(selectedJobId, job.clientName);
+        $('create-folders-btn').textContent = 'Create Drive Folders';
+        $('create-folders-btn').disabled = false;
+        const updated = jobs.find(j => j.id === selectedJobId);
+        if (updated) loadDriveSection(updated);
+    });
+
+    // ── Drive section loader ───────────────────────────────
+    function loadDriveSection(job) {
+        // Reset tab to photos
+        $('drive-tab-photos').classList.remove('hidden');
+        $('drive-tab-documents').classList.add('hidden');
+        document.querySelectorAll('.drive-tab-btn').forEach(b => {
+            b.style.background = '';
+            b.classList.remove('text-white');
+            b.classList.add('bg-gray-100','text-gray-600');
+        });
+        $('tab-btn-photos').style.background = '#1B3A6B';
+        $('tab-btn-photos').classList.add('text-white');
+        $('tab-btn-photos').classList.remove('bg-gray-100','text-gray-600');
+        activeDriveTab = 'photos';
+
+        if (!driveToken) {
+            showDriveReconnect(true);
+            $('drive-create-folders-box').classList.add('hidden');
+            $('drive-folder-link').classList.add('hidden');
+            setFileListLoading('drive-photos-list', '—');
+            setFileListLoading('drive-docs-list', '—');
+            return;
+        }
+
+        showDriveReconnect(false);
+
+        if (!job.driveFolderJobId) {
+            $('drive-create-folders-box').classList.remove('hidden');
+            $('drive-folder-link').classList.add('hidden');
+            setFileListLoading('drive-photos-list', 'No photos yet');
+            setFileListLoading('drive-docs-list', 'No documents yet');
+            return;
+        }
+
+        $('drive-create-folders-box').classList.add('hidden');
+        const link = $('drive-folder-link');
+        link.href = `https://drive.google.com/drive/folders/${job.driveFolderJobId}`;
+        link.classList.remove('hidden');
+
+        setFileListLoading('drive-photos-list', 'Loading…');
+        setFileListLoading('drive-docs-list', 'Loading…');
+
+        if (job.driveFolderPhotoId) {
+            refreshFileList(job.driveFolderPhotoId, 'drive-photos-list');
+        } else {
+            setFileListLoading('drive-photos-list', 'No photos yet');
+        }
+        if (job.driveFolderDocId) {
+            refreshFileList(job.driveFolderDocId, 'drive-docs-list');
+        } else {
+            setFileListLoading('drive-docs-list', 'No documents yet');
+        }
+    }
+
+    function setFileListLoading(listId, msg) {
+        $(listId).innerHTML = `<p class="text-xs text-gray-400 italic py-2 text-center">${msg}</p>`;
+    }
+
+    function showDriveReconnect(show) {
+        $('drive-reconnect-box').classList.toggle('hidden', !show);
+    }
+
+    async function refreshFileList(folderId, listId) {
+        try {
+            const files = await listDriveFiles(folderId);
+            renderFileList(files, listId);
+        } catch (err) {
+            if (err.message === 'token_expired' || err.message === 'no_token') {
+                showDriveReconnect(true);
+                setFileListLoading(listId, '—');
+            } else {
+                setFileListLoading(listId, 'Error loading files');
+            }
+        }
+    }
+
+    function renderFileList(files, listId) {
+        const el = $(listId);
+        if (!files.length) {
+            el.innerHTML = `<p class="text-xs text-gray-400 italic py-2 text-center">No files yet</p>`;
+            return;
+        }
+        el.innerHTML = files.map(f => {
+            const icon = mimeIcon(f.mimeType);
+            const size = f.size ? ' · ' + formatBytes(parseInt(f.size, 10)) : '';
+            return `<a href="${esc(f.webViewLink)}" target="_blank" rel="noopener"
+                class="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg transition-colors group">
+                <span class="text-base flex-shrink-0">${icon}</span>
+                <span class="text-xs text-gray-700 truncate flex-1 group-hover:text-blue-600">${esc(f.name)}</span>
+                <span class="text-xs text-gray-400 flex-shrink-0">${size}</span>
+                <svg class="w-3 h-3 text-gray-300 group-hover:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>`;
+        }).join('');
+    }
+
+    // ── Drive API helpers ──────────────────────────────────
+    async function driveRequest(method, path, body = null, params = {}) {
+        if (!driveToken) throw new Error('no_token');
+        const url = new URL('https://www.googleapis.com/drive/v3/' + path);
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        const opts = { method, headers: { 'Authorization': 'Bearer ' + driveToken } };
+        if (body) {
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(body);
+        }
+        const resp = await fetch(url.toString(), opts);
+        if (resp.status === 401) { driveToken = null; sessionStorage.removeItem('driveToken'); throw new Error('token_expired'); }
+        if (!resp.ok) throw new Error('Drive API error ' + resp.status);
+        return resp.json();
+    }
+
+    async function findFolder(name, parentId) {
+        const safeN = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        const q = `name='${safeN}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`;
+        const data = await driveRequest('GET', 'files', null, { q, fields: 'files(id)', pageSize: '1' });
+        return data.files && data.files[0] ? data.files[0].id : null;
+    }
+
+    async function createFolder(name, parentId) {
+        const body = { name, mimeType: 'application/vnd.google-apps.folder' };
+        if (parentId && parentId !== 'root') body.parents = [parentId];
+        const data = await driveRequest('POST', 'files', body, { fields: 'id' });
+        return data.id;
+    }
+
+    async function findOrCreateFolder(name, parentId) {
+        const existing = await findFolder(name, parentId || 'root');
+        return existing || await createFolder(name, parentId || null);
+    }
+
+    async function createJobFolders(jobId, clientName) {
+        if (!driveToken) { showDriveReconnect(true); return; }
+        try {
+            const rootId     = await findOrCreateFolder('RGMD CRM Jobs', 'root');
+            const date       = new Date().toISOString().slice(0, 10);
+            const jobFolderName = `${clientName || 'Job'} — ${date}`;
+            const jobId_f    = await createFolder(jobFolderName, rootId);
+            const photoId    = await createFolder('Photos', jobId_f);
+            const docId      = await createFolder('Documents', jobId_f);
+            await patchJob(jobId, {
+                driveFolderJobId:   jobId_f,
+                driveFolderPhotoId: photoId,
+                driveFolderDocId:   docId,
+            });
+            toast('Drive folders created');
+        } catch (err) {
+            if (err.message === 'token_expired' || err.message === 'no_token') {
+                showDriveReconnect(true);
+            } else {
+                toast('Drive error: ' + err.message, true);
+            }
+        }
+    }
+
+    async function listDriveFiles(folderId) {
+        const q = `'${folderId}' in parents and trashed=false`;
+        const data = await driveRequest('GET', 'files', null, {
+            q,
+            fields: 'files(id,name,mimeType,webViewLink,size,createdTime)',
+            orderBy: 'createdTime desc',
+            pageSize: '100',
+        });
+        return data.files || [];
+    }
+
+    async function uploadToDrive(folderId, file) {
+        if (!driveToken) throw new Error('no_token');
+        const meta = { name: file.name, parents: [folderId] };
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+        form.append('file', file);
+        const resp = await fetch(
+            'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink',
+            { method: 'POST', headers: { 'Authorization': 'Bearer ' + driveToken }, body: form }
+        );
+        if (resp.status === 401) { driveToken = null; sessionStorage.removeItem('driveToken'); throw new Error('token_expired'); }
+        if (!resp.ok) throw new Error('Upload failed: ' + resp.status);
+        return resp.json();
+    }
+
+    // ── Utilities ──────────────────────────────────────────
+    function mimeIcon(mime) {
+        if (!mime) return '📄';
+        if (mime.startsWith('image/')) return '🖼️';
+        if (mime === 'application/pdf') return '📋';
+        if (mime.includes('word') || mime.includes('document')) return '📝';
+        if (mime.includes('sheet') || mime.includes('excel')) return '📊';
+        if (mime.includes('presentation') || mime.includes('powerpoint')) return '📑';
+        if (mime.includes('video')) return '🎥';
+        if (mime.includes('audio')) return '🎵';
+        if (mime.includes('zip') || mime.includes('rar') || mime.includes('7z')) return '🗜️';
+        return '📄';
+    }
+
+    function formatBytes(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+        return (b / (1024 * 1024)).toFixed(1) + ' MB';
+    }
 }
 
 // ────────────────────────────────────────────────────────────
