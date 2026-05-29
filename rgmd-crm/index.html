@@ -501,6 +501,13 @@
                     </div>
                     <div id="sig-status-coc_rebuild"></div>
                 </div>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Hold Harmless Agreement</span>
+                        <span id="sig-pill-hold_harmless" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-hold_harmless"></div>
+                </div>
             </div>
         </div>
 
@@ -902,10 +909,11 @@ const STATUS = {
 // DOCUMENT TYPE CONFIG
 // ────────────────────────────────────────────────────────────
 const DOC_TYPES = {
-    wa:          { label: 'Service Authorization',                  tokenField: 'sigTokenWA',         hasAob: true,  simpleDoc: false },
-    rwa:         { label: 'Reconstruction Work Authorization',      tokenField: 'sigTokenRWA',        hasAob: true,  simpleDoc: false },
-    coc_mit:     { label: 'Certificate of Completion — Mitigation', tokenField: 'sigTokenCOCMit',     hasAob: false, simpleDoc: true  },
-    coc_rebuild: { label: 'Certificate of Completion — Rebuild',    tokenField: 'sigTokenCOCRebuild', hasAob: false, simpleDoc: true  },
+    wa:            { label: 'Service Authorization',                  tokenField: 'sigTokenWA',           hasAob: true,  simpleDoc: false },
+    rwa:           { label: 'Reconstruction Work Authorization',      tokenField: 'sigTokenRWA',          hasAob: true,  simpleDoc: false },
+    coc_mit:       { label: 'Certificate of Completion — Mitigation', tokenField: 'sigTokenCOCMit',       hasAob: false, simpleDoc: true  },
+    coc_rebuild:   { label: 'Certificate of Completion — Rebuild',    tokenField: 'sigTokenCOCRebuild',   hasAob: false, simpleDoc: true  },
+    hold_harmless: { label: 'Hold Harmless Agreement',                tokenField: 'sigTokenHoldHarmless', hasAob: false, simpleDoc: true  },
 };
 
 const WA_PARAGRAPHS = [
@@ -980,14 +988,16 @@ async function initSigningPage(token) {
 
         // Set page title and signature label based on doc type
         const titles = {
-            wa:          'Service Authorization Contract',
-            rwa:         'Reconstruction Work Authorization',
-            coc_mit:     'Mitigation Certificate of Completion and Satisfaction',
-            coc_rebuild: 'Rebuild Certificate of Completion and Satisfaction',
+            wa:            'Service Authorization Contract',
+            rwa:           'Reconstruction Work Authorization',
+            coc_mit:       'Mitigation Certificate of Completion and Satisfaction',
+            coc_rebuild:   'Rebuild Certificate of Completion and Satisfaction',
+            hold_harmless: 'Indemnification, Hold Harmless Agreement',
         };
         const sigLabels = {
             wa: 'Signature — Service Authorization', rwa: 'Signature — Reconstruction Work Authorization',
             coc_mit: 'Signature — Certificate of Completion', coc_rebuild: 'Signature — Certificate of Completion',
+            hold_harmless: 'Signature — Hold Harmless Agreement',
         };
         document.getElementById('sc-doc-title').textContent  = titles[docType]    || titles.wa;
         document.getElementById('sc-sig-label').textContent  = sigLabels[docType] || sigLabels.wa;
@@ -1018,8 +1028,17 @@ async function initSigningPage(token) {
             bodyEl.innerHTML = RWA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'coc_mit') {
             bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
-        } else {
+        } else if (docType === 'coc_rebuild') {
             bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
+        } else {
+            // hold_harmless
+            const cn = `<strong>${esc(d.clientName||'________________________')}</strong>`;
+            const addr = `<strong>${esc(d.address||'________________________')}</strong>`;
+            bodyEl.innerHTML = [
+                `<p>To the extent permitted by law, ${cn} agrees to defend, indemnify and hold harmless <strong>Restoration Group of Metro Detroit LLC</strong> and its/their officers, directors, agents and employees from and against any and all claims, suits, liens, judgments, damages, losses and expenses including legal fees and costs arising in whole or in part and in any manner from acts, omissions, breach or default in connection with performance of any work not completed as originally requested to recover, from homeowner/executor of estate/authorized agent. <strong>Restoration Group of Metro Detroit LLC</strong> is released from all obligations and duties previously requested to recover the property located at: ${addr}.</p>`,
+                `<p>I hereby agree and fully understand that I have asked <strong>Restoration Group of Metro Detroit LLC</strong> to remove equipment and stop the remediation process. In addition, I hereby take full responsibility of my actions after <strong>Restoration Group of Metro Detroit LLC</strong> has been relieved of their duties.</p>`,
+                `<p><strong>Restoration Group of Metro Detroit LLC</strong> is hereby relieved and is not and will not be held responsible for the recovery or any threats that may still arise from said property. I do understand <strong>Restoration Group of Metro Detroit LLC</strong> will bill the reasonable and standard charges for the work performed while on location.</p>`,
+            ].join('');
         }
 
         // Populate AOB fields
@@ -1236,10 +1255,11 @@ function initApp() {
 
     function loadAllSigStatuses(job) {
         // sigToken is backward compat field for old WA-only records
-        loadDocSigStatus(job, 'wa',          job.sigTokenWA      || job.sigToken || null);
-        loadDocSigStatus(job, 'rwa',         job.sigTokenRWA     || null);
-        loadDocSigStatus(job, 'coc_mit',     job.sigTokenCOCMit  || null);
-        loadDocSigStatus(job, 'coc_rebuild', job.sigTokenCOCRebuild || null);
+        loadDocSigStatus(job, 'wa',            job.sigTokenWA           || job.sigToken || null);
+        loadDocSigStatus(job, 'rwa',           job.sigTokenRWA          || null);
+        loadDocSigStatus(job, 'coc_mit',       job.sigTokenCOCMit       || null);
+        loadDocSigStatus(job, 'coc_rebuild',   job.sigTokenCOCRebuild   || null);
+        loadDocSigStatus(job, 'hold_harmless', job.sigTokenHoldHarmless || null);
     }
 
     $('sig-req-close').addEventListener('click', () => $('sig-req-modal').classList.add('hidden'));
@@ -1966,68 +1986,112 @@ function initApp() {
 // ────────────────────────────────────────────────────────────
 // PDF GENERATION  (uses jsPDF CDN)
 // ────────────────────────────────────────────────────────────
+let _logoDataURL = null;
+(function preloadLogo() {
+    fetch('logo.png').then(r => r.blob()).then(blob => {
+        const reader = new FileReader();
+        reader.onload = e => { _logoDataURL = e.target.result; };
+        reader.readAsDataURL(blob);
+    }).catch(() => {});
+})();
+
 function generateSignedPDF(d) {
     const docType = d.docType || 'wa';
-    if (docType === 'coc_mit' || docType === 'coc_rebuild') return _generateCOCPDF(d, docType);
+    if (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'hold_harmless') return _generateCOCPDF(d, docType);
     return _generateAuthPDF(d, docType);
 }
 
 function _generateCOCPDF(d, docType) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-    const pw = 612, ml = 70, mr = 70, tw = pw - ml - mr;
-    const title = docType === 'coc_mit'
-        ? 'MITIGATION CERTIFICATE OF COMPLETION AND SATISFACTION'
-        : 'REBUILD CERTIFICATE OF COMPLETION AND SATISFACTION';
-    const body = docType === 'coc_mit'
-        ? 'This is to certify that the mitigation performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.'
-        : 'This is to certify that the rebuild performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.';
+    const pw = 612, ph = 792, ml = 70, mr = 70, tw = pw - ml - mr;
     const signedDate = d.signedAt
         ? new Date(d.signedAt.seconds*1000).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
         : new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-    // Header bar
-    doc.setFillColor(27,58,107); doc.rect(0,0,pw,58,'F');
-    doc.setTextColor(255,255,255); doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
-    doc.text('Restoration Group of Metro Detroit LLC',ml,38);
+    const titles = {
+        coc_mit:       'MITIGATION CERTIFICATE OF COMPLETION AND SATISFACTION',
+        coc_rebuild:   'REBUILD CERTIFICATE OF COMPLETION AND SATISFACTION',
+        hold_harmless: 'INDEMNIFICATION, HOLD HARMLESS AGREEMENT',
+    };
+    const title = titles[docType] || titles.coc_mit;
+
+    // Header bar with logo
+    doc.setFillColor(27,58,107); doc.rect(0,0,pw,64,'F');
+    if (_logoDataURL) doc.addImage(_logoDataURL,'PNG',ml,8,48,48);
+    const textX = _logoDataURL ? ml+56 : ml;
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text('Restoration Group of Metro Detroit LLC', textX, 30);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.text('rgmd-crm.web.app', textX, 46);
 
     doc.setTextColor(20,20,20);
-    let y = 90;
-    doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    let y = 86;
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
     const titleLines = doc.splitTextToSize(title, tw);
-    doc.text(titleLines, pw/2, y, {align:'center'}); y += titleLines.length*17+20;
+    doc.text(titleLines, pw/2, y, {align:'center'}); y += titleLines.length*16+16;
 
-    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 20;
+    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 18;
 
+    // Client + address fields
     doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(100,100,100);
     doc.text('Client:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
-    doc.text(d.clientName||'', ml+48, y); y += 18;
+    doc.text(d.clientName||'', ml+48, y); y += 16;
     doc.setFont('helvetica','bold'); doc.setTextColor(100,100,100);
     doc.text('Address:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
-    doc.text(d.address||'', ml+56, y); y += 30;
+    const addrLines = doc.splitTextToSize(d.address||'', tw-56);
+    doc.text(addrLines, ml+56, y); y += Math.max(16, addrLines.length*13)+14;
 
-    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 40;
+    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 22;
 
-    doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(40,40,40);
-    const bodyLines = doc.splitTextToSize(body, tw-40);
-    doc.text(bodyLines, pw/2, y, {align:'center'}); y += bodyLines.length*16+60;
+    // Body content
+    if (docType === 'coc_mit' || docType === 'coc_rebuild') {
+        const bodyText = docType === 'coc_mit'
+            ? 'This is to certify that the mitigation performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.'
+            : 'This is to certify that the rebuild performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.';
+        doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(40,40,40);
+        const bodyLines = doc.splitTextToSize(bodyText, tw-40);
+        doc.text(bodyLines, pw/2, y+20, {align:'center'}); y += bodyLines.length*16+60;
+    } else {
+        // hold_harmless — longer paragraphs
+        const paras = [
+            `To the extent permitted by law, ${d.clientName||'________________________'} agrees to defend, indemnify and hold harmless Restoration Group of Metro Detroit LLC and its/their officers, directors, agents and employees from and against any and all claims, suits, liens, judgments, damages, losses and expenses including legal fees and costs arising in whole or in part and in any manner from acts, omissions, breach or default in connection with performance of any work not completed as originally requested to recover, from homeowner/executor of estate/authorized agent. Restoration Group of Metro Detroit LLC is released from all obligations and duties previously requested to recover the property located at: ${d.address||'________________________'}.`,
+            'I hereby agree and fully understand that I have asked Restoration Group of Metro Detroit LLC to remove equipment and stop the remediation process. In addition, I hereby take full responsibility of my actions after Restoration Group of Metro Detroit LLC has been relieved of their duties.',
+            'Restoration Group of Metro Detroit LLC is hereby relieved and is not and will not be held responsible for the recovery or any threats that may still arise from said property. I do understand Restoration Group of Metro Detroit LLC will bill the reasonable and standard charges for the work performed while on location.',
+        ];
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(40,40,40);
+        for (const p of paras) {
+            const lines = doc.splitTextToSize(p, tw);
+            for (let i = 0; i < lines.length; ) {
+                const avail = Math.floor((ph-40-y)/11);
+                const batch = lines.slice(i, i+Math.max(1,avail));
+                if (y+batch.length*11 > ph-40) { doc.addPage(); y=50; }
+                doc.text(batch, ml, y); y += batch.length*11;
+                i += batch.length;
+            }
+            y += 10;
+        }
+        y += 10;
+    }
 
     // Signature
     if (d.signatureDataURL) {
+        if (y+120 > ph-40) { doc.addPage(); y=50; }
         doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(110,110,110);
-        doc.text('Signature:', ml+30, y); y += 8;
-        doc.addImage(d.signatureDataURL,'PNG',ml+30,y,200,52); y += 62;
+        doc.text('Signature:', ml, y); y += 8;
+        doc.addImage(d.signatureDataURL,'PNG',ml,y,220,55); y += 65;
     }
     doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(70,70,70);
-    doc.text('Name:', ml+30, y);
+    doc.text('Printed Name:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
-    doc.text(d.signerName||'', ml+68, y); y += 16;
+    doc.text(d.signerName||'', ml+86, y); y += 16;
     doc.setFont('helvetica','bold'); doc.setTextColor(70,70,70);
-    doc.text('Date:', ml+30, y);
+    doc.text('Date:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
-    doc.text(signedDate, ml+64, y);
+    doc.text(signedDate, ml+38, y);
 
     return doc;
 }
@@ -2044,14 +2108,16 @@ function _generateAuthPDF(d, docType) {
 
     function pageHeader(title, subtitle) {
         doc.setFillColor(27, 58, 107);
-        doc.rect(0, 0, pw, 58, 'F');
+        doc.rect(0, 0, pw, 64, 'F');
+        if (_logoDataURL) doc.addImage(_logoDataURL, 'PNG', ml, 8, 48, 48);
+        const hx = _logoDataURL ? ml + 56 : ml;
         doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-        doc.text(title, ml, 34);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+        doc.text(title, hx, 32);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
-        doc.text(subtitle, ml, 50);
+        doc.text(subtitle, hx, 48);
         doc.setTextColor(30, 30, 30);
-        y = 72;
+        y = 78;
     }
 
     function fieldRow(label, value) {
