@@ -672,10 +672,7 @@
                     <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Claim #:</span><span id="sc-claim" class="text-gray-900"></span></div>
                 </div>
                 <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
-                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Price:</span><span id="sc-price" class="text-gray-900 font-semibold"></span></div>
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-24 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
-                </div>
+                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
                 <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
             </div>
             <div class="px-8 py-5 text-sm text-gray-800 space-y-3 leading-relaxed border-b border-gray-100" style="font-size:0.8rem;">
@@ -688,7 +685,8 @@
                 <p><strong>Restoration Group of Metro Detroit LLC</strong> reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by <strong>Restoration Group of Metro Detroit LLC</strong> and is not negotiable.</p>
                 <p>I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct <strong>Restoration Group of Metro Detroit LLC</strong> to begin restoration immediately.</p>
             </div>
-            <div class="px-8 py-6">
+            <!-- Work Authorization Signature -->
+            <div class="px-8 py-6 border-b border-gray-100">
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div>
                         <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Printed Name <span class="text-red-400 normal-case font-normal">required</span></label>
@@ -701,7 +699,7 @@
                     </div>
                 </div>
                 <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">
-                    Signature <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
+                    Signature — Service Authorization <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
                 </label>
                 <div class="relative border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 overflow-hidden">
                     <canvas id="sign-canvas" width="900" height="160" class="w-full touch-none cursor-crosshair block" style="height:130px;"></canvas>
@@ -710,10 +708,70 @@
                         Clear
                     </button>
                 </div>
-                <p class="text-xs text-gray-400 mt-1.5 mb-5">By signing, you agree to the full terms of this Service Authorization Contract.</p>
+                <p class="text-xs text-gray-400 mt-1.5">By signing, you agree to the full terms of this Service Authorization Contract.</p>
+            </div>
+
+            <!-- AOB Section (shown only when includeAob is true) -->
+            <div id="sign-aob-section" class="hidden">
+                <div class="px-8 pt-6 pb-2">
+                    <h2 class="text-lg font-bold text-gray-900 mb-1">Assignment of Insurance Benefits</h2>
+                    <p class="text-xs text-gray-400">Restoration Group of Metro Detroit LLC</p>
+                </div>
+                <div class="px-8 py-3 space-y-1.5 text-sm border-b border-gray-100">
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Client/Insured:</span><span id="aob-customer" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Policy Number:</span><span id="aob-policy" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Claim Number:</span><span id="aob-claim" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurer:</span><span id="aob-insurer" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Date of Loss:</span><span id="aob-dol" class="text-gray-400 italic text-xs self-center">To be completed</span></div>
+                </div>
+                <div class="px-8 py-5 text-gray-800 space-y-4 border-b border-gray-100" style="font-size:0.8rem; line-height:1.6;">
+                    <div>
+                        <p class="font-bold text-gray-900 mb-1 text-sm">I. ASSIGNMENT OF INSURANCE BENEFITS</p>
+                        <p>I, hereby, assign any and all insurance rights, benefits, proceeds and any causes of action under any applicable insurance policies to <strong>Restoration Group of Metro Detroit LLC</strong> (hereinafter referred to as "Company"), for services rendered, or to be rendered by Company. In this regard, I waive my privacy rights. I make this assignment in consideration of Company's agreement to perform services and supply materials and otherwise perform its obligations under this contract, including not requiring full payment at the time of service. I also hereby direct my insurance carrier(s) to release any and all information requested by Company, its representative, and/or its Attorney for the direct purpose of obtaining actual benefits to be paid by my insurance carrier(s) for services rendered or to be rendered. I believe the appropriate insurance carrier to be <strong id="aob-insurer-inline"></strong>.</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-900 mb-1 text-sm">II. DIRECT PAYMENT AUTHORIZATION</p>
+                        <p>I hereby authorize and unequivocally instruct direct payment of any benefits or proceeds to Company. The payment of any benefits or proceeds to Company must be sent directly to Company and payment made solely to Company. I understand that I am responsible for payment for any services provided by Company for which payment is not recoverable from my insurance company, including any applicable deductible.</p>
+                    </div>
+                </div>
+                <div class="px-8 py-6">
+                    <div class="grid grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Print Name <span class="text-gray-400 text-xs normal-case font-normal">(Owner/Agent)</span></label>
+                            <div id="aob-print-name" class="border-b-2 border-gray-200 py-1.5 text-sm text-gray-700"></div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Address</label>
+                            <div id="aob-address" class="border-b-2 border-gray-200 py-1.5 text-sm text-gray-700"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">
+                                Signature — AOB <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
+                            </label>
+                            <div class="relative border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 overflow-hidden">
+                                <canvas id="aob-canvas" width="600" height="140" class="w-full touch-none cursor-crosshair block" style="height:100px;"></canvas>
+                                <button id="aob-clear-btn" type="button"
+                                    class="absolute top-2 right-2 text-xs text-gray-400 hover:text-gray-700 px-2 py-0.5 bg-white border border-gray-200 rounded transition-colors">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Phone</label>
+                            <div id="aob-phone" class="border-b-2 border-gray-200 py-1.5 text-sm text-gray-700"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-5">By signing, you authorize the Assignment of Insurance Benefits to Restoration Group of Metro Detroit LLC.</p>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="px-8 pb-8 pt-4">
                 <button id="sign-submit-btn"
                     class="w-full text-white font-bold py-3 rounded-xl text-sm transition-colors hover:opacity-90" style="background:#1B3A6B;">
-                    Submit Signed Authorization
+                    Submit Signed Documents
                 </button>
             </div>
         </div>
@@ -731,16 +789,22 @@
             </button>
         </div>
         <div id="sig-req-form-view" class="px-6 py-5 space-y-4">
-            <p class="text-xs text-gray-500">The contract auto-fills all job data. Add the price and due date, then generate a signing link to send to the client.</p>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Price / Estimate</label>
-                <input id="sig-req-price" type="text" placeholder="e.g. $5,000"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
-            </div>
+            <p class="text-xs text-gray-500">The contract auto-fills all job data. Add a due date, choose which documents to include, then generate the signing link.</p>
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Due Date</label>
                 <input id="sig-req-due-date" type="text" placeholder="e.g. 06/30/2026"
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+            </div>
+            <div class="border border-gray-200 rounded-xl p-3 space-y-2.5">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Include Documents</p>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="sig-req-include-wa" checked disabled class="w-4 h-4 rounded accent-orange-500">
+                    <span class="text-sm text-gray-700">Service Authorization Contract <span class="text-xs text-gray-400">(always included)</span></span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="sig-req-include-aob" class="w-4 h-4 rounded accent-orange-500">
+                    <span class="text-sm text-gray-700">Assignment of Benefits (AOB)</span>
+                </label>
             </div>
             <button id="sig-req-create-btn"
                 class="w-full text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#1B3A6B;">
@@ -883,7 +947,7 @@ async function initSigningPage(token) {
             document.getElementById('sign-already-date').textContent = dt;
             show('sign-already-state'); return;
         }
-        // Populate fields
+        // Populate Work Authorization fields
         document.getElementById('sc-customer').textContent     = d.clientName || '';
         document.getElementById('sc-address').textContent      = d.address    || '';
         document.getElementById('sc-phone').textContent        = d.phone      || '';
@@ -891,51 +955,74 @@ async function initSigningPage(token) {
         document.getElementById('sc-ins-co').textContent       = d.insCarrier || '';
         document.getElementById('sc-claim').textContent        = d.insClaim   || '';
         document.getElementById('sc-ins-agent').textContent    = d.insAdjusterName || '';
-        document.getElementById('sc-price').textContent        = d.price      || '';
         document.getElementById('sc-due-date').textContent     = d.dueDate    || '';
         document.getElementById('sc-project-type').textContent = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
         document.getElementById('sc-today-date').textContent   = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        // Populate AOB fields and show section if required
+        if (d.includeAob) {
+            document.getElementById('aob-customer').textContent      = d.clientName || '';
+            document.getElementById('aob-policy').textContent        = d.insPolicy  || '';
+            document.getElementById('aob-claim').textContent         = d.insClaim   || '';
+            document.getElementById('aob-insurer').textContent       = d.insCarrier || '';
+            document.getElementById('aob-insurer-inline').textContent = d.insCarrier || '________________________';
+            document.getElementById('aob-print-name').textContent    = d.clientName || '';
+            document.getElementById('aob-address').textContent       = d.address    || '';
+            document.getElementById('aob-phone').textContent         = d.phone      || '';
+            document.getElementById('sign-aob-section').classList.remove('hidden');
+            document.getElementById('sign-submit-btn').textContent   = 'Submit Signed Documents';
+        }
+
         show('sign-form-state');
 
-        // Canvas signature pad
-        const canvas = document.getElementById('sign-canvas');
-        const ctx    = canvas.getContext('2d');
-        ctx.strokeStyle = '#1B3A6B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        let drawing = false, lx = 0, ly = 0;
-
-        function pos(e) {
-            const r = canvas.getBoundingClientRect();
-            const sx = canvas.width / r.width, sy = canvas.height / r.height;
-            if (e.touches) return [(e.touches[0].clientX - r.left) * sx, (e.touches[0].clientY - r.top) * sy];
-            return [(e.clientX - r.left) * sx, (e.clientY - r.top) * sy];
+        // Canvas helper
+        function setupCanvas(canvasEl, clearBtnEl) {
+            const ctx = canvasEl.getContext('2d');
+            ctx.strokeStyle = '#1B3A6B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            let drawing = false, lx = 0, ly = 0;
+            function pos(e) {
+                const r = canvasEl.getBoundingClientRect();
+                const sx = canvasEl.width / r.width, sy = canvasEl.height / r.height;
+                if (e.touches) return [(e.touches[0].clientX - r.left)*sx, (e.touches[0].clientY - r.top)*sy];
+                return [(e.clientX - r.left)*sx, (e.clientY - r.top)*sy];
+            }
+            canvasEl.addEventListener('mousedown',  e => { drawing=true; [lx,ly]=pos(e); });
+            canvasEl.addEventListener('mousemove',  e => { if(!drawing) return; const [x,y]=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; });
+            canvasEl.addEventListener('mouseup',    () => drawing=false);
+            canvasEl.addEventListener('mouseleave', () => drawing=false);
+            canvasEl.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; [lx,ly]=pos(e); }, {passive:false});
+            canvasEl.addEventListener('touchmove',  e => { e.preventDefault(); if(!drawing) return; const [x,y]=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; }, {passive:false});
+            canvasEl.addEventListener('touchend',   () => drawing=false);
+            clearBtnEl.addEventListener('click', () => ctx.clearRect(0,0,canvasEl.width,canvasEl.height));
+            return {
+                isEmpty: () => !Array.from(ctx.getImageData(0,0,canvasEl.width,canvasEl.height).data).some(v => v!==0),
+                toDataURL: () => canvasEl.toDataURL('image/png'),
+            };
         }
-        canvas.addEventListener('mousedown',  e => { drawing = true;  [lx, ly] = pos(e); });
-        canvas.addEventListener('mousemove',  e => { if (!drawing) return; const [x,y] = pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; });
-        canvas.addEventListener('mouseup',    () => drawing = false);
-        canvas.addEventListener('mouseleave', () => drawing = false);
-        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; [lx,ly]=pos(e); }, { passive:false });
-        canvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!drawing) return; const[x,y]=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; }, { passive:false });
-        canvas.addEventListener('touchend',   () => drawing = false);
-        document.getElementById('sign-clear-btn').addEventListener('click', () => ctx.clearRect(0,0,canvas.width,canvas.height));
+
+        const waSig  = setupCanvas(document.getElementById('sign-canvas'), document.getElementById('sign-clear-btn'));
+        const aobSig = d.includeAob ? setupCanvas(document.getElementById('aob-canvas'), document.getElementById('aob-clear-btn')) : null;
 
         document.getElementById('sign-submit-btn').addEventListener('click', async () => {
             const name = document.getElementById('sc-signer-name').value.trim();
             if (!name) { alert('Please enter your printed name.'); return; }
-            const px = ctx.getImageData(0,0,canvas.width,canvas.height).data;
-            if (!Array.from(px).some(v => v !== 0)) { alert('Please draw your signature.'); return; }
+            if (waSig.isEmpty()) { alert('Please sign the Service Authorization.'); return; }
+            if (aobSig && aobSig.isEmpty()) { alert('Please sign the Assignment of Benefits.'); return; }
             const btn = document.getElementById('sign-submit-btn');
             btn.textContent = 'Submitting…'; btn.disabled = true;
             try {
                 await db.collection('signingRequests').doc(token).update({
                     signed: true,
                     signerName: name,
-                    signatureDataURL: canvas.toDataURL('image/png'),
+                    signatureDataURL: waSig.toDataURL(),
+                    aobSignatureDataURL: aobSig ? aobSig.toDataURL() : null,
                     signedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 });
                 hide('sign-form-state');
                 show('sign-success-state');
             } catch(err) {
-                btn.textContent = 'Submit Signed Authorization'; btn.disabled = false;
+                btn.textContent = d.includeAob ? 'Submit Signed Documents' : 'Submit Signed Authorization';
+                btn.disabled = false;
                 alert('Error submitting: ' + err.message);
             }
         });
@@ -1047,8 +1134,8 @@ function initApp() {
     $('sig-req-create-btn').addEventListener('click', async () => {
         const job = jobs.find(j => j.id === selectedJobId);
         if (!job) return;
-        const price   = $('sig-req-price').value.trim();
-        const dueDate = $('sig-req-due-date').value.trim();
+        const dueDate    = $('sig-req-due-date').value.trim();
+        const includeAob = $('sig-req-include-aob').checked;
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -1058,10 +1145,12 @@ function initApp() {
                 clientName: job.clientName || '', address: job.address || '',
                 phone: job.phone || '', email: job.email || '',
                 insCarrier: job.insCarrier || '', insClaim: job.insClaim || '',
+                insPolicy: job.insPolicy || '',
                 insAdjusterName: job.insAdjusterName || '',
                 projectType: job.projectType || '', subCategory: job.subCategory || '',
-                price, dueDate,
-                signed: false, signatureDataURL: null, signerName: null, signedAt: null,
+                dueDate, includeAob,
+                signed: false, signatureDataURL: null, aobSignatureDataURL: null,
+                signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: currentUser.email,
             });
@@ -1070,8 +1159,9 @@ function initApp() {
             const url = window.location.origin + window.location.pathname + '?sign=' + token;
             $('sig-req-link-input').value = url;
             $('sig-req-to-email').textContent = job.email || 'client';
-            const subject = encodeURIComponent(`Service Authorization — Job #${job.jobNumber || ''} — ${job.clientName || ''}`);
-            const body = encodeURIComponent(`Hi ${job.clientName || 'there'},\n\nPlease review and sign the Service Authorization Contract for your upcoming restoration project:\n\n${url}\n\nIf you have any questions, please don't hesitate to reach out.\n\nThank you,\nRestoration Group of Metro Detroit`);
+            const docs = includeAob ? 'Service Authorization Contract and Assignment of Benefits (AOB)' : 'Service Authorization Contract';
+            const subject = encodeURIComponent(`Documents for Signature — Job #${job.jobNumber || ''} — ${job.clientName || ''}`);
+            const body = encodeURIComponent(`Hi ${job.clientName || 'there'},\n\nPlease review and sign the following document(s) for your upcoming restoration project:\n\n• ${docs}\n\nSigning link:\n${url}\n\nIf you have any questions, please don't hesitate to reach out.\n\nThank you,\nRestoration Group of Metro Detroit`);
             $('sig-req-email-btn').href = `mailto:${job.email || ''}?subject=${subject}&body=${body}`;
             $('sig-req-form-view').classList.add('hidden');
             $('sig-req-link-view').classList.remove('hidden');
