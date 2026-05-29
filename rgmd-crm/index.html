@@ -1669,6 +1669,7 @@ function initApp() {
     let calMonth         = new Date().getMonth();
     let selectedEventId  = null;
     let extraInviteEmails = [];
+    let crmCalendarId    = sessionStorage.getItem('crmCalendarId') || null;
 
     // ── Auth ───────────────────────────────────────────────
     auth.onAuthStateChanged(user => {
@@ -2265,7 +2266,9 @@ function initApp() {
             if (job) descParts.push(`Job #${job.jobNumber || ''} — ${job.clientName || ''}\n${job.address || ''}`);
             if ($('ef-notes').value.trim()) descParts.push($('ef-notes').value.trim());
 
-            const created = await calendarRequest('POST', 'calendars/primary/events', {
+            const calId = await getCRMCalendarId();
+            if (!calId) return;
+            const created = await calendarRequest('POST', `calendars/${encodeURIComponent(calId)}/events`, {
                 summary,
                 description: descParts.join('\n\n'),
                 start: { dateTime: startDT, timeZone: tz },
@@ -2289,7 +2292,9 @@ function initApp() {
     $('evd-delete-btn').addEventListener('click', async () => {
         if (!selectedEventId) return;
         try {
-            await calendarRequest('DELETE', `calendars/primary/events/${selectedEventId}`);
+            const calId = await getCRMCalendarId();
+            if (!calId) return;
+            await calendarRequest('DELETE', `calendars/${encodeURIComponent(calId)}/events/${selectedEventId}`);
             $('event-detail-modal').classList.add('hidden');
             await fetchAndRenderCalendar();
             toast('Event deleted');
@@ -3118,6 +3123,8 @@ function initApp() {
     }
 
     function showCalendarReconnect() {
+        crmCalendarId = null;
+        sessionStorage.removeItem('crmCalendarId');
         $('calendar-reconnect-notice').classList.remove('hidden');
     }
 
@@ -3158,6 +3165,23 @@ function initApp() {
     }
 
     // ── Calendar fetch and render ──────────────────────────
+    async function getCRMCalendarId() {
+        if (crmCalendarId) return crmCalendarId;
+        // Find or create the dedicated "RGMD CRM" calendar
+        const list = await calendarRequest('GET', 'users/me/calendarList');
+        if (!list) return null;
+        const existing = (list.items || []).find(c => c.summary === 'RGMD CRM');
+        if (existing) {
+            crmCalendarId = existing.id;
+        } else {
+            const created = await calendarRequest('POST', 'calendars', { summary: 'RGMD CRM' });
+            if (!created) return null;
+            crmCalendarId = created.id;
+        }
+        sessionStorage.setItem('crmCalendarId', crmCalendarId);
+        return crmCalendarId;
+    }
+
     async function fetchAndRenderCalendar() {
         const firstDay = new Date(calYear, calMonth, 1);
         const lastDay  = new Date(calYear, calMonth + 1, 0);
@@ -3170,7 +3194,9 @@ function initApp() {
         $('cal-month-label').textContent = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
         try {
-            const data = await calendarRequest('GET', 'calendars/primary/events', null, {
+            const calId = await getCRMCalendarId();
+            if (!calId) { renderCalendarGrid(gridStart, gridEnd); return; }
+            const data = await calendarRequest('GET', `calendars/${encodeURIComponent(calId)}/events`, null, {
                 timeMin: gridStart.toISOString(),
                 timeMax: gridEnd.toISOString(),
                 singleEvents: 'true',
