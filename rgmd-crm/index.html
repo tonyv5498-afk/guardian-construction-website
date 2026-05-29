@@ -2063,11 +2063,6 @@ function initApp() {
         $('cp-edit-phone').value     = c.phone   || '';
         $('cp-edit-email').value     = c.email   || '';
 
-        // Agreement
-        $('cp-agreement').innerHTML = c.hasAgreement
-            ? `<div class="flex items-center gap-2"><span class="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Agreement on file</span>${c.agreementDate ? `<span class="text-xs text-gray-500">${esc(c.agreementDate)}</span>` : ''}</div>`
-            : `<p class="text-xs text-gray-400">No agreement on file</p>`;
-
         // Jobs referred (by contactId or matching name for legacy jobs)
         const referred = jobs.filter(j => j.referralContactId === c.id || (!j.referralContactId && j.referralName === c.name));
         if (referred.length === 0) {
@@ -2126,7 +2121,6 @@ function initApp() {
         $('contact-form-submit-text').textContent = 'Save Contact';
         $('contact-form').reset();
         $('contact-form').dataset.editId = '';
-        $('cf-agreement-date-wrap').classList.add('hidden');
         $('contact-modal').classList.remove('hidden');
         setTimeout(() => $('cf-name').focus(), 50);
     }
@@ -2141,9 +2135,6 @@ function initApp() {
         $('cf-type').value          = c.type           || '';
         $('cf-phone').value         = c.phone          || '';
         $('cf-email').value         = c.email          || '';
-        $('cf-has-agreement').checked = !!c.hasAgreement;
-        $('cf-agreement-date').value  = c.agreementDate || '';
-        $('cf-agreement-date-wrap').classList.toggle('hidden', !c.hasAgreement);
         $('cf-notes').value         = c.notes          || '';
         $('contact-form').dataset.editId = contactId;
         $('contact-modal').classList.remove('hidden');
@@ -2383,10 +2374,6 @@ function initApp() {
     $('contact-form-cancel').addEventListener('click', closeContactModal);
     $('contact-modal').addEventListener('click', e => { if (e.target === $('contact-modal')) closeContactModal(); });
 
-    $('cf-has-agreement').addEventListener('change', e => {
-        $('cf-agreement-date-wrap').classList.toggle('hidden', !e.target.checked);
-    });
-
     $('network-search-input').addEventListener('input', e => {
         networkSearch = e.target.value;
         renderNetwork();
@@ -2405,8 +2392,6 @@ function initApp() {
                 type:          $('cf-type').value,
                 phone:         $('cf-phone').value.trim(),
                 email:         $('cf-email').value.trim(),
-                hasAgreement:  $('cf-has-agreement').checked,
-                agreementDate: $('cf-has-agreement').checked ? $('cf-agreement-date').value.trim() : '',
                 notes:         $('cf-notes').value.trim(),
             };
             const editId = $('contact-form').dataset.editId;
