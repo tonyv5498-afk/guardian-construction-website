@@ -1122,8 +1122,8 @@ function initApp() {
     function openSigModal() {
         $('sig-req-form-view').classList.remove('hidden');
         $('sig-req-link-view').classList.add('hidden');
-        $('sig-req-price').value = '';
         $('sig-req-due-date').value = '';
+        $('sig-req-include-aob').checked = false;
         $('sig-req-modal').classList.remove('hidden');
     }
 
