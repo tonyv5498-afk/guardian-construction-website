@@ -2310,7 +2310,8 @@ function initApp() {
             fetchAndRenderCalendar();
             toast('Google Calendar connected');
         } catch (err) {
-            if (err.code !== 'auth/popup-closed-by-user') {
+            const ignoredCodes = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
+            if (!ignoredCodes.includes(err.code)) {
                 toast('Connection failed: ' + err.message, true);
             }
         }
