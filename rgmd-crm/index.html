@@ -2265,7 +2265,7 @@ function initApp() {
             if (job) descParts.push(`Job #${job.jobNumber || ''} — ${job.clientName || ''}\n${job.address || ''}`);
             if ($('ef-notes').value.trim()) descParts.push($('ef-notes').value.trim());
 
-            await calendarRequest('POST', 'calendars/primary/events', {
+            const created = await calendarRequest('POST', 'calendars/primary/events', {
                 summary,
                 description: descParts.join('\n\n'),
                 start: { dateTime: startDT, timeZone: tz },
@@ -2273,6 +2273,7 @@ function initApp() {
                 attendees: allEmails.map(email => ({ email })),
             }, { sendUpdates: 'all' });
 
+            if (created === null) return; // no token — reconnect notice shown by calendarRequest
             closeEventModal();
             await fetchAndRenderCalendar();
             toast('Event created');
@@ -3164,12 +3165,12 @@ function initApp() {
                 orderBy: 'startTime',
                 maxResults: '500',
             });
-            if (data === null) return; // auth error already handled
-            calendarEvents = data.items || [];
-            renderCalendarGrid(gridStart, gridEnd);
+            if (data !== null) calendarEvents = data.items || [];
         } catch (e) {
             if (e.message !== 'cal_auth') toast('Calendar error: ' + e.message, true);
         }
+        // Always render the grid (shows empty cells when not connected)
+        renderCalendarGrid(gridStart, gridEnd);
     }
 
     const EVENT_COLORS = {
@@ -3205,7 +3206,7 @@ function initApp() {
             });
 
             const cell = document.createElement('div');
-            cell.className = `cal-cell border-b border-r border-gray-100 p-1.5 relative ${isCurrentMonth ? '' : 'bg-gray-50/50'}`;
+            cell.className = `cal-cell border-b border-r border-gray-100 p-1.5 relative min-h-[90px] ${isCurrentMonth ? '' : 'bg-gray-50/50'}`;
             cell.dataset.date = dateStr;
 
             cell.innerHTML = `
