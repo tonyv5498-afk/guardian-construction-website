@@ -67,6 +67,13 @@
             <div class="sm:hidden font-bold text-sm">RGMD CRM</div>
         </div>
         <div class="flex items-center gap-3">
+            <button id="leads-btn" class="relative flex items-center gap-1.5 text-xs text-blue-200 hover:text-white border border-blue-700 hover:border-blue-400 px-3 py-1.5 rounded-lg transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <span class="hidden sm:inline">Leads</span>
+                <span id="leads-badge" class="hidden absolute -top-1.5 -right-1.5 bg-orange-500 text-white text-[10px] font-bold min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center leading-none"></span>
+            </button>
             <img id="user-photo" src="" alt="" class="w-7 h-7 rounded-full hidden flex-shrink-0">
             <span id="user-name" class="text-sm text-blue-200 hidden sm:block"></span>
             <button id="sign-out-btn"
@@ -860,6 +867,24 @@
     </div>
 </div>
 
+<!-- ─── Web Leads Modal ──────────────────────────────────────── -->
+<div id="leads-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.5)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+            <div>
+                <h3 class="text-base font-bold text-gray-900">Web Leads</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Form submissions from your website — review before creating a job</p>
+            </div>
+            <button id="leads-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="leads-list" class="overflow-y-auto flex-1 p-4 space-y-3">
+            <div id="leads-empty" class="hidden text-center py-12 text-gray-400 text-sm">No pending leads</div>
+        </div>
+    </div>
+</div>
+
 <!-- ─── Firebase Config Banner ──────────────────────────────── -->
 <div id="config-banner" class="hidden fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-6">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
@@ -1156,9 +1181,11 @@ function initApp() {
     // ── State ──────────────────────────────────────────────
     let currentUser   = null;
     let jobs          = [];
+    let leads         = [];
     let selectedJobId = null;
     let pendingDelete = null;
     let unsubJobs     = null;
+    let unsubLeads    = null;
     let statusFilter  = 'all';
     let searchQuery   = '';
     let driveToken    = sessionStorage.getItem('driveToken') || null;
@@ -1175,13 +1202,16 @@ function initApp() {
             const photo = document.getElementById('user-photo');
             if (user.photoURL) { photo.src = user.photoURL; photo.classList.remove('hidden'); }
             startListener();
+            startLeadsListener();
         } else {
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('app').classList.add('hidden');
             jobs = [];
+            leads = [];
             driveToken = null;
             sessionStorage.removeItem('driveToken');
-            if (unsubJobs) { unsubJobs(); unsubJobs = null; }
+            if (unsubJobs)   { unsubJobs();   unsubJobs   = null; }
+            if (unsubLeads)  { unsubLeads();  unsubLeads  = null; }
         }
     });
 
@@ -1367,6 +1397,104 @@ function initApp() {
                 err => toast('Data error: ' + err.message, true)
             );
     }
+
+    // ── Leads listener & UI ───────────────────────────────
+    function startLeadsListener() {
+        if (unsubLeads) unsubLeads();
+        unsubLeads = db.collection('webLeads')
+            .where('reviewed', '==', false)
+            .where('dismissed', '==', false)
+            .orderBy('submittedAt', 'desc')
+            .onSnapshot(
+                snap => {
+                    leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    updateLeadsBadge();
+                    renderLeads();
+                },
+                () => {}
+            );
+    }
+
+    function updateLeadsBadge() {
+        const badge = $('leads-badge');
+        if (leads.length === 0) {
+            badge.classList.add('hidden');
+        } else {
+            badge.textContent = leads.length > 9 ? '9+' : leads.length;
+            badge.classList.remove('hidden');
+        }
+    }
+
+    function renderLeads() {
+        const list  = $('leads-list');
+        const empty = $('leads-empty');
+        // Remove old lead cards (keep the empty placeholder)
+        [...list.querySelectorAll('.lead-card')].forEach(el => el.remove());
+        if (leads.length === 0) { empty.classList.remove('hidden'); return; }
+        empty.classList.add('hidden');
+        leads.forEach(lead => {
+            const date = lead.submittedAt
+                ? new Date(lead.submittedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
+                : 'Just now';
+            const card = document.createElement('div');
+            card.className = 'lead-card border border-gray-200 rounded-xl p-4 bg-gray-50';
+            card.dataset.leadId = lead.id;
+            card.innerHTML = `
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <span class="font-semibold text-gray-900 text-sm">${esc(lead.clientName)}</span>
+                            ${lead.projectType ? `<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${esc(lead.projectType)}</span>` : ''}
+                            <span class="text-xs text-gray-400">${date}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 space-y-0.5">
+                            ${lead.email ? `<div>${esc(lead.email)}${lead.phone ? ' · ' + esc(lead.phone) : ''}</div>` : ''}
+                            ${lead.address ? `<div>${esc(lead.address)}</div>` : ''}
+                        </div>
+                        ${lead.message ? `<p class="text-xs text-gray-700 mt-2 bg-white border border-gray-100 rounded-lg px-3 py-2 leading-relaxed">${esc(lead.message)}</p>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        <button class="lead-create-btn text-xs font-semibold text-white px-3 py-1.5 rounded-lg whitespace-nowrap" style="background:#1B3A6B;">
+                            Create Job
+                        </button>
+                        <button class="lead-dismiss-btn text-xs font-semibold text-gray-400 hover:text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors text-center">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>`;
+            card.querySelector('.lead-create-btn').addEventListener('click', () => openAddModalFromLead(lead));
+            card.querySelector('.lead-dismiss-btn').addEventListener('click', async () => {
+                card.remove();
+                leads = leads.filter(l => l.id !== lead.id);
+                updateLeadsBadge();
+                if (leads.length === 0) $('leads-empty').classList.remove('hidden');
+                await db.collection('webLeads').doc(lead.id).update({ dismissed: true }).catch(() => {});
+            });
+            list.appendChild(card);
+        });
+    }
+
+    function openAddModalFromLead(lead) {
+        $('modal-title').textContent      = 'Create Job from Lead';
+        $('form-submit-text').textContent = 'Create Job';
+        $('job-form').reset();
+        $('job-form').dataset.editId = '';
+        $('job-form').dataset.leadId = lead.id;
+        $('f-name').value            = lead.clientName  || '';
+        $('f-address').value         = lead.address     || '';
+        $('f-email').value           = lead.email       || '';
+        $('f-phone').value           = lead.phone       || '';
+        $('f-project-type').value    = lead.projectType || '';
+        $('f-notes').value           = lead.message     || '';
+        $('f-referral-source').value = 'Website';
+        $('leads-modal').classList.add('hidden');
+        $('modal-overlay').classList.remove('hidden');
+        setTimeout(() => $('f-name').focus(), 50);
+    }
+
+    $('leads-btn').addEventListener('click', () => $('leads-modal').classList.remove('hidden'));
+    $('leads-modal-close').addEventListener('click', () => $('leads-modal').classList.add('hidden'));
+    $('leads-modal').addEventListener('click', e => { if (e.target === $('leads-modal')) $('leads-modal').classList.add('hidden'); });
 
     // ── CRUD ───────────────────────────────────────────────
     async function getNextJobNumber() {
@@ -1623,6 +1751,7 @@ function initApp() {
         $('form-submit-text').textContent = 'Save Job';
         $('job-form').reset();
         $('job-form').dataset.editId = '';
+        $('job-form').dataset.leadId = '';
         $('modal-overlay').classList.remove('hidden');
         setTimeout(() => $('f-name').focus(), 50);
     }
@@ -1687,12 +1816,18 @@ function initApp() {
                 notes:            $('f-notes').value.trim(),
             };
             const editId = $('job-form').dataset.editId;
+            const leadId = $('job-form').dataset.leadId;
             if (editId) data.id = editId;
             const saved = await saveJob(data);
             closeModal();
             // Auto-create Drive folders for new jobs
             if (!editId && saved.id) {
                 createJobFolders(saved.id, saved.jobNumber, data.clientName, data.address);
+            }
+            // Mark web lead as reviewed
+            if (!editId && leadId) {
+                $('job-form').dataset.leadId = '';
+                db.collection('webLeads').doc(leadId).update({ reviewed: true }).catch(() => {});
             }
         } catch (err) {
             toast('Error: ' + err.message, true);
