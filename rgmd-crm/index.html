@@ -1227,7 +1227,6 @@ function initApp() {
             const blob = pdf.output('blob');
             const fname = `Service-Authorization-${d.jobNumber || job.jobNumber || 'doc'}.pdf`;
             await uploadToDrive(job.driveFolderDocId, new File([blob], fname, { type: 'application/pdf' }));
-            await db.collection('signingRequests').doc(job.sigToken).update({ driveSaved: true });
             btn.textContent = 'Saved to Drive ✓';
             toast('PDF saved to Drive Documents folder');
             refreshFileList(job.driveFolderDocId, 'drive-docs-list');
