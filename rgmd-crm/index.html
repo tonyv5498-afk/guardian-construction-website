@@ -2534,11 +2534,26 @@ function initApp() {
         if (!address) return null;
         if (geoCache[address]) return geoCache[address];
         try {
-            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
+            // Append Michigan context if the address lacks a state/zip so Nominatim
+            // doesn't guess a wrong location outside Metro Detroit.
+            const hasState = /\b(MI|Michigan)\b/i.test(address) || /\b\d{5}\b/.test(address);
+            const query = hasState ? address : `${address}, Michigan, USA`;
+            // Constrain search to Metro Detroit bounding box (W,S,E,N)
+            const bbox = '-84.0,41.5,-82.5,42.9';
+            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&bounded=1&viewbox=${bbox}&q=${encodeURIComponent(query)}`;
             const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
             const data = await res.json();
             if (data && data[0]) {
                 const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                geoCache[address] = coords;
+                return coords;
+            }
+            // Fallback: retry without bounding box if nothing found in bbox
+            const url2 = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(query)}`;
+            const res2 = await fetch(url2, { headers: { 'Accept-Language': 'en' } });
+            const data2 = await res2.json();
+            if (data2 && data2[0]) {
+                const coords = { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon) };
                 geoCache[address] = coords;
                 return coords;
             }
@@ -2554,15 +2569,14 @@ function initApp() {
         const bounds = [];
         for (const job of jobs) {
             if (!job.address) continue;
-            // Use cached geo from Firestore if present, otherwise geocode
-            let coords = job.geo || geoCache[job.address] || null;
+            // Always geocode fresh (in-memory geoCache avoids duplicate calls
+            // within the session). This overwrites any stale Firestore geo.
+            let coords = geoCache[job.address] || null;
             if (!coords) {
                 coords = await geocodeAddress(job.address);
                 if (coords && job.id) {
                     db.collection('jobs').doc(job.id).update({ geo: coords }).catch(() => {});
                 }
-            } else {
-                geoCache[job.address] = coords;
             }
             if (!coords) continue;
             const color = TYPE_COLORS[job.projectType] || TYPE_COLORS['Other'];
