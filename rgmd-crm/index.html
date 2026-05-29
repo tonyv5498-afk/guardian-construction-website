@@ -469,46 +469,38 @@
             </button>
         </div>
 
-        <!-- ─── Service Authorization ──────────────────── -->
+        <!-- ─── Documents for Signature ──────────────────── -->
         <div class="border-t border-gray-100 pt-4">
-            <div class="flex items-center justify-between mb-3">
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Service Authorization</p>
-                <span id="sig-status-pill" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
-            </div>
-            <div id="sig-section-pending">
-                <button id="send-for-sig-btn"
-                    class="w-full text-xs font-semibold py-2 rounded-lg transition-colors text-white" style="background:#1B3A6B;">
-                    Send for Signature
-                </button>
-            </div>
-            <div id="sig-section-sent" class="hidden space-y-2">
-                <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                    <p class="text-xs font-semibold text-amber-700">Awaiting Signature</p>
-                    <p class="text-xs text-amber-600 mt-0.5">Sent to <span id="sig-sent-to" class="font-medium"></span></p>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Documents for Signature</p>
+            <div class="space-y-2">
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Service Authorization</span>
+                        <span id="sig-pill-wa" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-wa"></div>
                 </div>
-                <button id="resend-sig-btn"
-                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
-                    Send New Link
-                </button>
-            </div>
-            <div id="sig-section-signed" class="hidden space-y-2">
-                <div class="p-3 bg-green-50 border border-green-100 rounded-lg">
-                    <p class="text-xs font-semibold text-green-700">Signed</p>
-                    <p class="text-xs text-green-600 mt-0.5">By <span id="sig-signed-by" class="font-medium"></span></p>
-                    <p class="text-xs text-green-500" id="sig-signed-at"></p>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Reconstruction Work Authorization</span>
+                        <span id="sig-pill-rwa" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-rwa"></div>
                 </div>
-                <button id="view-sig-btn"
-                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
-                    View Signed Document ↗
-                </button>
-                <button id="download-pdf-btn"
-                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
-                    Download Signed PDF
-                </button>
-                <button id="save-to-drive-btn"
-                    class="w-full text-xs font-semibold py-2 rounded-lg transition-colors text-white" style="background:#1B3A6B;">
-                    Save PDF to Drive Documents
-                </button>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Certificate of Completion — Mitigation</span>
+                        <span id="sig-pill-coc_mit" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-coc_mit"></div>
+                </div>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Certificate of Completion — Rebuild</span>
+                        <span id="sig-pill-coc_rebuild" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-coc_rebuild"></div>
+                </div>
             </div>
         </div>
 
@@ -642,7 +634,7 @@
         <div class="flex items-center gap-4 px-8 py-5 border-b border-gray-200">
             <img src="logo.png" alt="RGMD" class="w-14 h-14 object-contain flex-shrink-0">
             <div>
-                <h1 class="text-xl font-bold text-gray-900">Service Authorization Contract</h1>
+                <h1 id="sc-doc-title" class="text-xl font-bold text-gray-900">Service Authorization Contract</h1>
                 <p class="text-xs text-gray-400">Restoration Group of Metro Detroit LLC</p>
             </div>
         </div>
@@ -672,28 +664,21 @@
             <div class="px-8 py-6 space-y-1.5 text-sm border-b border-gray-100">
                 <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Customer:</span><span id="sc-customer" class="text-gray-900"></span></div>
                 <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Address:</span><span id="sc-address" class="text-gray-900"></span></div>
-                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Phone:</span><span id="sc-phone" class="text-gray-900"></span></div>
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-16 flex-shrink-0">Email:</span><span id="sc-email" class="text-gray-900"></span></div>
+                <div id="sc-extra-fields">
+                    <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Phone:</span><span id="sc-phone" class="text-gray-900"></span></div>
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-16 flex-shrink-0">Email:</span><span id="sc-email" class="text-gray-900"></span></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Co:</span><span id="sc-ins-co" class="text-gray-900"></span></div>
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Claim #:</span><span id="sc-claim" class="text-gray-900"></span></div>
+                    </div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
                 </div>
-                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Co:</span><span id="sc-ins-co" class="text-gray-900"></span></div>
-                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Claim #:</span><span id="sc-claim" class="text-gray-900"></span></div>
-                </div>
-                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
-                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
-                <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
             </div>
-            <div class="px-8 py-5 text-sm text-gray-800 space-y-3 leading-relaxed border-b border-gray-100" style="font-size:0.8rem;">
-                <p>I (we) hereby authorize <strong>Restoration Group of Metro Detroit LLC</strong> business to perform emergency/non emergency mitigation and restoration services at my (our) property at the above address and with respect to items that need to be restored at a remote location, to remove and store such items. I (we) authorize and direct the Insurance Company listed above to communicate with <strong>Restoration Group of Metro Detroit LLC</strong> and to pay <strong>Restoration Group of Metro Detroit LLC</strong> directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay <strong>Restoration Group of Metro Detroit LLC</strong> immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize <strong>Restoration Group of Metro Detroit LLC</strong> to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to <strong>Restoration Group of Metro Detroit LLC</strong> about such payment and endorse such payment.</p>
-                <p>I (we) understand that <strong>Restoration Group of Metro Detroit LLC</strong> is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay <strong>Restoration Group of Metro Detroit LLC</strong> directly for any amount not covered by insurance.</p>
-                <p>The liability of <strong>Restoration Group of Metro Detroit LLC</strong> is expressly limited to the total amount of the services authorized herein and in no event shall <strong>Restoration Group of Metro Detroit LLC</strong>, its agents or assigns, be liable for consequential and/or any other special damages of any kind. <strong>Restoration Group of Metro Detroit LLC</strong> is responsible for only the personal property listed on an inventory signed by me (us) and by a <strong>Restoration Group of Metro Detroit LLC</strong> representative. In the event that legal proceedings must be instituted to recover any due amount, <strong>Restoration Group of Metro Detroit LLC</strong> shall be entitled to recover the cost of collection including reasonable attorney's fees.</p>
-                <p>I (we) agrees to pay <strong>Restoration Group of Metro Detroit LLC</strong> 15% of the gross amount of the estimate provided to the Contractor as compensation for professional services and administrative fees. If <strong>Restoration Group of Metro Detroit LLC</strong> is not chosen to perform the entire scope of work provided in the estimate, this fee is due within 30 days of work authorization.</p>
-                <p>Payment shall be made to <strong>Restoration Group of Metro Detroit LLC</strong> as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. On the seventh (7th) day of <strong>Restoration Group of Metro Detroit LLC's</strong> final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.</p>
-                <p>Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney's fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to <strong>Restoration Group of Metro Detroit LLC</strong> and to be made payable in the name of and only <strong>Restoration Group of Metro Detroit LLC</strong>. If I (we) or my insurer fails to pay the balance owing to <strong>Restoration Group of Metro Detroit LLC</strong> within 30 days of job completion, I (we) agree that I (we) will pay to <strong>Restoration Group of Metro Detroit LLC</strong> the full amount owing, including the amount owed by my insurer. As one method of collection, I (we) authorize <strong>Restoration Group of Metro Detroit LLC</strong> to charge my credit card below for the unpaid balance. If that credit card charge is not sufficient to pay all money due to <strong>Restoration Group of Metro Detroit LLC</strong>, <strong>Restoration Group of Metro Detroit LLC</strong> is authorized to use other methods of collection, including liens and other legal proceedings."</p>
-                <p><strong>Restoration Group of Metro Detroit LLC</strong> reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by <strong>Restoration Group of Metro Detroit LLC</strong> and is not negotiable.</p>
-                <p>I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct <strong>Restoration Group of Metro Detroit LLC</strong> to begin restoration immediately.</p>
-            </div>
+            <div id="sc-contract-body" class="px-8 py-5 text-sm text-gray-800 space-y-3 leading-relaxed border-b border-gray-100" style="font-size:0.8rem;"></div>
             <!-- Work Authorization Signature -->
             <div class="px-8 py-6 border-b border-gray-100">
                 <div class="grid grid-cols-2 gap-4 mb-5">
@@ -708,7 +693,7 @@
                     </div>
                 </div>
                 <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">
-                    Signature — Service Authorization <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
+                    <span id="sc-sig-label">Signature</span> <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
                 </label>
                 <div class="relative border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 overflow-hidden">
                     <canvas id="sign-canvas" width="900" height="160" class="w-full touch-none cursor-crosshair block" style="height:130px;"></canvas>
@@ -797,21 +782,20 @@
             </button>
         </div>
         <div id="sig-req-form-view" class="px-6 py-5 space-y-4">
-            <p class="text-xs text-gray-500">The contract auto-fills all job data. Add a due date, choose which documents to include, then generate the signing link.</p>
-            <div>
+            <div class="p-2.5 bg-blue-50 border border-blue-100 rounded-lg">
+                <p id="sig-req-doc-label" class="text-xs font-semibold text-blue-800"></p>
+            </div>
+            <p class="text-xs text-gray-500">The document auto-fills all job data. Generate the signing link to send to the client.</p>
+            <div id="sig-req-due-date-wrap">
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Due Date</label>
                 <input id="sig-req-due-date" type="text" placeholder="e.g. 06/30/2026"
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
             </div>
-            <div class="border border-gray-200 rounded-xl p-3 space-y-2.5">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Include Documents</p>
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="sig-req-include-wa" checked disabled class="w-4 h-4 rounded accent-orange-500">
-                    <span class="text-sm text-gray-700">Service Authorization Contract <span class="text-xs text-gray-400">(always included)</span></span>
-                </label>
+            <div id="sig-req-aob-wrap" class="border border-gray-200 rounded-xl p-3 space-y-2.5">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Optional Add-on</p>
                 <label class="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" id="sig-req-include-aob" class="w-4 h-4 rounded accent-orange-500">
-                    <span class="text-sm text-gray-700">Assignment of Benefits (AOB)</span>
+                    <span class="text-sm text-gray-700">Include Assignment of Benefits (AOB)</span>
                 </label>
             </div>
             <button id="sig-req-create-btn"
@@ -915,6 +899,43 @@ const STATUS = {
 };
 
 // ────────────────────────────────────────────────────────────
+// DOCUMENT TYPE CONFIG
+// ────────────────────────────────────────────────────────────
+const DOC_TYPES = {
+    wa:          { label: 'Service Authorization',                  tokenField: 'sigTokenWA',         hasAob: true,  simpleDoc: false },
+    rwa:         { label: 'Reconstruction Work Authorization',      tokenField: 'sigTokenRWA',        hasAob: true,  simpleDoc: false },
+    coc_mit:     { label: 'Certificate of Completion — Mitigation', tokenField: 'sigTokenCOCMit',     hasAob: false, simpleDoc: true  },
+    coc_rebuild: { label: 'Certificate of Completion — Rebuild',    tokenField: 'sigTokenCOCRebuild', hasAob: false, simpleDoc: true  },
+};
+
+const WA_PARAGRAPHS = [
+    'I (we) hereby authorize Restoration Group of Metro Detroit LLC business to perform emergency/non emergency mitigation and restoration services at my (our) property at the above address and with respect to items that need to be restored at a remote location, to remove and store such items. I (we) authorize and direct the Insurance Company listed above to communicate with Restoration Group of Metro Detroit LLC and to pay Restoration Group of Metro Detroit LLC directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay Restoration Group of Metro Detroit LLC immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize Restoration Group of Metro Detroit LLC to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to Restoration Group of Metro Detroit LLC about such payment and endorse such payment.',
+    'I (we) understand that Restoration Group of Metro Detroit LLC is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay Restoration Group of Metro Detroit LLC directly for any amount not covered by insurance.',
+    'The liability of Restoration Group of Metro Detroit LLC is expressly limited to the total amount of the services authorized herein and in no event shall Restoration Group of Metro Detroit LLC, its agents or assigns, be liable for consequential and/or any other special damages of any kind. Restoration Group of Metro Detroit LLC is responsible for only the personal property listed on an inventory signed by me (us) and by a Restoration Group of Metro Detroit LLC representative. In the event that legal proceedings must be instituted to recover any due amount, Restoration Group of Metro Detroit LLC shall be entitled to recover the cost of collection including reasonable attorney\'s fees.',
+    'I (we) agrees to pay Restoration Group of Metro Detroit LLC 15% of the gross amount of the estimate provided to the Contractor as compensation for professional services and administrative fees. If Restoration Group of Metro Detroit LLC is not chosen to perform the entire scope of work provided in the estimate, this fee is due within 30 days of work authorization.',
+    'Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. On the seventh (7th) day of Restoration Group of Metro Detroit LLC\'s final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.',
+    'Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer.',
+    'Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.',
+    'I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin restoration immediately.',
+];
+
+const RWA_PARAGRAPHS = [
+    'I (we) authorize the locally independently owned and operated Restoration Group of Metro Detroit LLC to perform the above Project work at my (our) property at the above address beginning on the Estimated Start Date.',
+    'Restoration Group of Metro Detroit LLC will select the materials used in the Project unless otherwise agreed between me (we) and Restoration Group of Metro Detroit LLC. If I (we) select the materials, there may be additional fees/costs/charges associated with my (our) choice. Restoration Group of Metro Detroit LLC will supply written notice of the price difference (if any) before the materials are purchased. I (we) understand Restoration Group of Metro Detroit LLC will supply all labor to the Project. Title to all materials incorporated into your Project will transfer from the Company to you at such time as all work required under this agreement is complete, and all payments due under this agreement have been paid.',
+    'When this Contract is signed, you (we) agree to pay Restoration Group of Metro Detroit LLC our home/auto/commercial insurance deductible plus the deposits for labor and materials (if any). The balance will be paid at the time the Project is completed.',
+    'I (we) agree that Restoration Group of Metro Detroit LLC will solely be responsible for the Project\'s management, and I (we) will provide complete access to the area where the Product is located. During the construction process, I (we) agree to direct any questions concerning the process directly to the Restoration Group of Metro Detroit LLC representative (whose name and contact information will be provided) and not to the construction crew.',
+    'I (we) authorize and direct the Insurance Company listed above to communicate with Restoration Group of Metro Detroit LLC and to pay Restoration Group of Metro Detroit LLC directly for the work covered by insurance. If the payment should come to me (us) for any reason, I (we) agree to pay Restoration Group of Metro Detroit LLC immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize Restoration Group of Metro Detroit LLC to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to Restoration Group of Metro Detroit LLC about such payment and endorse such payment. I (we) understand that Restoration Group of Metro Detroit LLC is working for me (us) and not the insurance company, adjuster, or agent.',
+    'I (we) understand and agree that I (we) am/are personally responsible for all deductibles, depreciation, or other charges or costs not covered by insurance. I (we) agree to pay Restoration Group of Metro Detroit LLC directly for any amount not covered by insurance. If, for any reason, the insurance company or lender fails to pay us within 30 days of billing, I (we) will make full payment to Restoration Group of Metro Detroit LLC.',
+    'No credit or allowance will be made by Restoration Group of Metro Detroit LLC for any alteration in this Contract, except for changes that you and Restoration Group of Metro Detroit LLC have consented to in writing (Change Order). Such changes will result in a change to the cost of the Project, the amount of which will be stated in the Change Order.',
+    'If there is a disagreement between you and Restoration Group of Metro Detroit LLC, you and Restoration Group of Metro Detroit LLC agree first to attempt resolution by non-binding mediation before a single mediator (chosen by agreement) at a location halfway between your address and Restoration Group of Metro Detroit LLC\'s offices. If you (we) and Restoration Group of Metro Detroit LLC cannot agree on a mediator, the services of the American Arbitration Association (AAA) nearest to the work address will be used.',
+    'This Contract will be interpreted under the laws of the state where my (our) home is found. Jurisdiction and venue will be in the proper court in the county where my (our) address is located. Restoration Group of Metro Detroit LLC retains the right to lien the location of the Project if payment in full is not timely made.',
+    'The liability of Restoration Group of Metro Detroit LLC is expressly limited to the total amount you (we) paid under this Contract. In no event will Restoration Group of Metro Detroit LLC, its agents, or assigns be liable for any other compensatory, punitive, consequential or any other special damages of any kind.',
+    'Restoration Group of Metro Detroit LLC will not be liable for any delays caused by weather conditions, the unavailability of materials or workers, or for reasons beyond Restoration Group of Metro Detroit LLC\'s reasonable control, such as local, county, state, national or international health crises or so-called "acts of God."',
+    'I (we) understand that I (we) may cancel this Contract by contacting Restoration Group of Metro Detroit LLC by phone, text, or email within three (3) calendar days of signing. If balance in full is not paid to Restoration Group of Metro Detroit LLC within 30 days of job completion, I hereby authorize Restoration Group of Metro Detroit LLC to charge my credit card for the unpaid balance.',
+    'This Contract contains the entire understanding of you and Restoration Group of Metro Detroit LLC concerning the Project. All prior written or oral understandings or agreements are merged into this Contract. This Contract may be altered only in writing signed by me (us) and Restoration Group of Metro Detroit LLC.',
+];
+
+// ────────────────────────────────────────────────────────────
 // INIT — detect signing page vs CRM
 // ────────────────────────────────────────────────────────────
 const _signToken = new URLSearchParams(window.location.search).get('sign');
@@ -950,35 +971,69 @@ async function initSigningPage(token) {
         hide('sign-loading-state');
         if (!doc.exists) { show('sign-error-state'); return; }
         const d = doc.data();
+        const docType = d.docType || 'wa';
         if (d.signed) {
             const dt = d.signedAt ? new Date(d.signedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '';
             document.getElementById('sign-already-date').textContent = dt;
             show('sign-already-state'); return;
         }
-        // Populate Work Authorization fields
-        document.getElementById('sc-customer').textContent     = d.clientName || '';
-        document.getElementById('sc-address').textContent      = d.address    || '';
-        document.getElementById('sc-phone').textContent        = d.phone      || '';
-        document.getElementById('sc-email').textContent        = d.email      || '';
-        document.getElementById('sc-ins-co').textContent       = d.insCarrier || '';
-        document.getElementById('sc-claim').textContent        = d.insClaim   || '';
-        document.getElementById('sc-ins-agent').textContent    = d.insAdjusterName || '';
-        document.getElementById('sc-due-date').textContent     = d.dueDate    || '';
-        document.getElementById('sc-project-type').textContent = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
-        document.getElementById('sc-today-date').textContent   = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-        // Populate AOB fields and show section if required
-        if (d.includeAob) {
-            document.getElementById('aob-customer').textContent      = d.clientName || '';
-            document.getElementById('aob-policy').textContent        = d.insPolicy  || '';
-            document.getElementById('aob-claim').textContent         = d.insClaim   || '';
-            document.getElementById('aob-insurer').textContent       = d.insCarrier || '';
+        // Set page title and signature label based on doc type
+        const titles = {
+            wa:          'Service Authorization Contract',
+            rwa:         'Reconstruction Work Authorization',
+            coc_mit:     'Mitigation Certificate of Completion and Satisfaction',
+            coc_rebuild: 'Rebuild Certificate of Completion and Satisfaction',
+        };
+        const sigLabels = {
+            wa: 'Signature — Service Authorization', rwa: 'Signature — Reconstruction Work Authorization',
+            coc_mit: 'Signature — Certificate of Completion', coc_rebuild: 'Signature — Certificate of Completion',
+        };
+        document.getElementById('sc-doc-title').textContent  = titles[docType]    || titles.wa;
+        document.getElementById('sc-sig-label').textContent  = sigLabels[docType] || sigLabels.wa;
+
+        const isSimple = (docType === 'coc_mit' || docType === 'coc_rebuild');
+
+        // Populate fields
+        document.getElementById('sc-customer').textContent = d.clientName || '';
+        document.getElementById('sc-address').textContent  = d.address    || '';
+        if (isSimple) {
+            document.getElementById('sc-extra-fields').classList.add('hidden');
+        } else {
+            document.getElementById('sc-phone').textContent        = d.phone             || '';
+            document.getElementById('sc-email').textContent        = d.email             || '';
+            document.getElementById('sc-ins-co').textContent       = d.insCarrier        || '';
+            document.getElementById('sc-claim').textContent        = d.insClaim          || '';
+            document.getElementById('sc-ins-agent').textContent    = d.insAdjusterName   || '';
+            document.getElementById('sc-due-date').textContent     = d.dueDate           || '';
+            document.getElementById('sc-project-type').textContent = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
+        }
+        document.getElementById('sc-today-date').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        // Populate contract body
+        const bodyEl = document.getElementById('sc-contract-body');
+        if (docType === 'wa') {
+            bodyEl.innerHTML = WA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
+        } else if (docType === 'rwa') {
+            bodyEl.innerHTML = RWA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
+        } else if (docType === 'coc_mit') {
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
+        } else {
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
+        }
+
+        // Populate AOB fields
+        if (d.includeAob && !isSimple) {
+            document.getElementById('aob-customer').textContent       = d.clientName || '';
+            document.getElementById('aob-policy').textContent         = d.insPolicy  || '';
+            document.getElementById('aob-claim').textContent          = d.insClaim   || '';
+            document.getElementById('aob-insurer').textContent        = d.insCarrier || '';
             document.getElementById('aob-insurer-inline').textContent = d.insCarrier || '________________________';
-            document.getElementById('aob-print-name').textContent    = d.clientName || '';
-            document.getElementById('aob-address').textContent       = d.address    || '';
-            document.getElementById('aob-phone').textContent         = d.phone      || '';
+            document.getElementById('aob-print-name').textContent     = d.clientName || '';
+            document.getElementById('aob-address').textContent        = d.address    || '';
+            document.getElementById('aob-phone').textContent          = d.phone      || '';
             document.getElementById('sign-aob-section').classList.remove('hidden');
-            document.getElementById('sign-submit-btn').textContent   = 'Submit Signed Documents';
+            document.getElementById('sign-submit-btn').textContent    = 'Submit Signed Documents';
         }
 
         show('sign-form-state');
@@ -1091,90 +1146,140 @@ function initApp() {
     document.getElementById('sign-out-btn').addEventListener('click', () => auth.signOut());
 
     // ── Signing workflow ───────────────────────────────────
-    let currentSigToken = null;
+    let currentSigDocType = null;
 
-    function showSigSection(mode) {
-        ['pending','sent','signed'].forEach(m => $('sig-section-' + m).classList.toggle('hidden', m !== mode));
-        const pill = $('sig-status-pill');
-        if (mode === 'sent') {
-            pill.textContent = 'Awaiting Signature'; pill.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
-            pill.classList.remove('hidden');
-        } else if (mode === 'signed') {
-            pill.textContent = 'Signed'; pill.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700';
-            pill.classList.remove('hidden');
-        } else {
-            pill.classList.add('hidden');
-        }
-    }
-
-    async function loadSigStatus(job) {
-        showSigSection('pending');
-        $('sig-status-pill').classList.add('hidden');
-        if (!job.sigToken) return;
-        currentSigToken = job.sigToken;
-        try {
-            const doc = await db.collection('signingRequests').doc(job.sigToken).get();
-            if (!doc.exists) return;
-            const d = doc.data();
-            if (d.signed) {
-                $('sig-signed-by').textContent = d.signerName || '';
-                $('sig-signed-at').textContent = d.signedAt ? new Date(d.signedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '';
-                showSigSection('signed');
-            } else {
-                $('sig-sent-to').textContent = job.email || '';
-                showSigSection('sent');
-            }
-        } catch(_) {}
-    }
-
-    function openSigModal() {
+    function openSigModal(docType) {
+        currentSigDocType = docType;
+        const dt = DOC_TYPES[docType];
+        $('sig-req-doc-label').textContent = dt.label;
         $('sig-req-form-view').classList.remove('hidden');
         $('sig-req-link-view').classList.add('hidden');
         $('sig-req-due-date').value = '';
         $('sig-req-include-aob').checked = false;
+        $('sig-req-due-date-wrap').classList.toggle('hidden', dt.simpleDoc);
+        $('sig-req-aob-wrap').classList.toggle('hidden', !dt.hasAob);
         $('sig-req-modal').classList.remove('hidden');
     }
 
-    $('send-for-sig-btn').addEventListener('click', openSigModal);
-    $('resend-sig-btn').addEventListener('click', openSigModal);
+    function renderSigPending(el, docType) {
+        el.innerHTML = `<button class="w-full text-xs font-semibold py-1.5 rounded-lg transition-colors text-white" style="background:#1B3A6B;">Send for Signature</button>`;
+        el.querySelector('button').addEventListener('click', () => openSigModal(docType));
+    }
+
+    function renderSigSent(el, docType, email) {
+        el.innerHTML = `<p class="text-xs text-amber-600 mb-1.5">Sent to <span class="font-medium">${esc(email)}</span></p>
+            <button class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 rounded-lg transition-colors">Send New Link</button>`;
+        el.querySelector('button').addEventListener('click', () => openSigModal(docType));
+    }
+
+    function renderSigSigned(el, docType, token, d) {
+        const at = d.signedAt ? new Date(d.signedAt.seconds*1000).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) : '';
+        el.innerHTML = `<p class="text-xs text-green-600 mb-1.5">By <span class="font-medium">${esc(d.signerName||'')}</span>${at ? ' · <span class="text-green-500">'+at+'</span>' : ''}</p>
+            <div class="flex gap-1.5">
+                <button class="v-btn flex-1 text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 rounded-lg">View ↗</button>
+                <button class="d-btn flex-1 text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 rounded-lg">PDF</button>
+                <button class="s-btn flex-1 text-xs font-semibold py-1.5 rounded-lg text-white" style="background:#1B3A6B;">Drive</button>
+            </div>`;
+        el.querySelector('.v-btn').addEventListener('click', () => window.open('?sign='+token,'_blank'));
+        el.querySelector('.d-btn').addEventListener('click', async e => {
+            const btn = e.currentTarget; btn.textContent='…'; btn.disabled=true;
+            try {
+                const snap = await db.collection('signingRequests').doc(token).get();
+                const pdf = generateSignedPDF(snap.data());
+                const label = DOC_TYPES[docType].label.replace(/[^a-z0-9]/gi,'-');
+                pdf.save(label+'-'+(snap.data().jobNumber||'')+'.pdf');
+            } catch(err){ toast('PDF error: '+err.message,true); }
+            finally { btn.textContent='PDF'; btn.disabled=false; }
+        });
+        el.querySelector('.s-btn').addEventListener('click', async e => {
+            const job = jobs.find(j => j.id === selectedJobId);
+            if (!job||!job.driveFolderDocId){ toast('Drive Documents folder not set up',true); return; }
+            if (!driveToken){ showDriveReconnect(true); return; }
+            const btn = e.currentTarget; btn.textContent='…'; btn.disabled=true;
+            try {
+                const snap = await db.collection('signingRequests').doc(token).get();
+                const sd = snap.data();
+                const pdf = generateSignedPDF(sd);
+                const blob = pdf.output('blob');
+                const label = DOC_TYPES[docType].label.replace(/[^a-z0-9]/gi,'-');
+                const fname = label+'-'+(sd.jobNumber||job.jobNumber||'')+'.pdf';
+                await uploadToDrive(job.driveFolderDocId, new File([blob],fname,{type:'application/pdf'}));
+                btn.textContent='Saved ✓';
+                toast('PDF saved to Drive Documents folder');
+                refreshFileList(job.driveFolderDocId,'drive-docs-list');
+            } catch(err){
+                if(err.message==='token_expired'||err.message==='no_token') showDriveReconnect(true);
+                else toast('Drive error: '+err.message,true);
+                btn.textContent='Drive'; btn.disabled=false;
+            }
+        });
+    }
+
+    async function loadDocSigStatus(job, docType, token) {
+        const pillEl = $('sig-pill-'+docType);
+        const statusEl = $('sig-status-'+docType);
+        pillEl.className = 'hidden text-xs font-semibold px-2 py-0.5 rounded-full';
+        if (!token) { renderSigPending(statusEl, docType); return; }
+        try {
+            const doc = await db.collection('signingRequests').doc(token).get();
+            if (!doc.exists) { renderSigPending(statusEl, docType); return; }
+            const d = doc.data();
+            if (d.signed) {
+                pillEl.textContent='Signed'; pillEl.className='text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700';
+                renderSigSigned(statusEl, docType, token, d);
+            } else {
+                pillEl.textContent='Awaiting'; pillEl.className='text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+                renderSigSent(statusEl, docType, job.email||'');
+            }
+        } catch(_){ renderSigPending(statusEl, docType); }
+    }
+
+    function loadAllSigStatuses(job) {
+        // sigToken is backward compat field for old WA-only records
+        loadDocSigStatus(job, 'wa',          job.sigTokenWA      || job.sigToken || null);
+        loadDocSigStatus(job, 'rwa',         job.sigTokenRWA     || null);
+        loadDocSigStatus(job, 'coc_mit',     job.sigTokenCOCMit  || null);
+        loadDocSigStatus(job, 'coc_rebuild', job.sigTokenCOCRebuild || null);
+    }
+
     $('sig-req-close').addEventListener('click', () => $('sig-req-modal').classList.add('hidden'));
 
     $('sig-req-create-btn').addEventListener('click', async () => {
         const job = jobs.find(j => j.id === selectedJobId);
-        if (!job) return;
-        const dueDate    = $('sig-req-due-date').value.trim();
-        const includeAob = $('sig-req-include-aob').checked;
+        if (!job || !currentSigDocType) return;
+        const dt = DOC_TYPES[currentSigDocType];
+        const dueDate    = dt.simpleDoc ? '' : $('sig-req-due-date').value.trim();
+        const includeAob = dt.hasAob ? $('sig-req-include-aob').checked : false;
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
-            const token = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Date.now().toString(36));
+            const token = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2)+Date.now().toString(36));
             await db.collection('signingRequests').doc(token).set({
-                jobId: job.id, jobNumber: job.jobNumber || '',
-                clientName: job.clientName || '', address: job.address || '',
-                phone: job.phone || '', email: job.email || '',
-                insCarrier: job.insCarrier || '', insClaim: job.insClaim || '',
-                insPolicy: job.insPolicy || '',
-                insAdjusterName: job.insAdjusterName || '',
-                projectType: job.projectType || '', subCategory: job.subCategory || '',
+                docType: currentSigDocType,
+                jobId: job.id, jobNumber: job.jobNumber||'',
+                clientName: job.clientName||'', address: job.address||'',
+                phone: job.phone||'', email: job.email||'',
+                insCarrier: job.insCarrier||'', insClaim: job.insClaim||'',
+                insPolicy: job.insPolicy||'', insAdjusterName: job.insAdjusterName||'',
+                projectType: job.projectType||'', subCategory: job.subCategory||'',
                 dueDate, includeAob,
                 signed: false, signatureDataURL: null, aobSignatureDataURL: null,
                 signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: currentUser.email,
             });
-            await patchJob(job.id, { sigToken: token });
-            currentSigToken = token;
+            await patchJob(job.id, { [dt.tokenField]: token });
             const url = window.location.origin + window.location.pathname + '?sign=' + token;
             $('sig-req-link-input').value = url;
             $('sig-req-to-email').textContent = job.email || 'client';
-            const docs = includeAob ? 'Service Authorization Contract and Assignment of Benefits (AOB)' : 'Service Authorization Contract';
-            const subject = encodeURIComponent(`Documents for Signature — Job #${job.jobNumber || ''} — ${job.clientName || ''}`);
-            const body = encodeURIComponent(`Hi ${job.clientName || 'there'},\n\nPlease review and sign the following document(s) for your upcoming restoration project:\n\n• ${docs}\n\nSigning link:\n${url}\n\nIf you have any questions, please don't hesitate to reach out.\n\nThank you,\nRestoration Group of Metro Detroit`);
-            $('sig-req-email-btn').href = `mailto:${job.email || ''}?subject=${subject}&body=${body}`;
+            const subject = encodeURIComponent(`${dt.label} — Job #${job.jobNumber||''} — ${job.clientName||''}`);
+            const bodyLines = [`Hi ${job.clientName||'there'},`, '', `Please review and sign: ${dt.label}${includeAob?'\nAssignment of Benefits (AOB)':''}`, '', `Signing link:\n${url}`, '', 'Thank you,\nRestoration Group of Metro Detroit'];
+            $('sig-req-email-btn').href = `mailto:${job.email||''}?subject=${subject}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
             $('sig-req-form-view').classList.add('hidden');
             $('sig-req-link-view').classList.remove('hidden');
-            $('sig-sent-to').textContent = job.email || '';
-            showSigSection('sent');
+            // refresh just the doc row that changed
+            const updatedJob = { ...job, [dt.tokenField]: token };
+            loadDocSigStatus(updatedJob, currentSigDocType, token);
         } catch(err) {
             toast('Error: ' + err.message, true);
         } finally {
@@ -1188,55 +1293,6 @@ function initApp() {
             $('sig-req-copy-btn').textContent = 'Copied!';
             setTimeout(() => { $('sig-req-copy-btn').textContent = 'Copy'; }, 2000);
         }).catch(() => { inp.select(); document.execCommand('copy'); });
-    });
-
-    $('view-sig-btn').addEventListener('click', () => {
-        if (currentSigToken) window.open('?sign=' + currentSigToken, '_blank');
-    });
-
-    $('download-pdf-btn').addEventListener('click', async () => {
-        const job = jobs.find(j => j.id === selectedJobId);
-        if (!job || !job.sigToken) return;
-        const btn = $('download-pdf-btn');
-        btn.textContent = 'Generating…'; btn.disabled = true;
-        try {
-            const snap = await db.collection('signingRequests').doc(job.sigToken).get();
-            if (!snap.exists) { toast('Signing request not found', true); return; }
-            const pdf = generateSignedPDF(snap.data());
-            pdf.save(`Service-Authorization-${snap.data().jobNumber || job.jobNumber || 'doc'}.pdf`);
-        } catch(err) {
-            toast('PDF error: ' + err.message, true);
-        } finally {
-            btn.textContent = 'Download Signed PDF'; btn.disabled = false;
-        }
-    });
-
-    $('save-to-drive-btn').addEventListener('click', async () => {
-        const job = jobs.find(j => j.id === selectedJobId);
-        if (!job || !job.sigToken) return;
-        if (!job.driveFolderDocId) { toast('Drive Documents folder not set up for this job', true); return; }
-        if (!driveToken) { showDriveReconnect(true); return; }
-        const btn = $('save-to-drive-btn');
-        btn.textContent = 'Saving…'; btn.disabled = true;
-        try {
-            const snap = await db.collection('signingRequests').doc(job.sigToken).get();
-            if (!snap.exists) { toast('Signing request not found', true); return; }
-            const d = snap.data();
-            const pdf = generateSignedPDF(d);
-            const blob = pdf.output('blob');
-            const fname = `Service-Authorization-${d.jobNumber || job.jobNumber || 'doc'}.pdf`;
-            await uploadToDrive(job.driveFolderDocId, new File([blob], fname, { type: 'application/pdf' }));
-            btn.textContent = 'Saved to Drive ✓';
-            toast('PDF saved to Drive Documents folder');
-            refreshFileList(job.driveFolderDocId, 'drive-docs-list');
-        } catch(err) {
-            if (err.message === 'token_expired' || err.message === 'no_token') {
-                showDriveReconnect(true);
-            } else {
-                toast('Drive error: ' + err.message, true);
-            }
-            btn.textContent = 'Save PDF to Drive Documents'; btn.disabled = false;
-        }
     });
 
     // ── Firestore listener ─────────────────────────────────
@@ -1386,12 +1442,11 @@ function initApp() {
         if (!job) return;
         selectedJobId = jobId;
         activeDriveTab = 'photos';
-        currentSigToken = job.sigToken || null;
         populateDetailPanel(job);
         $('detail-panel').classList.add('open');
         $('panel-backdrop').classList.remove('hidden');
         loadDriveSection(job);
-        loadSigStatus(job);
+        loadAllSigStatuses(job);
     }
 
     function populateDetailPanel(job) {
@@ -1912,6 +1967,72 @@ function initApp() {
 // PDF GENERATION  (uses jsPDF CDN)
 // ────────────────────────────────────────────────────────────
 function generateSignedPDF(d) {
+    const docType = d.docType || 'wa';
+    if (docType === 'coc_mit' || docType === 'coc_rebuild') return _generateCOCPDF(d, docType);
+    return _generateAuthPDF(d, docType);
+}
+
+function _generateCOCPDF(d, docType) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const pw = 612, ml = 70, mr = 70, tw = pw - ml - mr;
+    const title = docType === 'coc_mit'
+        ? 'MITIGATION CERTIFICATE OF COMPLETION AND SATISFACTION'
+        : 'REBUILD CERTIFICATE OF COMPLETION AND SATISFACTION';
+    const body = docType === 'coc_mit'
+        ? 'This is to certify that the mitigation performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.'
+        : 'This is to certify that the rebuild performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.';
+    const signedDate = d.signedAt
+        ? new Date(d.signedAt.seconds*1000).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+        : new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+    // Header bar
+    doc.setFillColor(27,58,107); doc.rect(0,0,pw,58,'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.text('Restoration Group of Metro Detroit LLC',ml,38);
+
+    doc.setTextColor(20,20,20);
+    let y = 90;
+    doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    const titleLines = doc.splitTextToSize(title, tw);
+    doc.text(titleLines, pw/2, y, {align:'center'}); y += titleLines.length*17+20;
+
+    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 20;
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(100,100,100);
+    doc.text('Client:', ml, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(d.clientName||'', ml+48, y); y += 18;
+    doc.setFont('helvetica','bold'); doc.setTextColor(100,100,100);
+    doc.text('Address:', ml, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(d.address||'', ml+56, y); y += 30;
+
+    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 40;
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(40,40,40);
+    const bodyLines = doc.splitTextToSize(body, tw-40);
+    doc.text(bodyLines, pw/2, y, {align:'center'}); y += bodyLines.length*16+60;
+
+    // Signature
+    if (d.signatureDataURL) {
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(110,110,110);
+        doc.text('Signature:', ml+30, y); y += 8;
+        doc.addImage(d.signatureDataURL,'PNG',ml+30,y,200,52); y += 62;
+    }
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(70,70,70);
+    doc.text('Name:', ml+30, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(d.signerName||'', ml+68, y); y += 16;
+    doc.setFont('helvetica','bold'); doc.setTextColor(70,70,70);
+    doc.text('Date:', ml+30, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(signedDate, ml+64, y);
+
+    return doc;
+}
+
+function _generateAuthPDF(d, docType) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'pt', format: 'letter' });
     const pw = 612, ph = 792, ml = 50, mr = 50, tw = pw - ml - mr;
@@ -1973,8 +2094,9 @@ function generateSignedPDF(d) {
         ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    // ── Page 1: Service Authorization ──────────────────────
-    pageHeader('Service Authorization Contract', 'Restoration Group of Metro Detroit LLC');
+    // ── Page 1: WA or RWA ──────────────────────────────────
+    const authTitle = docType === 'rwa' ? 'Reconstruction Work Authorization' : 'Service Authorization Contract';
+    pageHeader(authTitle, 'Restoration Group of Metro Detroit LLC');
 
     fieldRow('Customer', d.clientName);
     fieldRow('Address', d.address);
@@ -1988,14 +2110,8 @@ function generateSignedPDF(d) {
     fieldRow('Due Date', d.dueDate);
     y += 6; divider();
 
-    bodyPara('I (we) hereby authorize Restoration Group of Metro Detroit LLC business to perform emergency/non emergency mitigation and restoration services at my (our) property at the above address and with respect to items that need to be restored at a remote location, to remove and store such items. I (we) authorize and direct the Insurance Company listed above to communicate with Restoration Group of Metro Detroit LLC and to pay Restoration Group of Metro Detroit LLC directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay Restoration Group of Metro Detroit LLC immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize Restoration Group of Metro Detroit LLC to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to Restoration Group of Metro Detroit LLC about such payment and endorse such payment.');
-    bodyPara('I (we) understand that Restoration Group of Metro Detroit LLC is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay Restoration Group of Metro Detroit LLC directly for any amount not covered by insurance.');
-    bodyPara('The liability of Restoration Group of Metro Detroit LLC is expressly limited to the total amount of the services authorized herein and in no event shall Restoration Group of Metro Detroit LLC, its agents or assigns, be liable for consequential and/or any other special damages of any kind. Restoration Group of Metro Detroit LLC is responsible for only the personal property listed on an inventory signed by me (us) and by a Restoration Group of Metro Detroit LLC representative. In the event that legal proceedings must be instituted to recover any due amount, Restoration Group of Metro Detroit LLC shall be entitled to recover the cost of collection including reasonable attorney\'s fees.');
-    bodyPara('I (we) agrees to pay Restoration Group of Metro Detroit LLC 15% of the gross amount of the estimate provided to the Contractor as compensation for professional services and administrative fees. If Restoration Group of Metro Detroit LLC is not chosen to perform the entire scope of work provided in the estimate, this fee is due within 30 days of work authorization.');
-    bodyPara('Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. On the seventh (7th) day of Restoration Group of Metro Detroit LLC\'s final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.');
-    bodyPara('Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer. As one method of collection, I (we) authorize Restoration Group of Metro Detroit LLC to charge my credit card below for the unpaid balance. If that credit card charge is not sufficient to pay all money due to Restoration Group of Metro Detroit LLC, Restoration Group of Metro Detroit LLC is authorized to use other methods of collection, including liens and other legal proceedings.');
-    bodyPara('Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.');
-    bodyPara('I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin restoration immediately.');
+    const paragraphs = docType === 'rwa' ? RWA_PARAGRAPHS : WA_PARAGRAPHS;
+    paragraphs.forEach(p => bodyPara(p));
 
     // WA signature block
     newPageIfNeeded(140);
@@ -2012,7 +2128,7 @@ function generateSignedPDF(d) {
 
     if (d.signatureDataURL) {
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
-        doc.text('Signature — Service Authorization Contract', ml, y);
+        doc.text('Signature — ' + authTitle, ml, y);
         y += 8;
         doc.addImage(d.signatureDataURL, 'PNG', ml, y, 300, 76);
         y += 86;
