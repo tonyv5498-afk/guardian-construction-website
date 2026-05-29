@@ -2668,6 +2668,7 @@ function initApp() {
         populateDetailPanel(job);
         $('detail-panel').classList.add('open');
         $('panel-backdrop').classList.remove('hidden');
+        $('jobs-map').style.display = 'none';
         loadDriveSection(job);
         loadAllSigStatuses(job);
     }
@@ -2718,6 +2719,8 @@ function initApp() {
             $('panel-backdrop').classList.add('hidden');
         }
         selectedJobId = null;
+        $('jobs-map').style.display = '';
+        setTimeout(() => jobsMap && jobsMap.invalidateSize(), 100);
     }
 
     function closeAnyPanel() {
