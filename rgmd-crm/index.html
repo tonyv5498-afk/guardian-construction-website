@@ -256,7 +256,7 @@
             <div id="calendar-reconnect-notice" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-yellow-800">Google Calendar access needed</p>
-                    <p class="text-xs text-yellow-600 mt-0.5">Sign out and sign back in to grant Calendar permission.</p>
+                    <p class="text-xs text-yellow-600 mt-0.5">Click Re-connect and grant Calendar access when prompted.</p>
                 </div>
                 <button id="calendar-reconnect-btn"
                     class="text-xs font-semibold text-white px-3 py-1.5 rounded-lg" style="background:#1B3A6B;">
@@ -2304,12 +2304,20 @@ function initApp() {
             provider.addScope('https://www.googleapis.com/auth/drive.file');
             provider.addScope('https://www.googleapis.com/auth/calendar');
             provider.setCustomParameters({ prompt: 'consent' });
-            const result = await auth.signInWithPopup(provider);
-            driveToken = result.credential.accessToken;
-            if (driveToken) sessionStorage.setItem('driveToken', driveToken);
+            const user = auth.currentUser;
+            const result = user
+                ? await user.reauthenticateWithPopup(provider)
+                : await auth.signInWithPopup(provider);
+            const token = result.credential?.accessToken;
+            if (!token) { toast('Could not get access token — try signing out and back in.', true); return; }
+            driveToken = token;
+            sessionStorage.setItem('driveToken', driveToken);
             $('calendar-reconnect-notice').classList.add('hidden');
-            fetchAndRenderCalendar();
-            toast('Google Calendar connected');
+            await fetchAndRenderCalendar();
+            // Only confirm success if the notice didn't re-appear (i.e. API call worked)
+            if ($('calendar-reconnect-notice').classList.contains('hidden')) {
+                toast('Google Calendar connected');
+            }
         } catch (err) {
             const ignoredCodes = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
             if (!ignoredCodes.includes(err.code)) {
@@ -2881,8 +2889,12 @@ function initApp() {
     $('reconnect-drive-btn').addEventListener('click', async () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('https://www.googleapis.com/auth/drive.file');
+        provider.addScope('https://www.googleapis.com/auth/calendar');
         try {
-            const result = await auth.signInWithPopup(provider);
+            const user = auth.currentUser;
+            const result = user
+                ? await user.reauthenticateWithPopup(provider)
+                : await auth.signInWithPopup(provider);
             driveToken = result.credential.accessToken;
             if (driveToken) {
                 sessionStorage.setItem('driveToken', driveToken);
