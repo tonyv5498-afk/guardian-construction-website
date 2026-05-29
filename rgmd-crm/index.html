@@ -468,6 +468,41 @@
             </button>
         </div>
 
+        <!-- ─── Service Authorization ──────────────────── -->
+        <div class="border-t border-gray-100 pt-4">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Service Authorization</p>
+                <span id="sig-status-pill" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+            </div>
+            <div id="sig-section-pending">
+                <button id="send-for-sig-btn"
+                    class="w-full text-xs font-semibold py-2 rounded-lg transition-colors text-white" style="background:#1B3A6B;">
+                    Send for Signature
+                </button>
+            </div>
+            <div id="sig-section-sent" class="hidden space-y-2">
+                <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                    <p class="text-xs font-semibold text-amber-700">Awaiting Signature</p>
+                    <p class="text-xs text-amber-600 mt-0.5">Sent to <span id="sig-sent-to" class="font-medium"></span></p>
+                </div>
+                <button id="resend-sig-btn"
+                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                    Send New Link
+                </button>
+            </div>
+            <div id="sig-section-signed" class="hidden space-y-2">
+                <div class="p-3 bg-green-50 border border-green-100 rounded-lg">
+                    <p class="text-xs font-semibold text-green-700">Signed</p>
+                    <p class="text-xs text-green-600 mt-0.5">By <span id="sig-signed-by" class="font-medium"></span></p>
+                    <p class="text-xs text-green-500" id="sig-signed-at"></p>
+                </div>
+                <button id="view-sig-btn"
+                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                    View Signed Document ↗
+                </button>
+            </div>
+        </div>
+
         <!-- ─── Files (Google Drive) ───────────────────── -->
         <div class="border-t border-gray-100 pt-4">
             <div class="flex items-center justify-between mb-3">
@@ -592,6 +627,149 @@
     <span id="toast-text"></span>
 </div>
 
+<!-- ─── Signing Page (?sign=TOKEN) ────────────────────────── -->
+<div id="signing-page" class="hidden min-h-screen bg-gray-100 py-8 px-4">
+    <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-4 px-8 py-5 border-b border-gray-200">
+            <img src="logo.png" alt="RGMD" class="w-14 h-14 object-contain flex-shrink-0">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">Service Authorization Contract</h1>
+                <p class="text-xs text-gray-400">Restoration Group of Metro Detroit LLC</p>
+            </div>
+        </div>
+        <div id="sign-loading-state" class="p-10 text-center">
+            <div class="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-gray-400 text-sm">Loading document…</p>
+        </div>
+        <div id="sign-error-state" class="hidden p-10 text-center">
+            <p class="text-lg font-bold text-red-600 mb-2">Invalid Link</p>
+            <p class="text-gray-500 text-sm">This signing link is invalid or has expired.</p>
+        </div>
+        <div id="sign-already-state" class="hidden p-10 text-center">
+            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p class="text-lg font-bold text-gray-900 mb-1">Already Signed</p>
+            <p class="text-gray-500 text-sm">This document was signed on <span id="sign-already-date" class="font-medium"></span>.</p>
+        </div>
+        <div id="sign-success-state" class="hidden p-10 text-center">
+            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p class="text-lg font-bold text-gray-900 mb-1">Signed Successfully</p>
+            <p class="text-gray-500 text-sm">Thank you. Your authorization has been received by Restoration Group of Metro Detroit.</p>
+        </div>
+        <div id="sign-form-state" class="hidden">
+            <div class="px-8 py-6 space-y-1.5 text-sm border-b border-gray-100">
+                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Customer:</span><span id="sc-customer" class="text-gray-900"></span></div>
+                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Address:</span><span id="sc-address" class="text-gray-900"></span></div>
+                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Phone:</span><span id="sc-phone" class="text-gray-900"></span></div>
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-16 flex-shrink-0">Email:</span><span id="sc-email" class="text-gray-900"></span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Co:</span><span id="sc-ins-co" class="text-gray-900"></span></div>
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Claim #:</span><span id="sc-claim" class="text-gray-900"></span></div>
+                </div>
+                <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
+                <div class="grid grid-cols-2 gap-x-4 pb-1 border-b border-gray-100">
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Price:</span><span id="sc-price" class="text-gray-900 font-semibold"></span></div>
+                    <div class="flex gap-2"><span class="font-semibold text-gray-500 w-24 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
+                </div>
+                <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
+            </div>
+            <div class="px-8 py-5 text-sm text-gray-800 space-y-3 leading-relaxed border-b border-gray-100" style="font-size:0.8rem;">
+                <p>I (we) hereby authorize <strong>Restoration Group of Metro Detroit LLC</strong> business to perform emergency/non emergency mitigation and restoration services at my (our) property at the above address and with respect to items that need to be restored at a remote location, to remove and store such items. I (we) authorize and direct the Insurance Company listed above to communicate with <strong>Restoration Group of Metro Detroit LLC</strong> and to pay <strong>Restoration Group of Metro Detroit LLC</strong> directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay <strong>Restoration Group of Metro Detroit LLC</strong> immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize <strong>Restoration Group of Metro Detroit LLC</strong> to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to <strong>Restoration Group of Metro Detroit LLC</strong> about such payment and endorse such payment.</p>
+                <p>I (we) understand that <strong>Restoration Group of Metro Detroit LLC</strong> is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay <strong>Restoration Group of Metro Detroit LLC</strong> directly for any amount not covered by insurance.</p>
+                <p>The liability of <strong>Restoration Group of Metro Detroit LLC</strong> is expressly limited to the total amount of the services authorized herein and in no event shall <strong>Restoration Group of Metro Detroit LLC</strong>, its agents or assigns, be liable for consequential and/or any other special damages of any kind. <strong>Restoration Group of Metro Detroit LLC</strong> is responsible for only the personal property listed on an inventory signed by me (us) and by a <strong>Restoration Group of Metro Detroit LLC</strong> representative. In the event that legal proceedings must be instituted to recover any due amount, <strong>Restoration Group of Metro Detroit LLC</strong> shall be entitled to recover the cost of collection including reasonable attorney's fees.</p>
+                <p>I (we) agrees to pay <strong>Restoration Group of Metro Detroit LLC</strong> 15% of the gross amount of the estimate provided to the Contractor as compensation for professional services and administrative fees. If <strong>Restoration Group of Metro Detroit LLC</strong> is not chosen to perform the entire scope of work provided in the estimate, this fee is due within 30 days of work authorization.</p>
+                <p>Payment shall be made to <strong>Restoration Group of Metro Detroit LLC</strong> as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. On the seventh (7th) day of <strong>Restoration Group of Metro Detroit LLC's</strong> final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.</p>
+                <p>Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney's fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to <strong>Restoration Group of Metro Detroit LLC</strong> and to be made payable in the name of and only <strong>Restoration Group of Metro Detroit LLC</strong>. If I (we) or my insurer fails to pay the balance owing to <strong>Restoration Group of Metro Detroit LLC</strong> within 30 days of job completion, I (we) agree that I (we) will pay to <strong>Restoration Group of Metro Detroit LLC</strong> the full amount owing, including the amount owed by my insurer. As one method of collection, I (we) authorize <strong>Restoration Group of Metro Detroit LLC</strong> to charge my credit card below for the unpaid balance. If that credit card charge is not sufficient to pay all money due to <strong>Restoration Group of Metro Detroit LLC</strong>, <strong>Restoration Group of Metro Detroit LLC</strong> is authorized to use other methods of collection, including liens and other legal proceedings."</p>
+                <p><strong>Restoration Group of Metro Detroit LLC</strong> reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by <strong>Restoration Group of Metro Detroit LLC</strong> and is not negotiable.</p>
+                <p>I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct <strong>Restoration Group of Metro Detroit LLC</strong> to begin restoration immediately.</p>
+            </div>
+            <div class="px-8 py-6">
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Printed Name <span class="text-red-400 normal-case font-normal">required</span></label>
+                        <input id="sc-signer-name" type="text" placeholder="Your full name"
+                            class="w-full border-b-2 border-gray-300 focus:border-gray-800 outline-none py-1.5 text-sm bg-transparent transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Date</label>
+                        <div id="sc-today-date" class="border-b-2 border-gray-200 py-1.5 text-sm text-gray-700"></div>
+                    </div>
+                </div>
+                <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">
+                    Signature <span class="text-gray-400 normal-case font-normal tracking-normal">(draw with mouse or finger)</span>
+                </label>
+                <div class="relative border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 overflow-hidden">
+                    <canvas id="sign-canvas" width="900" height="160" class="w-full touch-none cursor-crosshair block" style="height:130px;"></canvas>
+                    <button id="sign-clear-btn" type="button"
+                        class="absolute top-2 right-2 text-xs text-gray-400 hover:text-gray-700 px-2 py-0.5 bg-white border border-gray-200 rounded transition-colors">
+                        Clear
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-1.5 mb-5">By signing, you agree to the full terms of this Service Authorization Contract.</p>
+                <button id="sign-submit-btn"
+                    class="w-full text-white font-bold py-3 rounded-xl text-sm transition-colors hover:opacity-90" style="background:#1B3A6B;">
+                    Submit Signed Authorization
+                </button>
+            </div>
+        </div>
+    </div>
+    <p class="text-center text-xs text-gray-400 mt-5 pb-4">Restoration Group of Metro Detroit LLC · Secure Document Signing</p>
+</div>
+
+<!-- ─── Send for Signature Modal ───────────────────────────── -->
+<div id="sig-req-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.5)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h3 class="text-base font-bold text-gray-900">Send for Signature</h3>
+            <button id="sig-req-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="sig-req-form-view" class="px-6 py-5 space-y-4">
+            <p class="text-xs text-gray-500">The contract auto-fills all job data. Add the price and due date, then generate a signing link to send to the client.</p>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Price / Estimate</label>
+                <input id="sig-req-price" type="text" placeholder="e.g. $5,000"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Due Date</label>
+                <input id="sig-req-due-date" type="text" placeholder="e.g. 06/30/2026"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+            </div>
+            <button id="sig-req-create-btn"
+                class="w-full text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#1B3A6B;">
+                Generate Signing Link
+            </button>
+        </div>
+        <div id="sig-req-link-view" class="hidden px-6 py-5 text-center">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p class="text-sm font-bold text-gray-900 mb-1">Link Created</p>
+            <p class="text-xs text-gray-500 mb-4">Send to <span id="sig-req-to-email" class="font-semibold text-gray-700"></span></p>
+            <div class="flex gap-2 mb-3 text-left">
+                <input id="sig-req-link-input" type="text" readonly
+                    class="flex-1 text-xs border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:outline-none min-w-0">
+                <button id="sig-req-copy-btn"
+                    class="text-xs font-semibold px-3 py-2 rounded-lg text-white flex-shrink-0" style="background:#1B3A6B;">
+                    Copy
+                </button>
+            </div>
+            <a id="sig-req-email-btn" href="#"
+                class="flex items-center justify-center gap-2 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Open in Email
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- ─── Firebase Config Banner ──────────────────────────────── -->
 <div id="config-banner" class="hidden fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-6">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
@@ -665,14 +843,106 @@ const STATUS = {
 };
 
 // ────────────────────────────────────────────────────────────
-// INIT CHECK
+// INIT — detect signing page vs CRM
 // ────────────────────────────────────────────────────────────
-if (firebaseConfig.apiKey.startsWith('REPLACE')) {
+const _signToken = new URLSearchParams(window.location.search).get('sign');
+
+if (_signToken) {
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('signing-page').classList.remove('hidden');
+    if (!firebaseConfig.apiKey.startsWith('REPLACE')) {
+        firebase.initializeApp(firebaseConfig);
+        initSigningPage(_signToken);
+    } else {
+        document.getElementById('sign-loading-state').classList.add('hidden');
+        document.getElementById('sign-error-state').classList.remove('hidden');
+    }
+} else if (firebaseConfig.apiKey.startsWith('REPLACE')) {
     document.getElementById('loading-screen').classList.add('hidden');
     document.getElementById('config-banner').classList.remove('hidden');
 } else {
     firebase.initializeApp(firebaseConfig);
     initApp();
+}
+
+// ────────────────────────────────────────────────────────────
+// SIGNING PAGE  (no auth required — client-facing)
+// ────────────────────────────────────────────────────────────
+async function initSigningPage(token) {
+    const db = firebase.firestore();
+    const show = id => document.getElementById(id).classList.remove('hidden');
+    const hide = id => document.getElementById(id).classList.add('hidden');
+
+    try {
+        const doc = await db.collection('signingRequests').doc(token).get();
+        hide('sign-loading-state');
+        if (!doc.exists) { show('sign-error-state'); return; }
+        const d = doc.data();
+        if (d.signed) {
+            const dt = d.signedAt ? new Date(d.signedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+            document.getElementById('sign-already-date').textContent = dt;
+            show('sign-already-state'); return;
+        }
+        // Populate fields
+        document.getElementById('sc-customer').textContent     = d.clientName || '';
+        document.getElementById('sc-address').textContent      = d.address    || '';
+        document.getElementById('sc-phone').textContent        = d.phone      || '';
+        document.getElementById('sc-email').textContent        = d.email      || '';
+        document.getElementById('sc-ins-co').textContent       = d.insCarrier || '';
+        document.getElementById('sc-claim').textContent        = d.insClaim   || '';
+        document.getElementById('sc-ins-agent').textContent    = d.insAdjusterName || '';
+        document.getElementById('sc-price').textContent        = d.price      || '';
+        document.getElementById('sc-due-date').textContent     = d.dueDate    || '';
+        document.getElementById('sc-project-type').textContent = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
+        document.getElementById('sc-today-date').textContent   = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        show('sign-form-state');
+
+        // Canvas signature pad
+        const canvas = document.getElementById('sign-canvas');
+        const ctx    = canvas.getContext('2d');
+        ctx.strokeStyle = '#1B3A6B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        let drawing = false, lx = 0, ly = 0;
+
+        function pos(e) {
+            const r = canvas.getBoundingClientRect();
+            const sx = canvas.width / r.width, sy = canvas.height / r.height;
+            if (e.touches) return [(e.touches[0].clientX - r.left) * sx, (e.touches[0].clientY - r.top) * sy];
+            return [(e.clientX - r.left) * sx, (e.clientY - r.top) * sy];
+        }
+        canvas.addEventListener('mousedown',  e => { drawing = true;  [lx, ly] = pos(e); });
+        canvas.addEventListener('mousemove',  e => { if (!drawing) return; const [x,y] = pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; });
+        canvas.addEventListener('mouseup',    () => drawing = false);
+        canvas.addEventListener('mouseleave', () => drawing = false);
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; [lx,ly]=pos(e); }, { passive:false });
+        canvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!drawing) return; const[x,y]=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); [lx,ly]=[x,y]; }, { passive:false });
+        canvas.addEventListener('touchend',   () => drawing = false);
+        document.getElementById('sign-clear-btn').addEventListener('click', () => ctx.clearRect(0,0,canvas.width,canvas.height));
+
+        document.getElementById('sign-submit-btn').addEventListener('click', async () => {
+            const name = document.getElementById('sc-signer-name').value.trim();
+            if (!name) { alert('Please enter your printed name.'); return; }
+            const px = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+            if (!Array.from(px).some(v => v !== 0)) { alert('Please draw your signature.'); return; }
+            const btn = document.getElementById('sign-submit-btn');
+            btn.textContent = 'Submitting…'; btn.disabled = true;
+            try {
+                await db.collection('signingRequests').doc(token).update({
+                    signed: true,
+                    signerName: name,
+                    signatureDataURL: canvas.toDataURL('image/png'),
+                    signedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                hide('sign-form-state');
+                show('sign-success-state');
+            } catch(err) {
+                btn.textContent = 'Submit Signed Authorization'; btn.disabled = false;
+                alert('Error submitting: ' + err.message);
+            }
+        });
+    } catch(err) {
+        hide('sign-loading-state');
+        show('sign-error-state');
+    }
 }
 
 // ────────────────────────────────────────────────────────────
@@ -724,6 +994,107 @@ function initApp() {
     });
 
     document.getElementById('sign-out-btn').addEventListener('click', () => auth.signOut());
+
+    // ── Signing workflow ───────────────────────────────────
+    let currentSigToken = null;
+
+    function showSigSection(mode) {
+        ['pending','sent','signed'].forEach(m => $('sig-section-' + m).classList.toggle('hidden', m !== mode));
+        const pill = $('sig-status-pill');
+        if (mode === 'sent') {
+            pill.textContent = 'Awaiting Signature'; pill.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+            pill.classList.remove('hidden');
+        } else if (mode === 'signed') {
+            pill.textContent = 'Signed'; pill.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700';
+            pill.classList.remove('hidden');
+        } else {
+            pill.classList.add('hidden');
+        }
+    }
+
+    async function loadSigStatus(job) {
+        showSigSection('pending');
+        $('sig-status-pill').classList.add('hidden');
+        if (!job.sigToken) return;
+        currentSigToken = job.sigToken;
+        try {
+            const doc = await db.collection('signingRequests').doc(job.sigToken).get();
+            if (!doc.exists) return;
+            const d = doc.data();
+            if (d.signed) {
+                $('sig-signed-by').textContent = d.signerName || '';
+                $('sig-signed-at').textContent = d.signedAt ? new Date(d.signedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+                showSigSection('signed');
+            } else {
+                $('sig-sent-to').textContent = job.email || '';
+                showSigSection('sent');
+            }
+        } catch(_) {}
+    }
+
+    function openSigModal() {
+        $('sig-req-form-view').classList.remove('hidden');
+        $('sig-req-link-view').classList.add('hidden');
+        $('sig-req-price').value = '';
+        $('sig-req-due-date').value = '';
+        $('sig-req-modal').classList.remove('hidden');
+    }
+
+    $('send-for-sig-btn').addEventListener('click', openSigModal);
+    $('resend-sig-btn').addEventListener('click', openSigModal);
+    $('sig-req-close').addEventListener('click', () => $('sig-req-modal').classList.add('hidden'));
+
+    $('sig-req-create-btn').addEventListener('click', async () => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job) return;
+        const price   = $('sig-req-price').value.trim();
+        const dueDate = $('sig-req-due-date').value.trim();
+        const btn = $('sig-req-create-btn');
+        btn.textContent = 'Creating…'; btn.disabled = true;
+        try {
+            const token = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Date.now().toString(36));
+            await db.collection('signingRequests').doc(token).set({
+                jobId: job.id, jobNumber: job.jobNumber || '',
+                clientName: job.clientName || '', address: job.address || '',
+                phone: job.phone || '', email: job.email || '',
+                insCarrier: job.insCarrier || '', insClaim: job.insClaim || '',
+                insAdjusterName: job.insAdjusterName || '',
+                projectType: job.projectType || '', subCategory: job.subCategory || '',
+                price, dueDate,
+                signed: false, signatureDataURL: null, signerName: null, signedAt: null,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: currentUser.email,
+            });
+            await patchJob(job.id, { sigToken: token });
+            currentSigToken = token;
+            const url = window.location.origin + window.location.pathname + '?sign=' + token;
+            $('sig-req-link-input').value = url;
+            $('sig-req-to-email').textContent = job.email || 'client';
+            const subject = encodeURIComponent(`Service Authorization — Job #${job.jobNumber || ''} — ${job.clientName || ''}`);
+            const body = encodeURIComponent(`Hi ${job.clientName || 'there'},\n\nPlease review and sign the Service Authorization Contract for your upcoming restoration project:\n\n${url}\n\nIf you have any questions, please don't hesitate to reach out.\n\nThank you,\nRestoration Group of Metro Detroit`);
+            $('sig-req-email-btn').href = `mailto:${job.email || ''}?subject=${subject}&body=${body}`;
+            $('sig-req-form-view').classList.add('hidden');
+            $('sig-req-link-view').classList.remove('hidden');
+            $('sig-sent-to').textContent = job.email || '';
+            showSigSection('sent');
+        } catch(err) {
+            toast('Error: ' + err.message, true);
+        } finally {
+            btn.textContent = 'Generate Signing Link'; btn.disabled = false;
+        }
+    });
+
+    $('sig-req-copy-btn').addEventListener('click', () => {
+        const inp = $('sig-req-link-input');
+        navigator.clipboard.writeText(inp.value).then(() => {
+            $('sig-req-copy-btn').textContent = 'Copied!';
+            setTimeout(() => { $('sig-req-copy-btn').textContent = 'Copy'; }, 2000);
+        }).catch(() => { inp.select(); document.execCommand('copy'); });
+    });
+
+    $('view-sig-btn').addEventListener('click', () => {
+        if (currentSigToken) window.open('?sign=' + currentSigToken, '_blank');
+    });
 
     // ── Firestore listener ─────────────────────────────────
     function startListener() {
@@ -872,10 +1243,12 @@ function initApp() {
         if (!job) return;
         selectedJobId = jobId;
         activeDriveTab = 'photos';
+        currentSigToken = job.sigToken || null;
         populateDetailPanel(job);
         $('detail-panel').classList.add('open');
         $('panel-backdrop').classList.remove('hidden');
         loadDriveSection(job);
+        loadSigStatus(job);
     }
 
     function populateDetailPanel(job) {
