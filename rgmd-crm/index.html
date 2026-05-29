@@ -409,6 +409,9 @@
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     placeholder="Name…">
             </div>
+            <input id="detail-referral-fee" type="text"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 mt-2"
+                placeholder="Referral Fee (e.g. $250)…">
             <button id="save-referral-btn"
                 class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
                 Save Referral
@@ -690,7 +693,11 @@
                     </div>
                     <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
                     <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
-                    <div class="flex gap-2 pb-1"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
+                    <div id="sc-rwa-cost-fields" class="hidden grid grid-cols-2 gap-x-4 pb-1">
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Estimated Cost:</span><span id="sc-estimated-cost" class="text-gray-900"></span></div>
+                        <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Deposit Amount:</span><span id="sc-deposit-amount" class="text-gray-900"></span></div>
+                    </div>
                 </div>
             </div>
             <div id="sc-contract-body" class="px-8 py-5 text-sm text-gray-800 space-y-3 leading-relaxed border-b border-gray-100" style="font-size:0.8rem;"></div>
@@ -805,6 +812,18 @@
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Due Date</label>
                 <input id="sig-req-due-date" type="text" placeholder="e.g. 06/30/2026"
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+            </div>
+            <div id="sig-req-rwa-cost-wrap" class="hidden grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Estimated Cost</label>
+                    <input id="sig-req-estimated-cost" type="text" placeholder="e.g. $15,000"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Deposit Amount</label>
+                    <input id="sig-req-deposit-amount" type="text" placeholder="e.g. $5,000"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
             </div>
             <div id="sig-req-aob-wrap" class="border border-gray-200 rounded-xl p-3 space-y-2.5">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Optional Add-on</p>
@@ -1025,6 +1044,11 @@ async function initSigningPage(token) {
             document.getElementById('sc-ins-agent').textContent    = d.insAdjusterName   || '';
             document.getElementById('sc-due-date').textContent     = d.dueDate           || '';
             document.getElementById('sc-project-type').textContent = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
+            if (docType === 'rwa') {
+                document.getElementById('sc-estimated-cost').textContent = d.estimatedCost || '';
+                document.getElementById('sc-deposit-amount').textContent = d.depositAmount || '';
+                document.getElementById('sc-rwa-cost-fields').classList.remove('hidden');
+            }
         }
         document.getElementById('sc-today-date').textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -1183,8 +1207,11 @@ function initApp() {
         $('sig-req-link-view').classList.add('hidden');
         $('sig-req-due-date').value = '';
         $('sig-req-include-aob').checked = false;
+        $('sig-req-estimated-cost').value = '';
+        $('sig-req-deposit-amount').value = '';
         $('sig-req-due-date-wrap').classList.toggle('hidden', dt.simpleDoc);
         $('sig-req-aob-wrap').classList.toggle('hidden', !dt.hasAob);
+        $('sig-req-rwa-cost-wrap').classList.toggle('hidden', docType !== 'rwa');
         $('sig-req-modal').classList.remove('hidden');
     }
 
@@ -1276,8 +1303,10 @@ function initApp() {
         const job = jobs.find(j => j.id === selectedJobId);
         if (!job || !currentSigDocType) return;
         const dt = DOC_TYPES[currentSigDocType];
-        const dueDate    = dt.simpleDoc ? '' : $('sig-req-due-date').value.trim();
-        const includeAob = dt.hasAob ? $('sig-req-include-aob').checked : false;
+        const dueDate       = dt.simpleDoc ? '' : $('sig-req-due-date').value.trim();
+        const includeAob    = dt.hasAob ? $('sig-req-include-aob').checked : false;
+        const estimatedCost = currentSigDocType === 'rwa' ? $('sig-req-estimated-cost').value.trim() : '';
+        const depositAmount = currentSigDocType === 'rwa' ? $('sig-req-deposit-amount').value.trim() : '';
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -1290,7 +1319,7 @@ function initApp() {
                 insCarrier: job.insCarrier||'', insClaim: job.insClaim||'',
                 insPolicy: job.insPolicy||'', insAdjusterName: job.insAdjusterName||'',
                 projectType: job.projectType||'', subCategory: job.subCategory||'',
-                dueDate, includeAob,
+                dueDate, includeAob, estimatedCost, depositAmount,
                 signed: false, signatureDataURL: null, aobSignatureDataURL: null,
                 signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1488,6 +1517,7 @@ function initApp() {
         $('detail-subcategory').value         = job.subCategory || '';
         $('detail-referral-source').value     = job.referralSource || '';
         $('detail-referral-name').value       = job.referralName || '';
+        $('detail-referral-fee').value        = job.referralFee || '';
         $('detail-ins-carrier').value         = job.insCarrier || '';
         $('detail-ins-claim').value           = job.insClaim || '';
         $('detail-ins-policy').value          = job.insPolicy || '';
@@ -1558,6 +1588,7 @@ function initApp() {
             await patchJob(selectedJobId, {
                 referralSource: $('detail-referral-source').value,
                 referralName:   $('detail-referral-name').value.trim(),
+                referralFee:    $('detail-referral-fee').value.trim(),
             });
             toast('Referral saved');
         }
@@ -2182,6 +2213,10 @@ function _generateAuthPDF(d, docType) {
     fieldRow('Insurance Agent', d.insAdjusterName);
     fieldRow('Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — '));
     fieldRow('Due Date', d.dueDate);
+    if (docType === 'rwa') {
+        fieldRow('Estimated Cost', d.estimatedCost);
+        fieldRow('Deposit Amount', d.depositAmount);
+    }
     y += 6; divider();
 
     const paragraphs = docType === 'rwa' ? RWA_PARAGRAPHS : WA_PARAGRAPHS;
