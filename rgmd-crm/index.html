@@ -1135,7 +1135,7 @@
                         <option value="Work Start">Work Start</option>
                         <option value="Site Visit">Site Visit</option>
                         <option value="Follow-up">Follow-up</option>
-                        <option value="Inspection">Inspection</option>
+
                         <option value="Other">Other</option>
                     </select>
                 </div>
@@ -2297,8 +2297,23 @@ function initApp() {
         }
     });
 
-    $('calendar-reconnect-btn').addEventListener('click', () => {
-        auth.signOut();
+    $('calendar-reconnect-btn').addEventListener('click', async () => {
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('https://www.googleapis.com/auth/drive.file');
+            provider.addScope('https://www.googleapis.com/auth/calendar');
+            provider.setCustomParameters({ prompt: 'consent' });
+            const result = await auth.signInWithPopup(provider);
+            driveToken = result.credential.accessToken;
+            if (driveToken) sessionStorage.setItem('driveToken', driveToken);
+            $('calendar-reconnect-notice').classList.add('hidden');
+            fetchAndRenderCalendar();
+            toast('Google Calendar connected');
+        } catch (err) {
+            if (err.code !== 'auth/popup-closed-by-user') {
+                toast('Connection failed: ' + err.message, true);
+            }
+        }
     });
 
     $('manage-team-btn').addEventListener('click', () => {
@@ -3161,7 +3176,7 @@ function initApp() {
         'Work Start':  'bg-green-500',
         'Site Visit':  'bg-orange-500',
         'Follow-up':   'bg-purple-500',
-        'Inspection':  'bg-teal-500',
+
         'Other':       'bg-gray-400',
     };
 
