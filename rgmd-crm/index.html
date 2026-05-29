@@ -86,6 +86,14 @@
     <!-- Content -->
     <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
 
+        <!-- Section tabs -->
+        <div class="flex gap-1 mb-5 bg-gray-100 p-1 rounded-xl w-fit">
+            <button id="tab-jobs" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white transition-all" style="background:#1B3A6B;">Jobs</button>
+            <button id="tab-network" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all">Network</button>
+        </div>
+
+        <div id="jobs-section">
+
         <!-- Page header -->
         <div class="flex items-center justify-between mb-5">
             <div>
@@ -170,6 +178,51 @@
                     </thead>
                     <tbody id="jobs-tbody" class="divide-y divide-gray-50"></tbody>
                 </table>
+            </div>
+        </div>
+
+        </div><!-- end #jobs-section -->
+
+        <!-- Network Section -->
+        <div id="network-section" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Network</h2>
+                    <p class="text-gray-500 text-xs mt-0.5">Referral contacts and partners</p>
+                </div>
+                <button id="add-contact-btn"
+                    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    <span class="hidden sm:inline">Add Contact</span>
+                    <span class="sm:hidden">Add</span>
+                </button>
+            </div>
+            <div class="relative mb-4">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input id="network-search-input" type="text" placeholder="Search by name, company, or type…"
+                    class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div id="network-empty" class="hidden text-center py-16">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <p class="text-gray-500 font-medium text-sm">No contacts yet</p>
+                    <p class="text-gray-400 text-xs mt-1">Add your first referral contact to get started</p>
+                </div>
+                <div class="overflow-x-auto" id="network-table-wrapper">
+                    <table class="w-full min-w-[640px]" id="network-table">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Name</th>
+                                <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Company</th>
+                                <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Type</th>
+                                <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Contact</th>
+                                <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Agreement</th>
+                                <th class="px-5 py-3 w-16"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="network-tbody" class="divide-y divide-gray-50"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -270,7 +323,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Referral Name</label>
-                    <input id="f-referral-name" type="text"
+                    <input id="f-referral-name" type="text" list="network-datalist"
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                         placeholder="e.g. John Smith Realty">
                 </div>
@@ -412,7 +465,7 @@
                     <option>Contractor</option>
                     <option>Other</option>
                 </select>
-                <input id="detail-referral-name" type="text"
+                <input id="detail-referral-name" type="text" list="network-datalist"
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     placeholder="Name…">
             </div>
@@ -608,6 +661,53 @@
             Edit Job
         </button>
         <button id="detail-delete-btn"
+            class="px-4 border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            Delete
+        </button>
+    </div>
+</div>
+
+<!-- ─── Contact Detail Side Panel ──────────────────────────── -->
+<div id="contact-panel"
+    class="fixed inset-y-0 right-0 w-full sm:w-96 bg-white shadow-2xl z-30 flex flex-col panel-slide">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+        <div class="min-w-0 mr-3">
+            <h3 id="cp-name" class="text-base font-bold text-gray-900 truncate"></h3>
+            <p id="cp-subtitle" class="text-xs text-gray-400 mt-0.5"></p>
+        </div>
+        <button id="contact-close-btn" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+        <div>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Contact Info</p>
+            <div id="cp-info-rows" class="space-y-2 text-sm"></div>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Referral Agreement</p>
+            <div id="cp-agreement"></div>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-2">Notes</label>
+            <textarea id="cp-notes" rows="3"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"></textarea>
+            <button id="save-contact-notes-btn"
+                class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                Save Notes
+            </button>
+        </div>
+        <div class="border-t border-gray-100 pt-4">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Jobs Referred</p>
+            <div id="cp-jobs-list" class="space-y-1 text-sm"></div>
+        </div>
+    </div>
+    <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+        <button id="contact-edit-btn"
+            class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            Edit Contact
+        </button>
+        <button id="contact-delete-btn"
             class="px-4 border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2.5 rounded-xl transition-colors text-sm">
             Delete
         </button>
@@ -864,6 +964,93 @@
                 Open in Email
             </a>
         </div>
+    </div>
+</div>
+
+<!-- ─── Add / Edit Contact Modal ────────────────────────────── -->
+<div id="contact-modal" class="hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4"
+    style="background:rgba(0,0,0,.45)">
+    <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[95vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+            <h3 id="contact-modal-title" class="text-base font-bold text-gray-900">Add Contact</h3>
+            <button id="contact-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form id="contact-form" class="px-6 py-5 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Name <span class="text-red-400 normal-case font-normal tracking-normal">required</span></label>
+                <input id="cf-name" type="text" required
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    placeholder="Jane Smith">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Company</label>
+                    <input id="cf-company" type="text"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="ABC Realty">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Type</label>
+                    <select id="cf-type"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">Select type…</option>
+                        <option>Social Media</option>
+                        <option>Google</option>
+                        <option>Realtor</option>
+                        <option>Testing Company</option>
+                        <option>Home Inspector</option>
+                        <option>Plumber</option>
+                        <option>Property Manager</option>
+                        <option>Contractor</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Phone</label>
+                    <input id="cf-phone" type="tel"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="(555) 123-4567">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Email</label>
+                    <input id="cf-email" type="email"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="jane@company.com">
+                </div>
+            </div>
+            <div class="border border-gray-200 rounded-xl p-3 space-y-3">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="cf-has-agreement" class="w-4 h-4 rounded accent-orange-500">
+                    <span class="text-sm font-medium text-gray-700">Referral Agreement on file</span>
+                </label>
+                <div id="cf-agreement-date-wrap" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Agreement Date</label>
+                    <input id="cf-agreement-date" type="text"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="e.g. 01/15/2026">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Notes</label>
+                <textarea id="cf-notes" rows="2"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                    placeholder="Any additional info…"></textarea>
+            </div>
+            <div class="flex gap-3 pt-1 pb-2">
+                <button type="button" id="contact-form-cancel"
+                    class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+                    <span id="contact-form-submit-text">Save Contact</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1190,6 +1377,10 @@ function initApp() {
     let searchQuery   = '';
     let driveToken    = sessionStorage.getItem('driveToken') || null;
     let activeDriveTab = 'photos';
+    let contacts       = [];
+    let selectedContactId = null;
+    let unsubContacts  = null;
+    let networkSearch  = '';
 
     // ── Auth ───────────────────────────────────────────────
     auth.onAuthStateChanged(user => {
@@ -1203,15 +1394,18 @@ function initApp() {
             if (user.photoURL) { photo.src = user.photoURL; photo.classList.remove('hidden'); }
             startListener();
             startLeadsListener();
+            startContactsListener();
         } else {
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('app').classList.add('hidden');
             jobs = [];
             leads = [];
+            contacts = [];
             driveToken = null;
             sessionStorage.removeItem('driveToken');
-            if (unsubJobs)   { unsubJobs();   unsubJobs   = null; }
-            if (unsubLeads)  { unsubLeads();  unsubLeads  = null; }
+            if (unsubJobs)      { unsubJobs();      unsubJobs      = null; }
+            if (unsubLeads)     { unsubLeads();     unsubLeads     = null; }
+            if (unsubContacts)  { unsubContacts();  unsubContacts  = null; }
         }
     });
 
@@ -1496,6 +1690,263 @@ function initApp() {
     $('leads-modal-close').addEventListener('click', () => $('leads-modal').classList.add('hidden'));
     $('leads-modal').addEventListener('click', e => { if (e.target === $('leads-modal')) $('leads-modal').classList.add('hidden'); });
 
+    // ── Network ────────────────────────────────────────────────
+    function startContactsListener() {
+        if (unsubContacts) unsubContacts();
+        unsubContacts = db.collection('network')
+            .orderBy('name')
+            .onSnapshot(
+                snap => {
+                    contacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderNetwork();
+                    updateReferralDatalist();
+                    if (selectedContactId) {
+                        const c = contacts.find(x => x.id === selectedContactId);
+                        if (c) loadContactDetail(c);
+                    }
+                },
+                () => {}
+            );
+    }
+
+    function updateReferralDatalist() {
+        const dl = document.getElementById('network-datalist');
+        if (!dl) return;
+        dl.innerHTML = contacts.map(c =>
+            `<option value="${esc(c.name)}">${esc(c.name)}${c.company ? ' — ' + esc(c.company) : ''}</option>`
+        ).join('');
+    }
+
+    function renderNetwork() {
+        const q = networkSearch.toLowerCase();
+        const filtered = contacts.filter(c =>
+            !q ||
+            (c.name    || '').toLowerCase().includes(q) ||
+            (c.company || '').toLowerCase().includes(q) ||
+            (c.type    || '').toLowerCase().includes(q)
+        );
+        const tbody = $('network-tbody');
+        tbody.innerHTML = '';
+        $('network-empty').classList.toggle('hidden', filtered.length > 0);
+        $('network-table-wrapper').classList.toggle('hidden', filtered.length === 0);
+        filtered.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 cursor-pointer transition-colors';
+            tr.innerHTML = `
+                <td class="px-5 py-3.5">
+                    <span class="font-semibold text-gray-900 text-sm">${esc(c.name)}</span>
+                </td>
+                <td class="px-5 py-3.5 text-sm text-gray-600">${esc(c.company || '—')}</td>
+                <td class="px-5 py-3.5">
+                    ${c.type ? `<span class="text-xs font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">${esc(c.type)}</span>` : '<span class="text-gray-400 text-xs">—</span>'}
+                </td>
+                <td class="px-5 py-3.5 text-xs text-gray-500">
+                    ${[c.phone, c.email].filter(Boolean).join('<br>')||'—'}
+                </td>
+                <td class="px-5 py-3.5">
+                    ${c.hasAgreement
+                        ? `<span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">On file${c.agreementDate ? ' · ' + esc(c.agreementDate) : ''}</span>`
+                        : `<span class="text-xs text-gray-400">None</span>`}
+                </td>
+                <td class="px-5 py-3.5 text-right">
+                    <button class="text-xs text-blue-600 hover:underline font-medium">View</button>
+                </td>`;
+            tr.addEventListener('click', () => openContactPanel(c.id));
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openContactPanel(contactId) {
+        const c = contacts.find(x => x.id === contactId);
+        if (!c) return;
+        selectedContactId = contactId;
+        loadContactDetail(c);
+        $('contact-panel').classList.add('open');
+        $('panel-backdrop').classList.remove('hidden');
+    }
+
+    function closeContactPanel() {
+        $('contact-panel').classList.remove('open');
+        if (!$('detail-panel').classList.contains('open')) {
+            $('panel-backdrop').classList.add('hidden');
+        }
+        selectedContactId = null;
+    }
+
+    function loadContactDetail(c) {
+        $('cp-name').textContent    = c.name    || '';
+        $('cp-subtitle').textContent = [c.type, c.company].filter(Boolean).join(' · ') || '';
+        $('cp-notes').value         = c.notes   || '';
+
+        // Info rows
+        const rows = [
+            { label: 'Phone',   value: c.phone   },
+            { label: 'Email',   value: c.email   },
+            { label: 'Company', value: c.company },
+            { label: 'Type',    value: c.type    },
+        ].filter(r => r.value);
+        $('cp-info-rows').innerHTML = rows.map(r =>
+            `<div class="flex gap-2"><span class="font-semibold text-gray-500 w-16 flex-shrink-0 text-xs pt-0.5 uppercase tracking-wide">${r.label}</span><span class="text-gray-800">${esc(r.value)}</span></div>`
+        ).join('') || '<p class="text-xs text-gray-400">No contact info</p>';
+
+        // Agreement
+        $('cp-agreement').innerHTML = c.hasAgreement
+            ? `<div class="flex items-center gap-2"><span class="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Agreement on file</span>${c.agreementDate ? `<span class="text-xs text-gray-500">${esc(c.agreementDate)}</span>` : ''}</div>`
+            : `<p class="text-xs text-gray-400">No agreement on file</p>`;
+
+        // Jobs referred (by contactId or matching name for legacy jobs)
+        const referred = jobs.filter(j => j.referralContactId === c.id || (!j.referralContactId && j.referralName === c.name));
+        if (referred.length === 0) {
+            $('cp-jobs-list').innerHTML = '<p class="text-xs text-gray-400">No jobs linked yet</p>';
+        } else {
+            $('cp-jobs-list').innerHTML = referred.map(j =>
+                `<div class="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded" data-jid="${j.id}">
+                    <span class="font-medium text-gray-800 text-sm">${esc(j.clientName || 'Unnamed')}</span>
+                    <span class="text-xs text-gray-400">#${j.jobNumber || '—'}</span>
+                </div>`
+            ).join('');
+            $('cp-jobs-list').querySelectorAll('[data-jid]').forEach(el => {
+                el.addEventListener('click', () => {
+                    closeContactPanel();
+                    // Switch to jobs tab and open detail
+                    switchTab('jobs');
+                    setTimeout(() => openDetailPanel(el.dataset.jid), 50);
+                });
+            });
+        }
+    }
+
+    function openAddContactModal() {
+        $('contact-modal-title').textContent      = 'Add Contact';
+        $('contact-form-submit-text').textContent = 'Save Contact';
+        $('contact-form').reset();
+        $('contact-form').dataset.editId = '';
+        $('cf-agreement-date-wrap').classList.add('hidden');
+        $('contact-modal').classList.remove('hidden');
+        setTimeout(() => $('cf-name').focus(), 50);
+    }
+
+    function openEditContactModal(contactId) {
+        const c = contacts.find(x => x.id === contactId);
+        if (!c) return;
+        $('contact-modal-title').textContent      = 'Edit Contact';
+        $('contact-form-submit-text').textContent = 'Save Changes';
+        $('cf-name').value          = c.name          || '';
+        $('cf-company').value       = c.company        || '';
+        $('cf-type').value          = c.type           || '';
+        $('cf-phone').value         = c.phone          || '';
+        $('cf-email').value         = c.email          || '';
+        $('cf-has-agreement').checked = !!c.hasAgreement;
+        $('cf-agreement-date').value  = c.agreementDate || '';
+        $('cf-agreement-date-wrap').classList.toggle('hidden', !c.hasAgreement);
+        $('cf-notes').value         = c.notes          || '';
+        $('contact-form').dataset.editId = contactId;
+        $('contact-modal').classList.remove('hidden');
+    }
+
+    function closeContactModal() { $('contact-modal').classList.add('hidden'); }
+
+    async function saveContact(data) {
+        const ts = firebase.firestore.FieldValue.serverTimestamp();
+        if (data.id) {
+            const { id, ...rest } = data;
+            await db.collection('network').doc(id).update({ ...rest, updatedAt: ts });
+            toast('Contact updated');
+            return { id };
+        } else {
+            const ref = await db.collection('network').add({ ...data, createdAt: ts, updatedAt: ts, createdBy: currentUser.email });
+            toast('Contact saved');
+            return { id: ref.id };
+        }
+    }
+
+    async function deleteContactById(id) {
+        await db.collection('network').doc(id).delete();
+        toast('Contact deleted');
+    }
+
+    function switchTab(tab) {
+        if (tab === 'jobs') {
+            $('jobs-section').classList.remove('hidden');
+            $('network-section').classList.add('hidden');
+            $('tab-jobs').style.background = '#1B3A6B';
+            $('tab-jobs').classList.add('text-white');
+            $('tab-jobs').classList.remove('text-gray-600');
+            $('tab-network').style.background = '';
+            $('tab-network').classList.remove('text-white');
+            $('tab-network').classList.add('text-gray-600');
+        } else {
+            $('jobs-section').classList.add('hidden');
+            $('network-section').classList.remove('hidden');
+            $('tab-network').style.background = '#1B3A6B';
+            $('tab-network').classList.add('text-white');
+            $('tab-network').classList.remove('text-gray-600');
+            $('tab-jobs').style.background = '';
+            $('tab-jobs').classList.remove('text-white');
+            $('tab-jobs').classList.add('text-gray-600');
+        }
+    }
+
+    // Network event listeners
+    $('tab-jobs').addEventListener('click', () => switchTab('jobs'));
+    $('tab-network').addEventListener('click', () => switchTab('network'));
+    $('add-contact-btn').addEventListener('click', openAddContactModal);
+    $('contact-close-btn').addEventListener('click', closeContactPanel);
+    $('contact-edit-btn').addEventListener('click', () => { if (selectedContactId) { closeContactPanel(); openEditContactModal(selectedContactId); } });
+    $('contact-delete-btn').addEventListener('click', async () => {
+        if (!selectedContactId) return;
+        closeContactPanel();
+        await deleteContactById(selectedContactId);
+    });
+    $('save-contact-notes-btn').addEventListener('click', async () => {
+        if (selectedContactId) {
+            const ts = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('network').doc(selectedContactId).update({ notes: $('cp-notes').value, updatedAt: ts });
+            toast('Notes saved');
+        }
+    });
+    $('contact-modal-close').addEventListener('click', closeContactModal);
+    $('contact-form-cancel').addEventListener('click', closeContactModal);
+    $('contact-modal').addEventListener('click', e => { if (e.target === $('contact-modal')) closeContactModal(); });
+
+    $('cf-has-agreement').addEventListener('change', e => {
+        $('cf-agreement-date-wrap').classList.toggle('hidden', !e.target.checked);
+    });
+
+    $('network-search-input').addEventListener('input', e => {
+        networkSearch = e.target.value;
+        renderNetwork();
+    });
+
+    $('contact-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn  = e.submitter || e.target.querySelector('[type=submit]');
+        const orig = $('contact-form-submit-text').textContent;
+        $('contact-form-submit-text').textContent = 'Saving…';
+        btn && (btn.disabled = true);
+        try {
+            const data = {
+                name:          $('cf-name').value.trim(),
+                company:       $('cf-company').value.trim(),
+                type:          $('cf-type').value,
+                phone:         $('cf-phone').value.trim(),
+                email:         $('cf-email').value.trim(),
+                hasAgreement:  $('cf-has-agreement').checked,
+                agreementDate: $('cf-has-agreement').checked ? $('cf-agreement-date').value.trim() : '',
+                notes:         $('cf-notes').value.trim(),
+            };
+            const editId = $('contact-form').dataset.editId;
+            if (editId) data.id = editId;
+            await saveContact(data);
+            closeContactModal();
+        } catch (err) {
+            toast('Error: ' + err.message, true);
+        } finally {
+            $('contact-form-submit-text').textContent = orig;
+            btn && (btn.disabled = false);
+        }
+    });
+
     // ── CRUD ───────────────────────────────────────────────
     async function getNextJobNumber() {
         const yr = new Date().getFullYear() % 100;
@@ -1683,12 +2134,19 @@ function initApp() {
 
     function closeDetailPanel() {
         $('detail-panel').classList.remove('open');
-        $('panel-backdrop').classList.add('hidden');
+        if (!$('contact-panel').classList.contains('open')) {
+            $('panel-backdrop').classList.add('hidden');
+        }
         selectedJobId = null;
     }
 
+    function closeAnyPanel() {
+        closeDetailPanel();
+        closeContactPanel();
+    }
+
     $('detail-close-btn').addEventListener('click', closeDetailPanel);
-    $('panel-backdrop').addEventListener('click', closeDetailPanel);
+    $('panel-backdrop').addEventListener('click', closeAnyPanel);
 
     $('detail-status').addEventListener('change', async e => {
         if (selectedJobId) {
@@ -1713,11 +2171,19 @@ function initApp() {
 
     $('save-referral-btn').addEventListener('click', async () => {
         if (selectedJobId) {
-            await patchJob(selectedJobId, {
-                referralSource: $('detail-referral-source').value,
-                referralName:   $('detail-referral-name').value.trim(),
-                referralFee:    $('detail-referral-fee').value.trim(),
-            });
+            const name = $('detail-referral-name').value.trim();
+            const matched = contacts.find(c => c.name === name);
+            const update = {
+                referralSource:    $('detail-referral-source').value,
+                referralName:      name,
+                referralFee:       $('detail-referral-fee').value.trim(),
+                referralContactId: matched ? matched.id : '',
+            };
+            if (matched && !$('detail-referral-source').value && matched.type) {
+                update.referralSource = matched.type;
+                $('detail-referral-source').value = matched.type;
+            }
+            await patchJob(selectedJobId, update);
             toast('Referral saved');
         }
     });
@@ -1818,6 +2284,9 @@ function initApp() {
             const editId = $('job-form').dataset.editId;
             const leadId = $('job-form').dataset.leadId;
             if (editId) data.id = editId;
+            const rName = data.referralName;
+            const rMatched = contacts.find(c => c.name === rName);
+            data.referralContactId = rMatched ? rMatched.id : (editId ? (jobs.find(j=>j.id===editId)||{}).referralContactId||'' : '');
             const saved = await saveJob(data);
             closeModal();
             // Auto-create Drive folders for new jobs
@@ -2451,5 +2920,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
+<datalist id="network-datalist"></datalist>
 </body>
 </html>
