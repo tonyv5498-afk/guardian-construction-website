@@ -685,7 +685,7 @@
             <div id="cp-info-rows" class="space-y-2 text-sm"></div>
         </div>
         <div class="border-t border-gray-100 pt-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Referral Agreement</p>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Agreement</p>
             <div id="cp-agreement"></div>
         </div>
         <div class="border-t border-gray-100 pt-4">
@@ -700,6 +700,10 @@
         <div class="border-t border-gray-100 pt-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Jobs Referred</p>
             <div id="cp-jobs-list" class="space-y-1 text-sm"></div>
+        </div>
+        <div class="border-t border-gray-100 pt-4" id="cp-drive-section">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Google Drive</p>
+            <div id="cp-drive"></div>
         </div>
     </div>
     <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
@@ -1025,7 +1029,7 @@
             <div class="border border-gray-200 rounded-xl p-3 space-y-3">
                 <label class="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" id="cf-has-agreement" class="w-4 h-4 rounded accent-orange-500">
-                    <span class="text-sm font-medium text-gray-700">Referral Agreement on file</span>
+                    <span class="text-sm font-medium text-gray-700">Agreement on file</span>
                 </label>
                 <div id="cf-agreement-date-wrap" class="hidden">
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Agreement Date</label>
@@ -1808,10 +1812,41 @@ function initApp() {
             $('cp-jobs-list').querySelectorAll('[data-jid]').forEach(el => {
                 el.addEventListener('click', () => {
                     closeContactPanel();
-                    // Switch to jobs tab and open detail
                     switchTab('jobs');
                     setTimeout(() => openDetailPanel(el.dataset.jid), 50);
                 });
+            });
+        }
+
+        // Drive section
+        const driveEl = $('cp-drive');
+        if (c.driveFolderId) {
+            driveEl.innerHTML = `
+                <a href="https://drive.google.com/drive/folders/${c.driveFolderId}" target="_blank"
+                    class="flex items-center gap-2 text-xs font-semibold text-blue-600 hover:underline mb-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Open Contact Folder ↗
+                </a>
+                <p class="text-xs text-gray-400">Sub-folders: Insurance · W9 & Tax · Contracts</p>`;
+        } else {
+            driveEl.innerHTML = `<button id="cp-create-drive-btn"
+                class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                Create Drive Folder
+            </button>`;
+            const btn = document.getElementById('cp-create-drive-btn');
+            if (btn) btn.addEventListener('click', async () => {
+                btn.textContent = 'Creating…'; btn.disabled = true;
+                const fid = await createContactFolder(c.id, c.name, c.company);
+                if (fid) {
+                    // contacts listener will re-render, but update inline immediately
+                    driveEl.innerHTML = `<a href="https://drive.google.com/drive/folders/${fid}" target="_blank"
+                        class="flex items-center gap-2 text-xs font-semibold text-blue-600 hover:underline">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        Open Contact Folder ↗
+                    </a>`;
+                } else {
+                    btn.textContent = 'Create Drive Folder'; btn.disabled = false;
+                }
             });
         }
     }
@@ -2558,10 +2593,11 @@ function initApp() {
     async function createJobFolders(jobId, jobNumber, clientName, address) {
         if (!driveToken) { showDriveReconnect(true); return; }
         try {
-            const rootId = await findOrCreateFolder('RGMD CRM Jobs', 'root');
-            const parts  = [jobNumber, clientName || 'Job', address].filter(Boolean);
+            const rootId  = await findOrCreateFolder('RGMD CRM', 'root');
+            const jobsId  = await findOrCreateFolder('Jobs', rootId);
+            const parts   = [jobNumber, clientName || 'Job', address].filter(Boolean);
             const jobFolderName = parts.join(' — ');
-            const jobId_f    = await createFolder(jobFolderName, rootId);
+            const jobId_f    = await createFolder(jobFolderName, jobsId);
             const photoId    = await createFolder('Photos', jobId_f);
             const docId      = await createFolder('Documents', jobId_f);
             await patchJob(jobId, {
@@ -2576,6 +2612,30 @@ function initApp() {
             } else {
                 toast('Drive error: ' + err.message, true);
             }
+        }
+    }
+
+    async function createContactFolder(contactId, contactName, company) {
+        if (!driveToken) { showDriveReconnect(true); return null; }
+        try {
+            const rootId      = await findOrCreateFolder('RGMD CRM', 'root');
+            const networkId   = await findOrCreateFolder('Network', rootId);
+            const folderName  = [contactName, company].filter(Boolean).join(' — ');
+            const folderId    = await createFolder(folderName, networkId);
+            await createFolder('Insurance',  folderId);
+            await createFolder('W9 & Tax',   folderId);
+            await createFolder('Contracts',  folderId);
+            const ts = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('network').doc(contactId).update({ driveFolderId: folderId, updatedAt: ts });
+            toast('Drive folder created');
+            return folderId;
+        } catch (err) {
+            if (err.message === 'token_expired' || err.message === 'no_token') {
+                showDriveReconnect(true);
+            } else {
+                toast('Drive error: ' + err.message, true);
+            }
+            return null;
         }
     }
 
