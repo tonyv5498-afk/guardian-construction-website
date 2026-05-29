@@ -164,11 +164,12 @@
                 <p class="text-gray-400 text-xs mt-1">Add your first job to get started</p>
             </div>
             <div class="overflow-x-auto" id="table-wrapper">
-                <table class="w-full min-w-[640px]" id="jobs-table">
+                <table class="w-full min-w-[800px]" id="jobs-table">
                     <thead class="bg-gray-50 border-b border-gray-100">
                         <tr>
                             <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Job #</th>
                             <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Client</th>
+                            <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Address</th>
                             <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Contact</th>
                             <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Project Type</th>
                             <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 py-3">Status</th>
@@ -2166,7 +2167,16 @@ function initApp() {
                 </td>
                 <td class="px-5 py-3.5">
                     <div class="font-semibold text-gray-900 text-sm">${esc(j.clientName)}</div>
-                    <div class="text-gray-400 text-xs mt-0.5 truncate max-w-[180px]">${esc(j.address)}</div>
+                </td>
+                <td class="px-5 py-3.5">
+                    ${j.address
+                        ? `<a href="https://maps.google.com/?q=${encodeURIComponent(j.address)}"
+                              target="_blank"
+                              class="text-sm text-blue-600 hover:underline leading-snug block max-w-[200px]"
+                              onclick="event.stopPropagation()">
+                              ${esc(j.address)}
+                           </a>`
+                        : '<span class="text-sm text-gray-400">—</span>'}
                 </td>
                 <td class="px-5 py-3.5">
                     <div class="text-sm text-gray-700">${esc(j.phone) || '—'}</div>
