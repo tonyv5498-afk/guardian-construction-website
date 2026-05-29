@@ -1154,13 +1154,24 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Start Time</label>
-                    <input id="ef-start-time" type="time" value="09:00"
-                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <select id="ef-start-time"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">End Time</label>
-                    <input id="ef-end-time" type="time" value="10:00"
-                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Duration</label>
+                    <select id="ef-duration"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="30">30 min</option>
+                        <option value="60" selected>1 hr</option>
+                        <option value="90">1.5 hrs</option>
+                        <option value="120">2 hrs</option>
+                        <option value="150">2.5 hrs</option>
+                        <option value="180">3 hrs</option>
+                        <option value="240">4 hrs</option>
+                        <option value="360">6 hrs</option>
+                        <option value="480">All day (8 hrs)</option>
+                    </select>
                 </div>
             </div>
             <div>
@@ -2253,8 +2264,13 @@ function initApp() {
             const date    = $('ef-date').value;
             const tz      = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-            const startDT = `${date}T${$('ef-start-time').value || '09:00'}:00`;
-            const endDT   = `${date}T${$('ef-end-time').value   || '10:00'}:00`;
+            const startTime  = $('ef-start-time').value || '09:00';
+            const durationM  = parseInt($('ef-duration').value) || 60;
+            const [sh, sm]   = startTime.split(':').map(Number);
+            const endMins    = sh * 60 + sm + durationM;
+            const endTime    = `${String(Math.floor(endMins / 60) % 24).padStart(2,'0')}:${String(endMins % 60).padStart(2,'0')}`;
+            const startDT = `${date}T${startTime}:00`;
+            const endDT   = `${date}T${endTime}:00`;
 
             // Collect attendee emails
             const checkedTeam = [...document.querySelectorAll('.ef-team-check:checked')]
@@ -3290,12 +3306,30 @@ function initApp() {
     }
 
     // ── Event modal functions ──────────────────────────────
+    function buildStartTimeOptions(selectEl, defaultVal = '09:00') {
+        selectEl.innerHTML = '';
+        for (let h = 6; h <= 20; h++) {
+            for (const m of [0, 30]) {
+                if (h === 20 && m === 30) break;
+                const val  = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+                const ampm = h < 12 ? 'AM' : 'PM';
+                const h12  = h % 12 || 12;
+                const label = `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+                const opt  = document.createElement('option');
+                opt.value = val;
+                opt.textContent = label;
+                if (val === defaultVal) opt.selected = true;
+                selectEl.appendChild(opt);
+            }
+        }
+    }
+
     function openEventModal(prefillDate) {
         $('event-modal-title').textContent = 'Add Event';
         $('event-form').reset();
         $('ef-date').value = prefillDate || new Date().toISOString().slice(0, 10);
-        $('ef-start-time').value = '09:00';
-        $('ef-end-time').value = '10:00';
+        buildStartTimeOptions($('ef-start-time'), '09:00');
+        $('ef-duration').value = '60';
 
         // Populate job select
         const jobSel = $('ef-job');
