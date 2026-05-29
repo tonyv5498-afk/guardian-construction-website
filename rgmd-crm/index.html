@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RGMD CRM — Restoration Group of Metro Detroit</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -499,6 +500,14 @@
                 <button id="view-sig-btn"
                     class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
                     View Signed Document ↗
+                </button>
+                <button id="download-pdf-btn"
+                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                    Download Signed PDF
+                </button>
+                <button id="save-to-drive-btn"
+                    class="w-full text-xs font-semibold py-2 rounded-lg transition-colors text-white" style="background:#1B3A6B;">
+                    Save PDF to Drive Documents
                 </button>
             </div>
         </div>
@@ -1186,6 +1195,52 @@ function initApp() {
         if (currentSigToken) window.open('?sign=' + currentSigToken, '_blank');
     });
 
+    $('download-pdf-btn').addEventListener('click', async () => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job || !job.sigToken) return;
+        const btn = $('download-pdf-btn');
+        btn.textContent = 'Generating…'; btn.disabled = true;
+        try {
+            const snap = await db.collection('signingRequests').doc(job.sigToken).get();
+            if (!snap.exists) { toast('Signing request not found', true); return; }
+            const pdf = generateSignedPDF(snap.data());
+            pdf.save(`Service-Authorization-${snap.data().jobNumber || job.jobNumber || 'doc'}.pdf`);
+        } catch(err) {
+            toast('PDF error: ' + err.message, true);
+        } finally {
+            btn.textContent = 'Download Signed PDF'; btn.disabled = false;
+        }
+    });
+
+    $('save-to-drive-btn').addEventListener('click', async () => {
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job || !job.sigToken) return;
+        if (!job.driveFolderDocId) { toast('Drive Documents folder not set up for this job', true); return; }
+        if (!driveToken) { showDriveReconnect(true); return; }
+        const btn = $('save-to-drive-btn');
+        btn.textContent = 'Saving…'; btn.disabled = true;
+        try {
+            const snap = await db.collection('signingRequests').doc(job.sigToken).get();
+            if (!snap.exists) { toast('Signing request not found', true); return; }
+            const d = snap.data();
+            const pdf = generateSignedPDF(d);
+            const blob = pdf.output('blob');
+            const fname = `Service-Authorization-${d.jobNumber || job.jobNumber || 'doc'}.pdf`;
+            await uploadToDrive(job.driveFolderDocId, new File([blob], fname, { type: 'application/pdf' }));
+            await db.collection('signingRequests').doc(job.sigToken).update({ driveSaved: true });
+            btn.textContent = 'Saved to Drive ✓';
+            toast('PDF saved to Drive Documents folder');
+            refreshFileList(job.driveFolderDocId, 'drive-docs-list');
+        } catch(err) {
+            if (err.message === 'token_expired' || err.message === 'no_token') {
+                showDriveReconnect(true);
+            } else {
+                toast('Drive error: ' + err.message, true);
+            }
+            btn.textContent = 'Save PDF to Drive Documents'; btn.disabled = false;
+        }
+    });
+
     // ── Firestore listener ─────────────────────────────────
     function startListener() {
         if (unsubJobs) unsubJobs();
@@ -1853,6 +1908,160 @@ function initApp() {
         if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
         return (b / (1024 * 1024)).toFixed(1) + ' MB';
     }
+}
+
+// ────────────────────────────────────────────────────────────
+// PDF GENERATION  (uses jsPDF CDN)
+// ────────────────────────────────────────────────────────────
+function generateSignedPDF(d) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const pw = 612, ph = 792, ml = 50, mr = 50, tw = pw - ml - mr;
+    let y = 0;
+
+    function newPageIfNeeded(needed) {
+        if (y + needed > ph - 40) { doc.addPage(); y = 50; }
+    }
+
+    function pageHeader(title, subtitle) {
+        doc.setFillColor(27, 58, 107);
+        doc.rect(0, 0, pw, 58, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+        doc.text(title, ml, 34);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(subtitle, ml, 50);
+        doc.setTextColor(30, 30, 30);
+        y = 72;
+    }
+
+    function fieldRow(label, value) {
+        if (!value) return;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(110, 110, 110);
+        doc.text(label + ':', ml, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        const lines = doc.splitTextToSize(String(value), tw - 118);
+        doc.text(lines, ml + 118, y);
+        y += Math.max(13, lines.length * 11);
+    }
+
+    function divider() {
+        doc.setDrawColor(210, 210, 210);
+        doc.line(ml, y, pw - mr, y);
+        y += 10;
+    }
+
+    function bodyPara(text) {
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(40, 40, 40);
+        const lines = doc.splitTextToSize(text, tw);
+        for (let i = 0; i < lines.length; ) {
+            const avail = Math.floor((ph - 40 - y) / 9.5);
+            const batch = lines.slice(i, i + Math.max(1, avail));
+            newPageIfNeeded(batch.length * 9.5);
+            doc.text(batch, ml, y);
+            y += batch.length * 9.5;
+            i += batch.length;
+        }
+        y += 6;
+    }
+
+    function sectionHeading(text) {
+        newPageIfNeeded(20);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(20, 20, 20);
+        doc.text(text, ml, y); y += 13;
+    }
+
+    const signedDate = d.signedAt
+        ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // ── Page 1: Service Authorization ──────────────────────
+    pageHeader('Service Authorization Contract', 'Restoration Group of Metro Detroit LLC');
+
+    fieldRow('Customer', d.clientName);
+    fieldRow('Address', d.address);
+    fieldRow('Phone', d.phone);
+    fieldRow('Email', d.email);
+    fieldRow('Insurance Co.', d.insCarrier);
+    fieldRow('Claim #', d.insClaim);
+    fieldRow('Policy #', d.insPolicy);
+    fieldRow('Insurance Agent', d.insAdjusterName);
+    fieldRow('Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — '));
+    fieldRow('Due Date', d.dueDate);
+    y += 6; divider();
+
+    bodyPara('I (we) hereby authorize Restoration Group of Metro Detroit LLC business to perform emergency/non emergency mitigation and restoration services at my (our) property at the above address and with respect to items that need to be restored at a remote location, to remove and store such items. I (we) authorize and direct the Insurance Company listed above to communicate with Restoration Group of Metro Detroit LLC and to pay Restoration Group of Metro Detroit LLC directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay Restoration Group of Metro Detroit LLC immediately upon receipt of the payment from the insurance company. If payment from the insurance company lists my (our) lender as a payee, I (we) authorize Restoration Group of Metro Detroit LLC to contact the lender directly about such payment, and I (we) hereby authorize the lender to speak directly to Restoration Group of Metro Detroit LLC about such payment and endorse such payment.');
+    bodyPara('I (we) understand that Restoration Group of Metro Detroit LLC is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay Restoration Group of Metro Detroit LLC directly for any amount not covered by insurance.');
+    bodyPara('The liability of Restoration Group of Metro Detroit LLC is expressly limited to the total amount of the services authorized herein and in no event shall Restoration Group of Metro Detroit LLC, its agents or assigns, be liable for consequential and/or any other special damages of any kind. Restoration Group of Metro Detroit LLC is responsible for only the personal property listed on an inventory signed by me (us) and by a Restoration Group of Metro Detroit LLC representative. In the event that legal proceedings must be instituted to recover any due amount, Restoration Group of Metro Detroit LLC shall be entitled to recover the cost of collection including reasonable attorney\'s fees.');
+    bodyPara('I (we) agrees to pay Restoration Group of Metro Detroit LLC 15% of the gross amount of the estimate provided to the Contractor as compensation for professional services and administrative fees. If Restoration Group of Metro Detroit LLC is not chosen to perform the entire scope of work provided in the estimate, this fee is due within 30 days of work authorization.');
+    bodyPara('Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. On the seventh (7th) day of Restoration Group of Metro Detroit LLC\'s final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.');
+    bodyPara('Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer. As one method of collection, I (we) authorize Restoration Group of Metro Detroit LLC to charge my credit card below for the unpaid balance. If that credit card charge is not sufficient to pay all money due to Restoration Group of Metro Detroit LLC, Restoration Group of Metro Detroit LLC is authorized to use other methods of collection, including liens and other legal proceedings.');
+    bodyPara('Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.');
+    bodyPara('I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin restoration immediately.');
+
+    // WA signature block
+    newPageIfNeeded(140);
+    divider();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
+    doc.text('Printed Name:', ml, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(d.signerName || '', ml + 88, y);
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 70);
+    doc.text('Date:', ml + 310, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(signedDate, ml + 340, y);
+    y += 18;
+
+    if (d.signatureDataURL) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+        doc.text('Signature — Service Authorization Contract', ml, y);
+        y += 8;
+        doc.addImage(d.signatureDataURL, 'PNG', ml, y, 300, 76);
+        y += 86;
+    }
+
+    // ── AOB page (if applicable) ────────────────────────────
+    if (d.includeAob) {
+        doc.addPage(); y = 0;
+        pageHeader('Assignment of Insurance Benefits', 'Restoration Group of Metro Detroit LLC');
+
+        fieldRow('Client/Insured', d.clientName);
+        fieldRow('Policy Number', d.insPolicy);
+        fieldRow('Claim Number', d.insClaim);
+        fieldRow('Insurer', d.insCarrier);
+        fieldRow('Address', d.address);
+        fieldRow('Phone', d.phone);
+        y += 6; divider();
+
+        sectionHeading('I. ASSIGNMENT OF INSURANCE BENEFITS');
+        bodyPara('I, hereby, assign any and all insurance rights, benefits, proceeds and any causes of action under any applicable insurance policies to Restoration Group of Metro Detroit LLC (hereinafter referred to as "Company"), for services rendered, or to be rendered by Company. In this regard, I waive my privacy rights. I make this assignment in consideration of Company\'s agreement to perform services and supply materials and otherwise perform its obligations under this contract, including not requiring full payment at the time of service. I also hereby direct my insurance carrier(s) to release any and all information requested by Company, its representative, and/or its Attorney for the direct purpose of obtaining actual benefits to be paid by my insurance carrier(s) for services rendered or to be rendered. I believe the appropriate insurance carrier to be ' + (d.insCarrier || '________________________') + '.');
+
+        sectionHeading('II. DIRECT PAYMENT AUTHORIZATION');
+        bodyPara('I hereby authorize and unequivocally instruct direct payment of any benefits or proceeds to Company. The payment of any benefits or proceeds to Company must be sent directly to Company and payment made solely to Company. I understand that I am responsible for payment for any services provided by Company for which payment is not recoverable from my insurance company, including any applicable deductible.');
+
+        // AOB signature block
+        newPageIfNeeded(140);
+        divider();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
+        doc.text('Print Name (Owner/Agent):', ml, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(d.signerName || '', ml + 140, y);
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 70);
+        doc.text('Date:', ml + 310, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(signedDate, ml + 340, y);
+        y += 18;
+
+        if (d.aobSignatureDataURL) {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+            doc.text('Signature — Assignment of Insurance Benefits', ml, y);
+            y += 8;
+            doc.addImage(d.aobSignatureDataURL, 'PNG', ml, y, 260, 66);
+            y += 76;
+        }
+    }
+
+    return doc;
 }
 
 // ────────────────────────────────────────────────────────────
