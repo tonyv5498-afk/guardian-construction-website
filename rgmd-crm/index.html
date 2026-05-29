@@ -21,6 +21,9 @@
         [x-cloak] { display: none; }
         .panel-slide { transform: translateX(100%); transition: transform 0.25s ease; }
         .panel-slide.open { transform: translateX(0); }
+        .cal-cell { min-height: 80px; }
+        .cal-cell:hover .cal-add-btn { opacity: 1; }
+        .cal-add-btn { opacity: 0; transition: opacity 0.15s; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased">
@@ -90,6 +93,7 @@
         <div class="flex gap-1 mb-5 bg-gray-100 p-1 rounded-xl w-fit">
             <button id="tab-jobs" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white transition-all" style="background:#1B3A6B;">Jobs</button>
             <button id="tab-network" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all">Network</button>
+            <button id="tab-calendar" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all">Calendar</button>
         </div>
 
         <div id="jobs-section">
@@ -224,6 +228,65 @@
                         <tbody id="network-tbody" class="divide-y divide-gray-50"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div id="calendar-section" class="hidden">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Calendar</h2>
+                    <p class="text-gray-500 text-xs mt-0.5">Appointments and scheduling</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="manage-team-btn"
+                        class="flex items-center gap-2 text-sm font-semibold border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        Team
+                    </button>
+                    <button id="add-event-btn"
+                        class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        Add Event
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar reconnect notice -->
+            <div id="calendar-reconnect-notice" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-yellow-800">Google Calendar access needed</p>
+                    <p class="text-xs text-yellow-600 mt-0.5">Sign out and sign back in to grant Calendar permission.</p>
+                </div>
+                <button id="calendar-reconnect-btn"
+                    class="text-xs font-semibold text-white px-3 py-1.5 rounded-lg" style="background:#1B3A6B;">
+                    Re-connect
+                </button>
+            </div>
+
+            <!-- Month view -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                    <button id="cal-prev-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <h3 id="cal-month-label" class="text-base font-bold text-gray-900"></h3>
+                    <button id="cal-next-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                <!-- Day-of-week headers -->
+                <div class="grid grid-cols-7 border-b border-gray-100">
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Sun</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Mon</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Tue</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Wed</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Thu</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Fri</div>
+                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Sat</div>
+                </div>
+                <!-- Grid cells -->
+                <div id="cal-grid" class="grid grid-cols-7"></div>
             </div>
         </div>
 
@@ -1053,6 +1116,139 @@
     </div>
 </div>
 
+<!-- ─── Add Event Modal ──────────────────────────────────────── -->
+<div id="event-modal" class="hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4"
+    style="background:rgba(0,0,0,.45)">
+    <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[95vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+            <h3 id="event-modal-title" class="text-base font-bold text-gray-900">Add Event</h3>
+            <button id="event-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form id="event-form" class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Event Type</label>
+                    <select id="ef-type" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="Assessment">Assessment</option>
+                        <option value="Work Start">Work Start</option>
+                        <option value="Site Visit">Site Visit</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Inspection">Inspection</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Job (optional)</label>
+                    <select id="ef-job" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">No specific job</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Date <span class="text-red-400 normal-case font-normal tracking-normal">required</span></label>
+                <input id="ef-date" type="date" required
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Start Time</label>
+                    <input id="ef-start-time" type="time" value="09:00"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">End Time</label>
+                    <input id="ef-end-time" type="time" value="10:00"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Notes</label>
+                <textarea id="ef-notes" rows="2"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                    placeholder="Address, special instructions…"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Invite Team Members</label>
+                <div id="ef-team-list" class="space-y-2 mb-2"></div>
+                <div class="flex gap-2">
+                    <input id="ef-extra-email" type="email" placeholder="Add email…"
+                        class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <button type="button" id="ef-add-email-btn"
+                        class="text-xs font-semibold px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors">
+                        Add
+                    </button>
+                </div>
+                <div id="ef-extra-emails" class="mt-2 space-y-1"></div>
+            </div>
+            <div class="flex gap-3 pt-1 pb-2">
+                <button type="button" id="event-form-cancel"
+                    class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+                    <span id="event-form-submit-text">Create Event</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── Team Management Modal ───────────────────────────────── -->
+<div id="team-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4"
+    style="background:rgba(0,0,0,.45)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h3 class="text-base font-bold text-gray-900">Manage Team</h3>
+            <button id="team-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 py-4 space-y-3">
+            <div id="team-members-list" class="space-y-2 min-h-[40px]">
+                <p class="text-xs text-gray-400">No team members yet</p>
+            </div>
+            <div class="border-t border-gray-100 pt-3">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Add Member</p>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="tm-name" type="text" placeholder="Name"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <input id="tm-email" type="email" placeholder="Email"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <button id="tm-add-btn"
+                    class="w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
+                    Add to Team
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Event Detail Modal ──────────────────────────────────── -->
+<div id="event-detail-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4"
+    style="background:rgba(0,0,0,.45)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h3 id="evd-title" class="text-base font-bold text-gray-900 truncate mr-3"></h3>
+            <button id="event-detail-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 py-4 space-y-2 text-sm">
+            <div id="evd-body" class="space-y-2"></div>
+        </div>
+        <div class="px-6 pb-5">
+            <button id="evd-delete-btn"
+                class="w-full border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2 rounded-xl transition-colors text-sm">
+                Delete Event
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ─── Add / Edit Contact Modal ────────────────────────────── -->
 <div id="contact-modal" class="hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4"
     style="background:rgba(0,0,0,.45)">
@@ -1467,6 +1663,12 @@ function initApp() {
     let selectedContactId = null;
     let unsubContacts  = null;
     let networkSearch  = '';
+    let calendarEvents   = [];
+    let teamMembers      = [];
+    let calYear          = new Date().getFullYear();
+    let calMonth         = new Date().getMonth();
+    let selectedEventId  = null;
+    let extraInviteEmails = [];
 
     // ── Auth ───────────────────────────────────────────────
     auth.onAuthStateChanged(user => {
@@ -1481,6 +1683,7 @@ function initApp() {
             startListener();
             startLeadsListener();
             startContactsListener();
+            loadTeamMembers();
         } else {
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('app').classList.add('hidden');
@@ -1498,6 +1701,7 @@ function initApp() {
     document.getElementById('google-signin-btn').addEventListener('click', () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('https://www.googleapis.com/auth/drive.file');
+        provider.addScope('https://www.googleapis.com/auth/calendar');
         auth.signInWithPopup(provider).then(result => {
             driveToken = result.credential.accessToken;
             if (driveToken) sessionStorage.setItem('driveToken', driveToken);
@@ -1977,26 +2181,143 @@ function initApp() {
     }
 
     function switchTab(tab) {
-        if (tab === 'jobs') {
-            $('jobs-section').classList.remove('hidden');
-            $('network-section').classList.add('hidden');
-            $('tab-jobs').style.background = '#1B3A6B';
-            $('tab-jobs').classList.add('text-white');
-            $('tab-jobs').classList.remove('text-gray-600');
-            $('tab-network').style.background = '';
-            $('tab-network').classList.remove('text-white');
-            $('tab-network').classList.add('text-gray-600');
-        } else {
-            $('jobs-section').classList.add('hidden');
-            $('network-section').classList.remove('hidden');
-            $('tab-network').style.background = '#1B3A6B';
-            $('tab-network').classList.add('text-white');
-            $('tab-network').classList.remove('text-gray-600');
-            $('tab-jobs').style.background = '';
-            $('tab-jobs').classList.remove('text-white');
-            $('tab-jobs').classList.add('text-gray-600');
-        }
+        const tabs = { jobs: 'tab-jobs', network: 'tab-network', calendar: 'tab-calendar' };
+        const sections = { jobs: 'jobs-section', network: 'network-section', calendar: 'calendar-section' };
+        Object.entries(tabs).forEach(([t, btnId]) => {
+            const btn = $(btnId);
+            const sec = $(sections[t]);
+            if (!btn || !sec) return;
+            if (t === tab) {
+                btn.style.background = '#1B3A6B';
+                btn.classList.add('text-white');
+                btn.classList.remove('text-gray-600');
+                sec.classList.remove('hidden');
+            } else {
+                btn.style.background = '';
+                btn.classList.remove('text-white');
+                btn.classList.add('text-gray-600');
+                sec.classList.add('hidden');
+            }
+        });
     }
+
+    // ── Calendar event listeners ──────────────────────────────────
+    $('tab-calendar').addEventListener('click', () => {
+        switchTab('calendar');
+        fetchAndRenderCalendar();
+    });
+    $('cal-prev-btn').addEventListener('click', () => {
+        calMonth--;
+        if (calMonth < 0) { calMonth = 11; calYear--; }
+        fetchAndRenderCalendar();
+    });
+    $('cal-next-btn').addEventListener('click', () => {
+        calMonth++;
+        if (calMonth > 11) { calMonth = 0; calYear++; }
+        fetchAndRenderCalendar();
+    });
+    $('add-event-btn').addEventListener('click', () => openEventModal());
+    $('event-modal-close').addEventListener('click', closeEventModal);
+    $('event-form-cancel').addEventListener('click', closeEventModal);
+    $('event-modal').addEventListener('click', e => { if (e.target === $('event-modal')) closeEventModal(); });
+
+    $('ef-add-email-btn').addEventListener('click', () => {
+        const email = $('ef-extra-email').value.trim();
+        if (!email || !email.includes('@')) return;
+        extraInviteEmails.push(email);
+        $('ef-extra-email').value = '';
+        $('ef-extra-emails').innerHTML = extraInviteEmails.map((em, i) =>
+            `<div class="flex items-center justify-between text-xs bg-gray-50 px-2 py-1 rounded">
+                <span>${esc(em)}</span>
+                <button type="button" class="extra-email-remove text-red-400 hover:text-red-600 ml-2" data-idx="${i}">✕</button>
+            </div>`).join('');
+        $('ef-extra-emails').querySelectorAll('.extra-email-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                extraInviteEmails.splice(parseInt(btn.dataset.idx), 1);
+                btn.closest('div').remove();
+            });
+        });
+    });
+
+    $('event-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn  = e.submitter || e.target.querySelector('[type=submit]');
+        const orig = $('event-form-submit-text').textContent;
+        $('event-form-submit-text').textContent = 'Creating…'; btn && (btn.disabled = true);
+        try {
+            const type    = $('ef-type').value;
+            const jobId   = $('ef-job').value;
+            const job     = jobs.find(j => j.id === jobId);
+            const summary = job ? `${type} — ${job.clientName || 'Job #' + job.jobNumber}` : type;
+            const date    = $('ef-date').value;
+            const tz      = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            const startDT = `${date}T${$('ef-start-time').value || '09:00'}:00`;
+            const endDT   = `${date}T${$('ef-end-time').value   || '10:00'}:00`;
+
+            // Collect attendee emails
+            const checkedTeam = [...document.querySelectorAll('.ef-team-check:checked')]
+                .map(cb => teamMembers[parseInt(cb.dataset.idx)]?.email)
+                .filter(Boolean);
+            const allEmails = [...new Set([...checkedTeam, ...extraInviteEmails])];
+
+            const descParts = [];
+            if (job) descParts.push(`Job #${job.jobNumber || ''} — ${job.clientName || ''}\n${job.address || ''}`);
+            if ($('ef-notes').value.trim()) descParts.push($('ef-notes').value.trim());
+
+            await calendarRequest('POST', 'calendars/primary/events', {
+                summary,
+                description: descParts.join('\n\n'),
+                start: { dateTime: startDT, timeZone: tz },
+                end:   { dateTime: endDT,   timeZone: tz },
+                attendees: allEmails.map(email => ({ email })),
+            }, { sendUpdates: 'all' });
+
+            closeEventModal();
+            await fetchAndRenderCalendar();
+            toast('Event created');
+        } catch (err) {
+            if (err.message !== 'cal_auth') toast('Error: ' + err.message, true);
+        } finally {
+            $('event-form-submit-text').textContent = orig; btn && (btn.disabled = false);
+        }
+    });
+
+    $('event-detail-close').addEventListener('click', () => $('event-detail-modal').classList.add('hidden'));
+    $('event-detail-modal').addEventListener('click', e => { if (e.target === $('event-detail-modal')) $('event-detail-modal').classList.add('hidden'); });
+    $('evd-delete-btn').addEventListener('click', async () => {
+        if (!selectedEventId) return;
+        try {
+            await calendarRequest('DELETE', `calendars/primary/events/${selectedEventId}`);
+            $('event-detail-modal').classList.add('hidden');
+            await fetchAndRenderCalendar();
+            toast('Event deleted');
+        } catch (err) {
+            if (err.message !== 'cal_auth') toast('Delete failed: ' + err.message, true);
+        }
+    });
+
+    $('calendar-reconnect-btn').addEventListener('click', () => {
+        auth.signOut();
+    });
+
+    $('manage-team-btn').addEventListener('click', () => {
+        renderTeamModal();
+        $('team-modal').classList.remove('hidden');
+    });
+    $('team-modal-close').addEventListener('click', () => $('team-modal').classList.add('hidden'));
+    $('team-modal').addEventListener('click', e => { if (e.target === $('team-modal')) $('team-modal').classList.add('hidden'); });
+
+    $('tm-add-btn').addEventListener('click', async () => {
+        const name  = $('tm-name').value.trim();
+        const email = $('tm-email').value.trim();
+        if (!name || !email || !email.includes('@')) return;
+        teamMembers.push({ name, email });
+        await saveTeamMembers();
+        $('tm-name').value = ''; $('tm-email').value = '';
+        renderTeamModal();
+        toast('Team member added');
+    });
 
     // Network event listeners
     $('tab-jobs').addEventListener('click', () => switchTab('jobs'));
@@ -2747,6 +3068,228 @@ function initApp() {
             }
             return null;
         }
+    }
+
+    // ── Calendar API helper ────────────────────────────────
+    // Note: Firestore `settings` collection requires: match /settings/{id} { allow read, write: if request.auth != null; }
+    async function calendarRequest(method, path, body = null, params = {}) {
+        if (!driveToken) { showCalendarReconnect(); return null; }
+        const url = new URL(`https://www.googleapis.com/calendar/v3/${path}`);
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        const opts = { method, headers: { Authorization: `Bearer ${driveToken}`, 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (res.status === 401 || res.status === 403) { showCalendarReconnect(); throw new Error('cal_auth'); }
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${res.status}`);
+        }
+        if (res.status === 204) return null;
+        return res.json();
+    }
+
+    function showCalendarReconnect() {
+        $('calendar-reconnect-notice').classList.remove('hidden');
+    }
+
+    // ── Team member functions ──────────────────────────────
+    async function loadTeamMembers() {
+        try {
+            const doc = await db.collection('settings').doc('team').get();
+            teamMembers = doc.exists ? (doc.data().members || []) : [];
+            renderTeamModal();
+        } catch(e) {}
+    }
+
+    async function saveTeamMembers() {
+        await db.collection('settings').doc('team').set({ members: teamMembers });
+    }
+
+    function renderTeamModal() {
+        const list = $('team-members-list');
+        if (teamMembers.length === 0) {
+            list.innerHTML = '<p class="text-xs text-gray-400">No team members yet</p>';
+            return;
+        }
+        list.innerHTML = teamMembers.map((m, i) => `
+            <div class="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
+                <div>
+                    <span class="text-sm font-medium text-gray-800">${esc(m.name)}</span>
+                    <span class="text-xs text-gray-400 ml-2">${esc(m.email)}</span>
+                </div>
+                <button class="tm-remove-btn text-xs text-red-400 hover:text-red-600 px-2 py-1" data-idx="${i}">Remove</button>
+            </div>`).join('');
+        list.querySelectorAll('.tm-remove-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                teamMembers.splice(parseInt(btn.dataset.idx), 1);
+                await saveTeamMembers();
+                renderTeamModal();
+            });
+        });
+    }
+
+    // ── Calendar fetch and render ──────────────────────────
+    async function fetchAndRenderCalendar() {
+        const firstDay = new Date(calYear, calMonth, 1);
+        const lastDay  = new Date(calYear, calMonth + 1, 0);
+        // Pad to include days from surrounding months that appear in the grid
+        const gridStart = new Date(firstDay);
+        gridStart.setDate(gridStart.getDate() - gridStart.getDay());
+        const gridEnd = new Date(lastDay);
+        gridEnd.setDate(gridEnd.getDate() + (6 - gridEnd.getDay()));
+
+        $('cal-month-label').textContent = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        try {
+            const data = await calendarRequest('GET', 'calendars/primary/events', null, {
+                timeMin: gridStart.toISOString(),
+                timeMax: gridEnd.toISOString(),
+                singleEvents: 'true',
+                orderBy: 'startTime',
+                maxResults: '500',
+            });
+            if (data === null) return; // auth error already handled
+            calendarEvents = data.items || [];
+            renderCalendarGrid(gridStart, gridEnd);
+        } catch (e) {
+            if (e.message !== 'cal_auth') toast('Calendar error: ' + e.message, true);
+        }
+    }
+
+    const EVENT_COLORS = {
+        'Assessment': 'bg-blue-500',
+        'Work Start':  'bg-green-500',
+        'Site Visit':  'bg-orange-500',
+        'Follow-up':   'bg-purple-500',
+        'Inspection':  'bg-teal-500',
+        'Other':       'bg-gray-400',
+    };
+
+    function eventColor(summary) {
+        for (const [key, cls] of Object.entries(EVENT_COLORS)) {
+            if ((summary || '').startsWith(key)) return cls;
+        }
+        return 'bg-gray-400';
+    }
+
+    function renderCalendarGrid(gridStart, gridEnd) {
+        const grid = $('cal-grid');
+        grid.innerHTML = '';
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        const cur = new Date(gridStart);
+        while (cur <= gridEnd) {
+            const dateStr = cur.toISOString().slice(0, 10);
+            const isToday = cur.getTime() === today.getTime();
+            const isCurrentMonth = cur.getMonth() === calMonth;
+
+            const dayEvents = calendarEvents.filter(e => {
+                const start = (e.start?.dateTime || e.start?.date || '').slice(0, 10);
+                return start === dateStr;
+            });
+
+            const cell = document.createElement('div');
+            cell.className = `cal-cell border-b border-r border-gray-100 p-1.5 relative ${isCurrentMonth ? '' : 'bg-gray-50/50'}`;
+            cell.dataset.date = dateStr;
+
+            cell.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'text-white' : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'}"
+                        ${isToday ? 'style="background:#1B3A6B;"' : ''}>
+                        ${cur.getDate()}
+                    </span>
+                    <button class="cal-add-btn text-gray-300 hover:text-orange-500 p-0.5 rounded transition-colors" data-date="${dateStr}" title="Add event">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    </button>
+                </div>
+                <div class="space-y-0.5">
+                    ${dayEvents.slice(0, 3).map(e => {
+                        const time = e.start?.dateTime
+                            ? new Date(e.start.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+                            : '';
+                        return `<div class="event-pill ${eventColor(e.summary)} text-white text-[10px] font-semibold px-1.5 py-0.5 rounded truncate cursor-pointer leading-tight" data-event-id="${e.id}">
+                            ${time ? `<span class="opacity-80">${time}</span> ` : ''}${esc(e.summary || 'Event')}
+                        </div>`;
+                    }).join('')}
+                    ${dayEvents.length > 3 ? `<div class="text-[10px] text-gray-400 pl-1">+${dayEvents.length - 3} more</div>` : ''}
+                </div>`;
+
+            // Add event via "+" button
+            cell.querySelector('.cal-add-btn').addEventListener('click', e => {
+                e.stopPropagation();
+                openEventModal(e.currentTarget.dataset.date);
+            });
+
+            // Open event detail
+            cell.querySelectorAll('.event-pill').forEach(pill => {
+                pill.addEventListener('click', ev => {
+                    ev.stopPropagation();
+                    const event = calendarEvents.find(x => x.id === pill.dataset.eventId);
+                    if (event) openEventDetail(event);
+                });
+            });
+
+            grid.appendChild(cell);
+            cur.setDate(cur.getDate() + 1);
+        }
+    }
+
+    // ── Event modal functions ──────────────────────────────
+    function openEventModal(prefillDate) {
+        $('event-modal-title').textContent = 'Add Event';
+        $('event-form').reset();
+        $('ef-date').value = prefillDate || new Date().toISOString().slice(0, 10);
+        $('ef-start-time').value = '09:00';
+        $('ef-end-time').value = '10:00';
+
+        // Populate job select
+        const jobSel = $('ef-job');
+        jobSel.innerHTML = '<option value="">No specific job</option>';
+        [...jobs].sort((a,b) => (b.jobNumber||'').localeCompare(a.jobNumber||'')).forEach(j => {
+            const opt = document.createElement('option');
+            opt.value = j.id;
+            opt.textContent = `#${j.jobNumber || '—'} — ${j.clientName || 'Unnamed'}`;
+            jobSel.appendChild(opt);
+        });
+
+        // Team member checkboxes
+        extraInviteEmails = [];
+        renderEventTeamList();
+        $('ef-extra-emails').innerHTML = '';
+        $('ef-extra-email').value = '';
+
+        $('event-modal').classList.remove('hidden');
+        setTimeout(() => $('ef-date').focus(), 50);
+    }
+
+    function renderEventTeamList() {
+        const container = $('ef-team-list');
+        if (teamMembers.length === 0) {
+            container.innerHTML = '<p class="text-xs text-gray-400">No team members saved — add them via the Team button.</p>';
+            return;
+        }
+        container.innerHTML = teamMembers.map((m, i) => `
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" class="ef-team-check w-4 h-4 accent-orange-500 rounded" data-idx="${i}">
+                <span class="text-sm text-gray-700">${esc(m.name)} <span class="text-gray-400 text-xs">${esc(m.email)}</span></span>
+            </label>`).join('');
+    }
+
+    function closeEventModal() { $('event-modal').classList.add('hidden'); }
+
+    function openEventDetail(event) {
+        selectedEventId = event.id;
+        $('evd-title').textContent = event.summary || 'Event';
+        const start = event.start?.dateTime || event.start?.date;
+        const end   = event.end?.dateTime   || event.end?.date;
+        const fmt = dt => dt ? new Date(dt).toLocaleString('en-US', { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true }) : '';
+        const attendees = (event.attendees || []).map(a => esc(a.email)).join(', ');
+        $('evd-body').innerHTML = `
+            <div class="flex gap-2 text-gray-600"><span class="font-semibold w-16 text-xs uppercase tracking-wide text-gray-400 flex-shrink-0 pt-0.5">Start</span>${fmt(start)}</div>
+            <div class="flex gap-2 text-gray-600"><span class="font-semibold w-16 text-xs uppercase tracking-wide text-gray-400 flex-shrink-0 pt-0.5">End</span>${fmt(end)}</div>
+            ${event.description ? `<div class="flex gap-2 text-gray-600"><span class="font-semibold w-16 text-xs uppercase tracking-wide text-gray-400 flex-shrink-0 pt-0.5">Notes</span><span class="text-sm">${esc(event.description)}</span></div>` : ''}
+            ${attendees ? `<div class="flex gap-2 text-gray-600"><span class="font-semibold w-16 text-xs uppercase tracking-wide text-gray-400 flex-shrink-0 pt-0.5">Invites</span><span class="text-xs break-all">${attendees}</span></div>` : ''}`;
+        $('event-detail-modal').classList.remove('hidden');
     }
 
     async function listDriveFiles(folderId) {
