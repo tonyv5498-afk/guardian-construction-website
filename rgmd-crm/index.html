@@ -1988,6 +1988,7 @@ function initApp() {
         $('f-referral-source').value = 'Website';
         $('leads-modal').classList.add('hidden');
         $('modal-overlay').classList.remove('hidden');
+        $('jobs-map').style.display = 'none';
         setTimeout(() => $('f-name').focus(), 50);
     }
 
@@ -2816,6 +2817,7 @@ function initApp() {
         $('job-form').dataset.editId = '';
         $('job-form').dataset.leadId = '';
         $('modal-overlay').classList.remove('hidden');
+        $('jobs-map').style.display = 'none';
         setTimeout(() => $('f-name').focus(), 50);
     }
 
@@ -2843,9 +2845,14 @@ function initApp() {
         $('f-notes').value                = job.notes            || '';
         $('job-form').dataset.editId = jobId;
         $('modal-overlay').classList.remove('hidden');
+        $('jobs-map').style.display = 'none';
     }
 
-    function closeModal() { $('modal-overlay').classList.add('hidden'); }
+    function closeModal() {
+        $('modal-overlay').classList.add('hidden');
+        $('jobs-map').style.display = '';
+        setTimeout(() => jobsMap && jobsMap.invalidateSize(), 100);
+    }
 
     $('add-job-btn').addEventListener('click', openAddModal);
     $('modal-close-btn').addEventListener('click', closeModal);
