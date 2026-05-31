@@ -6,10 +6,86 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "redirects": [
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/traverse-city-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/petoskey-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/charlevoix-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/gaylord-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/boyne-city-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/cadillac-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/midland-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/bay-city-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/saginaw-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/alpena-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/cheboygan-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/rogers-city-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/west-branch-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/houghton-lake-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cities/roscommon-mi-contractor.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [
@@ -33,13 +109,6 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/index.html",
-      "destination": "/",
-      "permanent": true
     }
   ],
   "cleanUrls": true,
