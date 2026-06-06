@@ -2804,6 +2804,7 @@ function initApp() {
     // ── Field Log ─────────────────────────────────────────
     function renderFieldLog(fieldLog) {
         const list = $('field-log-list');
+        if (!list) return;
         if (!fieldLog || !fieldLog.length) {
             list.innerHTML = '<p class="text-xs text-gray-400 italic">No field notes yet.</p>';
             return;
@@ -2870,21 +2871,57 @@ function initApp() {
                 return `[${ts}] ${n.text}`;
             }).join('\n');
 
-            const res = await fetch('/api/generate-report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    clientName:    job.clientName  || '',
-                    address:       job.address     || '',
-                    projectType:   job.projectType || '',
-                    subCategory:   job.subCategory || '',
-                    status:        job.status      || '',
-                    notes:         job.notes       || '',
-                    fieldLog,
-                }),
-            });
-            if (!res.ok) throw new Error(await res.text());
-            const { report } = await res.json();
+            let report = null;
+            let noAiKey = false;
+
+            try {
+                const res = await fetch('/api/generate-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clientName:    job.clientName  || '',
+                        address:       job.address     || '',
+                        projectType:   job.projectType || '',
+                        subCategory:   job.subCategory || '',
+                        status:        job.status      || '',
+                        notes:         job.notes       || '',
+                        fieldLog,
+                    }),
+                });
+                if (!res.ok) {
+                    let errMsg = 'API error';
+                    try { const j = await res.json(); errMsg = j.error || errMsg; } catch (_) { errMsg = await res.text(); }
+                    if (errMsg === 'NO_API_KEY') { noAiKey = true; }
+                    else { throw new Error(errMsg); }
+                } else {
+                    const data = await res.json();
+                    report = data.report;
+                }
+            } catch (fetchErr) {
+                if (!noAiKey) throw fetchErr;
+            }
+
+            if (noAiKey || !report) {
+                // Build a basic structured report from available job data without AI
+                const statusLabel = (job.status || '').replace(/_/g, ' ');
+                const typeLabel   = [job.projectType, job.subCategory].filter(Boolean).join(' — ') || 'N/A';
+                report = [
+                    'PROJECT OVERVIEW:',
+                    `This report documents project work performed at ${job.address || 'the subject property'} for client ${job.clientName || 'N/A'}. Project type: ${typeLabel}.`,
+                    '',
+                    'SCOPE OF WORK:',
+                    job.notes || 'Refer to the initial assessment and project notes on file.',
+                    '',
+                    'WORK PERFORMED:',
+                    fieldLog || 'See field log entries on file.',
+                    '',
+                    'CURRENT STATUS & OUTCOME:',
+                    `Project status: ${statusLabel || 'N/A'}.`,
+                    '',
+                    'RECOMMENDATIONS:',
+                    'Please refer to the project team for recommendations and next steps.',
+                ].join('\n');
+            }
 
             // Render report preview
             $('report-modal-body').innerHTML = `<div class="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">${esc(report)}</div>`;

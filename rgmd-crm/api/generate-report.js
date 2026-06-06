@@ -1,12 +1,14 @@
-export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+module.exports = async function handler(req, res) {
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-        return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
-    }
+    if (!apiKey) return res.status(503).json({ error: 'NO_API_KEY' });
 
     const { clientName, address, projectType, subCategory, status, notes, fieldLog } = req.body || {};
 
@@ -26,24 +28,15 @@ ${notes || 'None provided'}
 FIELD LOG ENTRIES:
 ${fieldLog || 'None provided'}
 
-Write a professional project report with these sections (use the section name as a label on its own line followed by the content):
+Write a professional project report with these exact section headers (use the section name as a label followed by a colon, on its own line):
 
 PROJECT OVERVIEW:
-Summarize the project scope, property, and the nature of the damage or work required.
-
 SCOPE OF WORK:
-Describe the services performed or to be performed based on the project type and notes.
-
 WORK PERFORMED:
-Detail the specific actions taken, materials used, and methods employed based on the field log entries.
-
 CURRENT STATUS & OUTCOME:
-Describe the current state of the project and any completed milestones.
-
 RECOMMENDATIONS:
-List any follow-up actions, next steps, or recommendations for the client or insurance carrier.
 
-Write in professional, third-person language. Be specific where details are provided. Keep each section concise but thorough. Do not include any placeholders like [insert date] — work only with the information provided.`;
+Write in professional, third-person language suitable for insurance documentation. Be specific where details are provided. Do not use placeholders.`;
 
     try {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -62,7 +55,7 @@ Write in professional, third-person language. Be specific where details are prov
 
         if (!response.ok) {
             const err = await response.text();
-            return res.status(502).json({ error: `Anthropic API error: ${err}` });
+            return res.status(502).json({ error: `API error: ${err}` });
         }
 
         const data = await response.json();
@@ -71,4 +64,4 @@ Write in professional, third-person language. Be specific where details are prov
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
-}
+};
