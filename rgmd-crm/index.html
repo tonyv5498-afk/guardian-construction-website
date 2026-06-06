@@ -2910,20 +2910,16 @@ function initApp() {
                         fieldLog,
                     }),
                 });
-                if (!res.ok) {
-                    let errMsg = 'API error';
-                    try { const j = await res.json(); errMsg = j.error || errMsg; } catch (_) { errMsg = await res.text(); }
-                    if (errMsg === 'NO_API_KEY') { noAiKey = true; }
-                    else { throw new Error(errMsg); }
-                } else {
+                if (res.ok) {
                     const data = await res.json();
-                    report = data.report;
+                    report = data.report || null;
                 }
-            } catch (fetchErr) {
-                if (!noAiKey) throw fetchErr;
+                // Any non-ok response (including NO_API_KEY) falls through to the template below
+            } catch (_) {
+                // Network error or parse error — fall through to template
             }
 
-            if (noAiKey || !report) {
+            if (!report) {
                 // Build a basic structured report from available job data without AI
                 const statusLabel = (job.status || '').replace(/_/g, ' ');
                 const typeLabel   = [job.projectType, job.subCategory].filter(Boolean).join(' — ') || 'N/A';
