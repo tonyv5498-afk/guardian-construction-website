@@ -1448,6 +1448,31 @@
 </div>
 
 
+<datalist id="network-datalist"></datalist>
+
+<!-- ─── Report Preview Modal ─────────────────────────────── -->
+<div id="report-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.5)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+            <h3 class="text-base font-bold text-gray-900">Project Report</h3>
+            <button id="report-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="report-modal-body" class="flex-1 overflow-y-auto px-6 py-5">
+            <!-- Content injected by JS -->
+        </div>
+        <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+            <button id="report-download-btn" class="hidden flex-1 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#e97316;">
+                Download PDF
+            </button>
+            <button id="report-modal-cancel" class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════════
      APPLICATION SCRIPT
 ════════════════════════════════════════════════════════════ -->
@@ -4120,29 +4145,5 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-<datalist id="network-datalist"></datalist>
-
-<!-- ─── Report Preview Modal ─────────────────────────────── -->
-<div id="report-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.5)">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
-            <h3 class="text-base font-bold text-gray-900">Project Report</h3>
-            <button id="report-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-        <div id="report-modal-body" class="flex-1 overflow-y-auto px-6 py-5">
-            <!-- Content injected by JS -->
-        </div>
-        <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
-            <button id="report-download-btn" class="hidden flex-1 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#e97316;">
-                Download PDF
-            </button>
-            <button id="report-modal-cancel" class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
