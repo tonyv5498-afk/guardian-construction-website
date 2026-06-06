@@ -653,13 +653,29 @@
         <!-- Notes -->
         <div>
             <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">Notes</label>
-            <textarea id="detail-notes" rows="4"
+            <textarea id="detail-notes" rows="3"
                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
                 placeholder="Add notes here…"></textarea>
             <button id="save-notes-btn"
                 class="mt-2 w-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors">
                 Save Notes
             </button>
+        </div>
+
+        <!-- Field Log -->
+        <div class="border-t border-gray-100 pt-4">
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Field Log</p>
+            </div>
+            <div class="flex gap-2 mb-2">
+                <textarea id="field-log-input" rows="2"
+                    class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                    placeholder="Add a timestamped field note…"></textarea>
+                <button id="add-field-log-btn"
+                    class="text-xs font-semibold text-white px-3 py-2 rounded-lg self-end flex-shrink-0"
+                    style="background:#1B3A6B;">Add</button>
+            </div>
+            <div id="field-log-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
         </div>
 
         <!-- ─── Documents for Signature ──────────────────── -->
@@ -777,15 +793,23 @@
         </div>
     </div>
 
-    <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
-        <button id="detail-edit-btn"
-            class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
-            Edit Job
+    <div class="px-6 py-3 border-t border-gray-100 flex-shrink-0">
+        <button id="generate-report-btn"
+            class="w-full flex items-center justify-center gap-2 font-semibold py-2.5 rounded-xl transition-colors text-sm text-white mb-3"
+            style="background:#1B3A6B;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="generate-report-btn-text">Generate Project Report</span>
         </button>
-        <button id="detail-delete-btn"
-            class="px-4 border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2.5 rounded-xl transition-colors text-sm">
-            Delete
-        </button>
+        <div class="flex gap-3">
+            <button id="detail-edit-btn"
+                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+                Edit Job
+            </button>
+            <button id="detail-delete-btn"
+                class="px-4 border border-red-200 text-red-500 hover:bg-red-50 font-semibold py-2.5 rounded-xl transition-colors text-sm">
+                Delete
+            </button>
+        </div>
     </div>
 </div>
 
@@ -2737,6 +2761,7 @@ function initApp() {
             created ? `<p>Created: ${created}</p>` : '',
             job.createdBy ? `<p>By: ${esc(job.createdBy)}</p>` : '',
         ].join('');
+        renderFieldLog(job.fieldLog || []);
     }
 
     function refreshDetailPanel() {
@@ -2775,6 +2800,223 @@ function initApp() {
             toast('Notes saved');
         }
     });
+
+    // ── Field Log ─────────────────────────────────────────
+    function renderFieldLog(fieldLog) {
+        const list = $('field-log-list');
+        if (!fieldLog || !fieldLog.length) {
+            list.innerHTML = '<p class="text-xs text-gray-400 italic">No field notes yet.</p>';
+            return;
+        }
+        list.innerHTML = [...fieldLog].reverse().map(n => {
+            const ts = n.addedAt?.seconds
+                ? new Date(n.addedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
+                : 'Just now';
+            return `<div class="bg-gray-50 rounded-lg px-3 py-2 text-xs">
+                <div class="flex items-center justify-between mb-0.5">
+                    <span class="font-semibold text-gray-500">${esc(n.addedBy || 'Unknown')}</span>
+                    <span class="text-gray-400">${ts}</span>
+                </div>
+                <p class="text-gray-700 whitespace-pre-wrap">${esc(n.text)}</p>
+            </div>`;
+        }).join('');
+    }
+
+    $('add-field-log-btn').addEventListener('click', async () => {
+        const text = $('field-log-input').value.trim();
+        if (!text || !selectedJobId) return;
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job) return;
+        const entry = {
+            text,
+            addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            addedBy: auth.currentUser?.displayName || 'Unknown',
+        };
+        const existing = job.fieldLog || [];
+        await patchJob(selectedJobId, { fieldLog: [...existing, entry] });
+        $('field-log-input').value = '';
+        toast('Note added');
+    });
+
+    // ── Report Modal ──────────────────────────────────────
+    let reportJobSnapshot = null;
+
+    $('report-modal-close').addEventListener('click', () => { $('report-modal').classList.add('hidden'); });
+    $('report-modal-cancel').addEventListener('click', () => { $('report-modal').classList.add('hidden'); });
+    $('report-modal').addEventListener('click', e => { if (e.target === $('report-modal')) $('report-modal').classList.add('hidden'); });
+
+    $('generate-report-btn').addEventListener('click', async () => {
+        if (!selectedJobId) return;
+        const job = jobs.find(j => j.id === selectedJobId);
+        if (!job) return;
+        reportJobSnapshot = job;
+
+        const btnText = $('generate-report-btn-text');
+        btnText.textContent = 'Generating…';
+        $('generate-report-btn').disabled = true;
+        $('report-modal-body').innerHTML = `
+            <div class="flex flex-col items-center justify-center py-16 gap-4">
+                <div class="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+                <p class="text-sm text-gray-500">Writing report with AI…</p>
+            </div>`;
+        $('report-download-btn').classList.add('hidden');
+        $('report-modal').classList.remove('hidden');
+
+        try {
+            const fieldLog = (job.fieldLog || []).map(n => {
+                const ts = n.addedAt?.seconds
+                    ? new Date(n.addedAt.seconds * 1000).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
+                    : '';
+                return `[${ts}] ${n.text}`;
+            }).join('\n');
+
+            const res = await fetch('/api/generate-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clientName:    job.clientName  || '',
+                    address:       job.address     || '',
+                    projectType:   job.projectType || '',
+                    subCategory:   job.subCategory || '',
+                    status:        job.status      || '',
+                    notes:         job.notes       || '',
+                    fieldLog,
+                }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const { report } = await res.json();
+
+            // Render report preview
+            $('report-modal-body').innerHTML = `<div class="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap text-sm leading-relaxed">${esc(report)}</div>`;
+            $('report-download-btn').classList.remove('hidden');
+
+            $('report-download-btn').onclick = () => downloadReportPDF(job, report);
+        } catch (err) {
+            $('report-modal-body').innerHTML = `<p class="text-red-500 text-sm text-center py-10">Failed to generate report: ${esc(err.message)}</p>`;
+        } finally {
+            btnText.textContent = 'Generate Project Report';
+            $('generate-report-btn').disabled = false;
+        }
+    });
+
+    async function downloadReportPDF(job, reportText) {
+        const btn = $('report-download-btn');
+        const orig = btn.textContent;
+        btn.textContent = 'Building PDF…';
+        btn.disabled = true;
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+            const pw = doc.internal.pageSize.getWidth();
+            const ph = doc.internal.pageSize.getHeight();
+            const ml = 50, mr = 50, mt = 50;
+            const usable = pw - ml - mr;
+
+            // ── Header bar ──
+            doc.setFillColor(27, 58, 107);
+            doc.rect(0, 0, pw, 70, 'F');
+            doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
+            doc.text('Restoration Group of Metro Detroit', ml, 30);
+            doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+            doc.text('PROJECT REPORT', ml, 48);
+            const created = new Date().toLocaleDateString('en-US', { dateStyle: 'long' });
+            doc.text(created, pw - mr, 48, { align: 'right' });
+
+            // ── Job meta grid ──
+            let y = 100;
+            doc.setTextColor(30, 30, 30);
+            const metaItems = [
+                ['Client',       job.clientName  || '—'],
+                ['Address',      job.address     || '—'],
+                ['Project Type', [job.projectType, job.subCategory].filter(Boolean).join(' — ') || '—'],
+                ['Job #',        job.jobNumber   || '—'],
+                ['Status',       (job.status || '').replace(/_/g, ' ')],
+            ];
+            const colW = usable / 2;
+            metaItems.forEach(([label, val], i) => {
+                const x = ml + (i % 2 === 1 ? colW : 0);
+                if (i % 2 === 0 && i > 0) y += 32;
+                doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(120, 120, 120);
+                doc.text(label.toUpperCase(), x, y);
+                doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(30, 30, 30);
+                doc.text(val, x, y + 13);
+            });
+            y += 44;
+
+            // Divider
+            doc.setDrawColor(220, 220, 220); doc.line(ml, y, pw - mr, y);
+            y += 16;
+
+            // ── Report body ──
+            doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(40, 40, 40);
+            const lines = doc.splitTextToSize(reportText, usable);
+            lines.forEach(line => {
+                if (y > ph - 60) { doc.addPage(); y = mt; }
+                const isBold = /^[A-Z][A-Z &]+:/.test(line) || /^\d+\./.test(line);
+                doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+                doc.text(line, ml, y);
+                y += isBold ? 16 : 14;
+            });
+
+            // ── Photos page ──
+            if (job.driveFolderPhotoId && driveToken) {
+                try {
+                    const photoFiles = await listDriveFiles(job.driveFolderPhotoId);
+                    const imageFiles = photoFiles.filter(f => f.mimeType && f.mimeType.startsWith('image/'));
+                    if (imageFiles.length > 0) {
+                        doc.addPage();
+                        y = mt;
+                        doc.setFontSize(13); doc.setFont('helvetica', 'bold'); doc.setTextColor(27, 58, 107);
+                        doc.text('Project Photos', ml, y); y += 24;
+                        doc.setDrawColor(220,220,220); doc.line(ml, y, pw-mr, y); y += 16;
+
+                        const imgW = (usable - 20) / 3;
+                        const imgH = imgW * 0.75;
+                        let col = 0;
+
+                        for (const file of imageFiles) {
+                            try {
+                                const imgRes = await fetch(
+                                    `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
+                                    { headers: { Authorization: `Bearer ${driveToken}` } }
+                                );
+                                const blob = await imgRes.blob();
+                                const dataUrl = await new Promise(resolve => {
+                                    const reader = new FileReader();
+                                    reader.onload = e => resolve(e.target.result);
+                                    reader.readAsDataURL(blob);
+                                });
+                                if (y + imgH > ph - 60 && col === 0) { doc.addPage(); y = mt; }
+                                const x = ml + col * (imgW + 10);
+                                doc.addImage(dataUrl, 'JPEG', x, y, imgW, imgH);
+                                doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(120,120,120);
+                                doc.text(file.name.substring(0, 30), x, y + imgH + 9, { maxWidth: imgW });
+                                col++;
+                                if (col === 3) { col = 0; y += imgH + 22; }
+                            } catch (_) {}
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            // ── Footer on every page ──
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(160,160,160);
+                doc.text(`Restoration Group of Metro Detroit  ·  Page ${i} of ${pageCount}`, pw / 2, ph - 20, { align: 'center' });
+            }
+
+            const fname = `${(job.clientName||'Job').replace(/\s+/g,'_')}_Report_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(fname);
+        } catch (err) {
+            toast('PDF error: ' + err.message, true);
+        } finally {
+            btn.textContent = orig;
+            btn.disabled = false;
+        }
+    }
 
     $('save-subcategory-btn').addEventListener('click', async () => {
         if (selectedJobId) {
@@ -3845,5 +4087,28 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <datalist id="network-datalist"></datalist>
+
+<!-- ─── Report Preview Modal ─────────────────────────────── -->
+<div id="report-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.5)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+            <h3 class="text-base font-bold text-gray-900">Project Report</h3>
+            <button id="report-modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="report-modal-body" class="flex-1 overflow-y-auto px-6 py-5">
+            <!-- Content injected by JS -->
+        </div>
+        <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+            <button id="report-download-btn" class="hidden flex-1 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#e97316;">
+                Download PDF
+            </button>
+            <button id="report-modal-cancel" class="flex-1 border border-gray-200 text-gray-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-gray-50 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
