@@ -2355,10 +2355,7 @@ function initApp() {
             provider.addScope('https://www.googleapis.com/auth/drive.file');
             provider.addScope('https://www.googleapis.com/auth/calendar');
             provider.setCustomParameters({ prompt: 'consent' });
-            const user = auth.currentUser;
-            const result = user
-                ? await user.reauthenticateWithPopup(provider)
-                : await auth.signInWithPopup(provider);
+            const result = await auth.signInWithPopup(provider);
             const token = result.credential?.accessToken;
             if (!token) { toast('Could not get access token — try signing out and back in.', true); return; }
             driveToken = token;
@@ -3314,10 +3311,7 @@ function initApp() {
             provider.addScope('https://www.googleapis.com/auth/drive.file');
             provider.addScope('https://www.googleapis.com/auth/calendar');
             provider.setCustomParameters({ prompt: 'consent' });
-            const user = auth.currentUser;
-            const result = user
-                ? await user.reauthenticateWithPopup(provider)
-                : await auth.signInWithPopup(provider);
+            const result = await auth.signInWithPopup(provider);
             const token = result.credential?.accessToken;
             if (!token) { toast('Could not get access token — try signing out and back in.', true); return; }
             driveToken = token;
