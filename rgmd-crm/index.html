@@ -3309,23 +3309,26 @@ function initApp() {
 
     // ── Reconnect Drive ────────────────────────────────────
     $('reconnect-drive-btn').addEventListener('click', async () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/drive.file');
-        provider.addScope('https://www.googleapis.com/auth/calendar');
         try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('https://www.googleapis.com/auth/drive.file');
+            provider.addScope('https://www.googleapis.com/auth/calendar');
+            provider.setCustomParameters({ prompt: 'consent' });
             const user = auth.currentUser;
             const result = user
                 ? await user.reauthenticateWithPopup(provider)
                 : await auth.signInWithPopup(provider);
-            driveToken = result.credential.accessToken;
-            if (driveToken) {
-                sessionStorage.setItem('driveToken', driveToken);
-                showDriveReconnect(false);
-                const job = jobs.find(j => j.id === selectedJobId);
-                if (job) loadDriveSection(job);
-            }
+            const token = result.credential?.accessToken;
+            if (!token) { toast('Could not get access token — try signing out and back in.', true); return; }
+            driveToken = token;
+            sessionStorage.setItem('driveToken', driveToken);
+            showDriveReconnect(false);
+            const job = jobs.find(j => j.id === selectedJobId);
+            if (job) loadDriveSection(job);
+            toast('Google Drive connected');
         } catch (err) {
-            toast('Reconnect failed: ' + err.message, true);
+            const ignored = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
+            if (!ignored.includes(err.code)) toast('Reconnect failed: ' + err.message, true);
         }
     });
 
