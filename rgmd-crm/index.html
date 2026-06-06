@@ -2623,63 +2623,89 @@ function initApp() {
         return null;
     }
 
-    let _mapUpdateId = 0; // cancels stale updates when filter changes mid-geocode
+    let _mapRunId = 0; // incremented on filter change to cancel stale geocoding
+
+    function addMapPin(job, coords) {
+        const color = TYPE_COLORS[job.projectType] || TYPE_COLORS['Other'];
+        const marker = L.marker([coords.lat, coords.lng], { icon: makePin(color) })
+            .addTo(jobsMap)
+            .bindPopup(`
+                <div style="min-width:160px;">
+                    <div style="font-weight:700;font-size:13px;color:#111;margin-bottom:2px;">${esc(job.clientName || 'Unnamed')}</div>
+                    <div style="font-size:11px;color:#555;margin-bottom:4px;">${esc(job.address || '')}</div>
+                    <div style="font-size:11px;font-weight:600;color:${color};">${esc(job.projectType || '')}</div>
+                    <button onclick="window.__openJobFromMap('${job.id}')" style="margin-top:6px;font-size:11px;font-weight:600;color:#e97316;background:none;border:none;padding:0;cursor:pointer;">Open Job →</button>
+                </div>`);
+        mapMarkers.push(marker);
+        return marker;
+    }
 
     async function updateMapPins() {
         if (!jobsMap) initJobsMap();
         mapMarkers.forEach(m => m.remove());
         mapMarkers.length = 0;
 
-        const runId = ++_mapUpdateId;
-        const bounds = [];
-
-        // Only pin the jobs currently visible in the table
+        const runId = ++_mapRunId;
         const visibleJobs = filtered();
+        const bounds = [];
+        const needsGeocode = []; // jobs with no cached coords
 
+        // ── Phase 1: immediately pin every job that already has coords ──
         for (const job of visibleJobs) {
-            if (_mapUpdateId !== runId) return; // filter changed — abort
             if (!job.address) continue;
-
-            // 1. In-memory cache
-            let coords = geoCache[job.address] || null;
-
-            // 2. Firestore-saved geo (written back on previous geocoding)
-            if (!coords && job.geo && typeof job.geo.lat === 'number' && typeof job.geo.lng === 'number') {
-                coords = { lat: job.geo.lat, lng: job.geo.lng };
-                geoCache[job.address] = coords;
+            // Populate in-memory cache from Firestore geo field
+            if (!geoCache[job.address] && job.geo && typeof job.geo.lat === 'number') {
+                geoCache[job.address] = { lat: job.geo.lat, lng: job.geo.lng };
             }
-
-            // 3. Fresh geocode — only for missing coords, rate-limited to ≤1 req/sec
-            if (!coords) {
-                await new Promise(r => setTimeout(r, 1100));
-                if (_mapUpdateId !== runId) return; // filter changed while waiting
-                coords = await geocodeAddress(job.address);
-                if (coords && job.id) {
-                    db.collection('jobs').doc(job.id).update({ geo: coords }).catch(() => {});
-                }
+            const coords = geoCache[job.address];
+            if (coords) {
+                addMapPin(job, coords);
+                bounds.push([coords.lat, coords.lng]);
+            } else {
+                needsGeocode.push(job);
             }
+        }
 
+        if (bounds.length > 0) jobsMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+        setTimeout(() => jobsMap && jobsMap.invalidateSize(), 100);
+
+        if (!needsGeocode.length) return;
+
+        // ── Phase 2: geocode missing addresses, one per second (Nominatim policy) ──
+        const newGeo = {}; // jobId → coords — batch-saved to Firestore at the end
+
+        for (const job of needsGeocode) {
+            if (_mapRunId !== runId) return; // user changed filter — abort
+            await new Promise(r => setTimeout(r, 1100));
+            if (_mapRunId !== runId) return;
+
+            const coords = await geocodeAddress(job.address);
             if (!coords) continue;
 
-            const color = TYPE_COLORS[job.projectType] || TYPE_COLORS['Other'];
-            const marker = L.marker([coords.lat, coords.lng], { icon: makePin(color) })
-                .addTo(jobsMap)
-                .bindPopup(`
-                    <div style="min-width:160px;">
-                        <div style="font-weight:700;font-size:13px;color:#111;margin-bottom:2px;">${esc(job.clientName || 'Unnamed')}</div>
-                        <div style="font-size:11px;color:#555;margin-bottom:4px;">${esc(job.address || '')}</div>
-                        <div style="font-size:11px;font-weight:600;color:${color};">${esc(job.projectType || '')}</div>
-                        <button onclick="window.__openJobFromMap('${job.id}')" style="margin-top:6px;font-size:11px;font-weight:600;color:#e97316;background:none;border:none;padding:0;cursor:pointer;">Open Job →</button>
-                    </div>`);
-            mapMarkers.push(marker);
-            bounds.push([coords.lat, coords.lng]);
+            geoCache[job.address] = coords;
+            newGeo[job.id] = coords;
+            addMapPin(job, coords);
+
+            // Extend map bounds to include new pin
+            if (mapMarkers.length === 1 && bounds.length === 0) {
+                jobsMap.setView([coords.lat, coords.lng], 11);
+            } else {
+                bounds.push([coords.lat, coords.lng]);
+                jobsMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+            }
         }
 
-        if (_mapUpdateId !== runId) return;
-        if (bounds.length > 0) {
-            jobsMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+        // ── Phase 3: batch-write all new coords to Firestore (one snapshot, not N) ──
+        const entries = Object.entries(newGeo);
+        if (!entries.length) return;
+        const CHUNK = 400;
+        for (let i = 0; i < entries.length; i += CHUNK) {
+            const batch = db.batch();
+            entries.slice(i, i + CHUNK).forEach(([id, coords]) => {
+                batch.update(db.collection('jobs').doc(id), { geo: coords });
+            });
+            await batch.commit().catch(() => {});
         }
-        setTimeout(() => jobsMap && jobsMap.invalidateSize(), 100);
     }
 
     window.__openJobFromMap = function(jobId) {
