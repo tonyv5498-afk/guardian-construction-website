@@ -2623,24 +2623,44 @@ function initApp() {
         return null;
     }
 
+    let _mapUpdateId = 0; // cancels stale updates when filter changes mid-geocode
+
     async function updateMapPins() {
         if (!jobsMap) initJobsMap();
-        // Remove existing markers
         mapMarkers.forEach(m => m.remove());
         mapMarkers.length = 0;
+
+        const runId = ++_mapUpdateId;
         const bounds = [];
-        for (const job of jobs) {
+
+        // Only pin the jobs currently visible in the table
+        const visibleJobs = filtered();
+
+        for (const job of visibleJobs) {
+            if (_mapUpdateId !== runId) return; // filter changed — abort
             if (!job.address) continue;
-            // Always geocode fresh (in-memory geoCache avoids duplicate calls
-            // within the session). This overwrites any stale Firestore geo.
+
+            // 1. In-memory cache
             let coords = geoCache[job.address] || null;
+
+            // 2. Firestore-saved geo (written back on previous geocoding)
+            if (!coords && job.geo && typeof job.geo.lat === 'number' && typeof job.geo.lng === 'number') {
+                coords = { lat: job.geo.lat, lng: job.geo.lng };
+                geoCache[job.address] = coords;
+            }
+
+            // 3. Fresh geocode — only for missing coords, rate-limited to ≤1 req/sec
             if (!coords) {
+                await new Promise(r => setTimeout(r, 1100));
+                if (_mapUpdateId !== runId) return; // filter changed while waiting
                 coords = await geocodeAddress(job.address);
                 if (coords && job.id) {
                     db.collection('jobs').doc(job.id).update({ geo: coords }).catch(() => {});
                 }
             }
+
             if (!coords) continue;
+
             const color = TYPE_COLORS[job.projectType] || TYPE_COLORS['Other'];
             const marker = L.marker([coords.lat, coords.lng], { icon: makePin(color) })
                 .addTo(jobsMap)
@@ -2654,10 +2674,11 @@ function initApp() {
             mapMarkers.push(marker);
             bounds.push([coords.lat, coords.lng]);
         }
+
+        if (_mapUpdateId !== runId) return;
         if (bounds.length > 0) {
             jobsMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
         }
-        // Invalidate size in case the map rendered while hidden
         setTimeout(() => jobsMap && jobsMap.invalidateSize(), 100);
     }
 
@@ -2669,6 +2690,7 @@ function initApp() {
 
     // ── Render jobs table ──────────────────────────────────
     function renderJobs() {
+        updateMapPins();
         const list  = filtered();
         const tbody = $('jobs-tbody');
         const empty = $('jobs-empty');
