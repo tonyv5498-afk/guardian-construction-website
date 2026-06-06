@@ -114,6 +114,45 @@
   <!-- Error -->
   <div id="error-box" class="hidden bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700 mb-5"></div>
 
+  <!-- Danger Zone: bulk delete -->
+  <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-6 mb-5">
+    <h2 class="font-bold text-red-700 mb-1">Delete All DBN Jobs</h2>
+    <p class="text-sm text-gray-500 mb-4">Finds every job whose job number starts with <code class="bg-gray-100 px-1 rounded">DBN</code> and permanently deletes them. Use this to clear the bad import before re-importing.</p>
+
+    <!-- Step A: find -->
+    <div id="del-step-find">
+      <button id="del-find-btn" class="bg-red-50 hover:bg-red-100 text-red-700 font-semibold px-5 py-2 rounded-xl text-sm transition-colors border border-red-200">
+        Find DBN Jobs
+      </button>
+    </div>
+
+    <!-- Step B: confirm -->
+    <div id="del-step-confirm" class="hidden">
+      <p id="del-count-msg" class="text-sm font-semibold text-gray-800 mb-3"></p>
+      <div class="flex gap-3">
+        <button id="del-confirm-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl text-sm transition-colors">
+          Yes, Delete All
+        </button>
+        <button id="del-cancel-btn" class="border border-gray-200 text-gray-600 font-semibold px-5 py-2 rounded-xl text-sm hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Step C: deleting progress -->
+    <div id="del-step-progress" class="hidden">
+      <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+        <div id="del-progress-bar" class="h-2 rounded-full transition-all duration-300 bg-red-500" style="width:0%"></div>
+      </div>
+      <p id="del-progress-label" class="text-sm text-gray-500">Deleting…</p>
+    </div>
+
+    <!-- Step D: done -->
+    <div id="del-step-done" class="hidden">
+      <p id="del-done-msg" class="text-sm font-semibold text-green-700"></p>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -369,6 +408,67 @@ function showError(msg) {
     $('error-box').classList.remove('hidden');
 }
 function hideError() { $('error-box').classList.add('hidden'); }
+
+// ── Bulk delete DBN jobs ──────────────────────────────────────
+let dbnDocs = [];
+
+$('del-find-btn').addEventListener('click', async () => {
+    if (!auth.currentUser) { showError('Please sign in first.'); return; }
+    $('del-find-btn').textContent = 'Searching…';
+    $('del-find-btn').disabled = true;
+    try {
+        // Firestore range query: jobNumber >= 'DBN' and < 'DBO' catches all 'DBN...' strings
+        const snap = await db.collection('jobs')
+            .where('jobNumber', '>=', 'DBN')
+            .where('jobNumber', '<', 'DBO')
+            .get();
+        dbnDocs = snap.docs;
+        $('del-step-find').classList.add('hidden');
+        $('del-step-confirm').classList.remove('hidden');
+        $('del-count-msg').textContent =
+            `Found ${dbnDocs.length} job${dbnDocs.length !== 1 ? 's' : ''} with job numbers starting with DBN. This cannot be undone.`;
+    } catch (err) {
+        $('del-find-btn').textContent = 'Find DBN Jobs';
+        $('del-find-btn').disabled = false;
+        showError('Search failed: ' + err.message);
+    }
+});
+
+$('del-cancel-btn').addEventListener('click', () => {
+    $('del-step-confirm').classList.add('hidden');
+    $('del-step-find').classList.remove('hidden');
+    $('del-find-btn').textContent = 'Find DBN Jobs';
+    $('del-find-btn').disabled = false;
+    dbnDocs = [];
+});
+
+$('del-confirm-btn').addEventListener('click', async () => {
+    if (!dbnDocs.length) return;
+    $('del-step-confirm').classList.add('hidden');
+    $('del-step-progress').classList.remove('hidden');
+
+    const total = dbnDocs.length;
+    let deleted = 0;
+
+    // Delete in batches of 400 (Firestore limit is 500 per batch)
+    const BATCH_SIZE = 400;
+    for (let i = 0; i < dbnDocs.length; i += BATCH_SIZE) {
+        const batch = db.batch();
+        const chunk = dbnDocs.slice(i, i + BATCH_SIZE);
+        chunk.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        deleted += chunk.length;
+
+        const pct = Math.round((deleted / total) * 100);
+        $('del-progress-bar').style.width = pct + '%';
+        $('del-progress-label').textContent = `Deleted ${deleted} of ${total} jobs…`;
+    }
+
+    $('del-step-progress').classList.add('hidden');
+    $('del-step-done').classList.remove('hidden');
+    $('del-done-msg').textContent = `✓ ${deleted} job${deleted !== 1 ? 's' : ''} deleted. You can now re-import.`;
+    dbnDocs = [];
+});
 </script>
 </body>
 </html>
