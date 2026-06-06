@@ -26,9 +26,9 @@
     </div>
   </div>
 
-  <!-- Auth check -->
+  <!-- Auth -->
   <div id="auth-banner" class="hidden mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
-    You must be signed in to the RGMD CRM to import jobs.
+    You must be signed in to import jobs.
     <button id="signin-btn" class="ml-2 font-semibold underline">Sign in with Google</button>
   </div>
   <div id="auth-ok" class="hidden mb-6 p-3 bg-green-50 border border-green-100 rounded-xl text-sm text-green-700 flex items-center gap-2">
@@ -38,9 +38,9 @@
 
   <!-- Step 1: Upload -->
   <div id="step-upload" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
-    <h2 class="font-bold text-gray-800 mb-1">Step 1 — Export &amp; Upload your CSV</h2>
-    <p class="text-sm text-gray-500 mb-4">In Excel: File → Save As → CSV UTF-8. The file must have these headers (exact or close match):<br>
-      <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Project, Customer, Type, Address, Customer Phone Number, Customer Email, Referrer Source</code>
+    <h2 class="font-bold text-gray-800 mb-1">Step 1 — Upload your CSV</h2>
+    <p class="text-sm text-gray-500 mb-4">In Excel: <strong>File → Save As → CSV UTF-8</strong>. Expected headers:<br>
+      <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded mt-1 inline-block">Project, Customer, Type, Address, Customer Phone Number, Customer Email, Referrer Source</code>
     </p>
     <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-blue-400 rounded-xl py-10 px-6 cursor-pointer transition-colors">
       <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -50,14 +50,27 @@
     </label>
   </div>
 
-  <!-- Step 2: Preview -->
+  <!-- Step 2: Mapping confirmation -->
+  <div id="step-mapping" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+    <h2 class="font-bold text-gray-800 mb-1">Step 2 — Verify Column Mapping</h2>
+    <p class="text-sm text-gray-500 mb-4">Confirm the detected headers match the right fields before importing.</p>
+    <div id="mapping-table" class="rounded-xl border border-gray-100 overflow-hidden mb-4">
+      <!-- filled by JS -->
+    </div>
+    <div id="raw-headers" class="text-xs text-gray-400 mb-4"></div>
+    <button id="confirm-mapping-btn" class="text-white font-semibold px-6 py-2.5 rounded-xl text-sm" style="background:#1B3A6B">
+      Looks Good — Show Preview
+    </button>
+  </div>
+
+  <!-- Step 3: Row preview -->
   <div id="step-preview" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
     <div class="flex items-center justify-between mb-4">
       <div>
-        <h2 class="font-bold text-gray-800">Step 2 — Preview &amp; Import</h2>
+        <h2 class="font-bold text-gray-800">Step 3 — Data Preview</h2>
         <p id="preview-count" class="text-sm text-gray-500"></p>
       </div>
-      <button id="import-btn" class="text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors" style="background:#1B3A6B">
+      <button id="import-btn" class="text-white font-semibold px-6 py-2.5 rounded-xl text-sm" style="background:#1B3A6B">
         Import All Jobs
       </button>
     </div>
@@ -65,13 +78,13 @@
       <table class="w-full text-xs">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-100">
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Job #</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Customer</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Type</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Address</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Phone</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Email</th>
-            <th class="text-left px-3 py-2 font-semibold text-gray-500">Referral</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Job #</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Customer</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Type</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Address</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Phone</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Email</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500 whitespace-nowrap">Referral</th>
           </tr>
         </thead>
         <tbody id="preview-body"></tbody>
@@ -79,7 +92,7 @@
     </div>
   </div>
 
-  <!-- Step 3: Progress -->
+  <!-- Step 4: Progress -->
   <div id="step-progress" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
     <h2 class="font-bold text-gray-800 mb-4">Importing…</h2>
     <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
@@ -88,16 +101,14 @@
     <p id="progress-label" class="text-sm text-gray-500">0 of 0 jobs imported</p>
   </div>
 
-  <!-- Step 4: Done -->
+  <!-- Step 5: Done -->
   <div id="step-done" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-6 mb-5 text-center">
     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
       <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     </div>
     <h2 class="font-bold text-gray-900 text-lg mb-1">Import Complete</h2>
     <p id="done-msg" class="text-sm text-gray-500 mb-5"></p>
-    <a href="/" class="inline-block text-white font-semibold px-6 py-2.5 rounded-xl text-sm" style="background:#1B3A6B;">
-      Go to CRM
-    </a>
+    <a href="/" class="inline-block text-white font-semibold px-6 py-2.5 rounded-xl text-sm" style="background:#1B3A6B;">Go to CRM</a>
   </div>
 
   <!-- Error -->
@@ -118,141 +129,204 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
-// ── Auth ────────────────────────────────────────────────────
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+    if (s === null || s === undefined || s === '') return '<span class="text-gray-300">—</span>';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Auth ─────────────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
     if (user) {
-        document.getElementById('auth-banner').classList.add('hidden');
-        document.getElementById('auth-ok').classList.remove('hidden');
-        document.getElementById('auth-user-label').textContent = 'Signed in as ' + (user.displayName || user.email);
+        $('auth-banner').classList.add('hidden');
+        $('auth-ok').classList.remove('hidden');
+        $('auth-user-label').textContent = 'Signed in as ' + (user.displayName || user.email);
     } else {
-        document.getElementById('auth-banner').classList.remove('hidden');
-        document.getElementById('auth-ok').classList.add('hidden');
+        $('auth-banner').classList.remove('hidden');
+        $('auth-ok').classList.add('hidden');
     }
 });
-
-document.getElementById('signin-btn').addEventListener('click', () => {
+$('signin-btn').addEventListener('click', () => {
     const p = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(p).catch(err => showError(err.message));
 });
 
-// ── CSV parsing ─────────────────────────────────────────────
+// ── CSV parsing ───────────────────────────────────────────────
 let parsedRows = [];
+let colMap = {};
 
-// Flexible column finder — matches even if the header has extra spaces or different casing
-function findCol(headers, ...candidates) {
-    for (const c of candidates) {
-        const i = headers.findIndex(h => h.trim().toLowerCase() === c.toLowerCase());
-        if (i !== -1) return i;
+function splitCSVLine(line) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+            // handle doubled quotes inside quoted fields
+            if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+            else { inQ = !inQ; }
+        } else if (ch === ',' && !inQ) {
+            result.push(cur.trim());
+            cur = '';
+        } else {
+            cur += ch;
+        }
     }
-    // Partial match fallback
+    result.push(cur.trim());
+    return result;
+}
+
+// Strips invisible characters (BOM, zero-width space, etc.) from a header string
+function cleanHeader(h) {
+    return h.replace(/[﻿​ ]/g, '').trim();
+}
+
+// Returns column index, or -1. Tries: exact → starts-with → contains (all case-insensitive)
+function findCol(headers, ...candidates) {
+    const cleaned = headers.map(cleanHeader);
     for (const c of candidates) {
-        const i = headers.findIndex(h => h.trim().toLowerCase().includes(c.toLowerCase()));
-        if (i !== -1) return i;
+        const cl = c.toLowerCase();
+        // exact
+        let i = cleaned.findIndex(h => h.toLowerCase() === cl);
+        if (i >= 0) return i;
+    }
+    for (const c of candidates) {
+        const cl = c.toLowerCase();
+        // starts with
+        let i = cleaned.findIndex(h => h.toLowerCase().startsWith(cl));
+        if (i >= 0) return i;
+    }
+    for (const c of candidates) {
+        const cl = c.toLowerCase();
+        // contains
+        let i = cleaned.findIndex(h => h.toLowerCase().includes(cl));
+        if (i >= 0) return i;
     }
     return -1;
 }
 
-function parseCSV(text) {
-    // Handle \r\n and \r line endings
-    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
-    if (lines.length < 2) throw new Error('CSV appears empty or has no data rows.');
+function parseCSV(rawText) {
+    // Strip BOM and normalize line endings
+    const text = rawText.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = text.split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('CSV appears empty or has only a header row with no data.');
 
-    // Simple CSV field splitter (handles quoted fields)
-    function splitLine(line) {
-        const result = [];
-        let cur = '', inQ = false;
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (ch === '"') { inQ = !inQ; }
-            else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
-            else { cur += ch; }
-        }
-        result.push(cur.trim());
-        return result;
-    }
+    const rawHeaders = splitCSVLine(lines[0]);
 
-    const headers = splitLine(lines[0]);
-    const iJob  = findCol(headers, 'Project', 'Job', 'Job Number', 'Job#', 'Job #');
-    const iName = findCol(headers, 'Customer', 'Client', 'Name', 'Customer Name', 'Client Name');
-    const iType = findCol(headers, 'Type', 'Job Type', 'Project Type', 'Work Type');
-    const iAddr = findCol(headers, 'Address', 'Job Address');
-    const iPhone = findCol(headers, 'Customer Phone Number', 'Phone', 'Phone Number', 'Cell');
-    const iEmail = findCol(headers, 'Customer Email', 'Email', 'Email Address');
-    const iRef  = findCol(headers, 'Referrer Source', 'Referral', 'Referral Source', 'Referrer', 'Lead Source');
+    // Find columns — order of candidates matters: most specific first
+    const iJob   = findCol(rawHeaders, 'Project', 'Job Number', 'Job #', 'Job#', 'Job No', 'Job');
+    const iName  = findCol(rawHeaders, 'Customer Name', 'Client Name', 'Customer', 'Client', 'Name');
+    const iType  = findCol(rawHeaders, 'Project Type', 'Job Type', 'Work Type', 'Type');
+    const iAddr  = findCol(rawHeaders, 'Job Address', 'Address', 'Location');
+    const iPhone = findCol(rawHeaders, 'Customer Phone Number', 'Phone Number', 'Cell Phone', 'Phone', 'Mobile', 'Cell');
+    const iEmail = findCol(rawHeaders, 'Customer Email', 'Email Address', 'Email');
+    const iRef   = findCol(rawHeaders, 'Referrer Source', 'Referral Source', 'Lead Source', 'Referrer', 'Referral', 'Referred By');
 
-    const missing = [];
-    if (iName < 0) missing.push('Customer');
-    if (missing.length) throw new Error('Could not find required column(s): ' + missing.join(', ') + '. Found headers: ' + headers.join(', '));
+    // Store mapping for display
+    colMap = {
+        'Job #':     { idx: iJob,   header: iJob   >= 0 ? rawHeaders[iJob]   : null },
+        'Customer':  { idx: iName,  header: iName  >= 0 ? rawHeaders[iName]  : null },
+        'Type':      { idx: iType,  header: iType  >= 0 ? rawHeaders[iType]  : null },
+        'Address':   { idx: iAddr,  header: iAddr  >= 0 ? rawHeaders[iAddr]  : null },
+        'Phone':     { idx: iPhone, header: iPhone >= 0 ? rawHeaders[iPhone] : null },
+        'Email':     { idx: iEmail, header: iEmail >= 0 ? rawHeaders[iEmail] : null },
+        'Referral':  { idx: iRef,   header: iRef   >= 0 ? rawHeaders[iRef]   : null },
+    };
 
     const rows = [];
     for (let i = 1; i < lines.length; i++) {
-        const cols = splitLine(lines[i]);
-        if (cols.every(c => !c)) continue; // skip blank rows
+        const cols = splitCSVLine(lines[i]);
+        if (cols.every(c => !c)) continue;
         rows.push({
-            jobNumber:     iJob  >= 0 ? cols[iJob]   || '' : '',
-            clientName:    iName >= 0 ? cols[iName]  || '' : '',
-            projectType:   iType >= 0 ? cols[iType]  || '' : '',
-            address:       iAddr >= 0 ? cols[iAddr]  || '' : '',
-            phone:         iPhone >= 0 ? cols[iPhone] || '' : '',
-            email:         iEmail >= 0 ? cols[iEmail] || '' : '',
-            referralSource: iRef >= 0 ? cols[iRef]   || '' : '',
+            jobNumber:      iJob   >= 0 ? cols[iJob]   || '' : '',
+            clientName:     iName  >= 0 ? cols[iName]  || '' : '',
+            projectType:    iType  >= 0 ? cols[iType]  || '' : '',
+            address:        iAddr  >= 0 ? cols[iAddr]  || '' : '',
+            phone:          iPhone >= 0 ? cols[iPhone] || '' : '',
+            email:          iEmail >= 0 ? cols[iEmail] || '' : '',
+            referralSource: iRef   >= 0 ? cols[iRef]   || '' : '',
         });
     }
-    if (!rows.length) throw new Error('No data rows found in CSV.');
-    return rows;
+    if (!rows.length) throw new Error('No data rows found.');
+    return { rows, rawHeaders };
 }
 
-document.getElementById('csv-input').addEventListener('change', e => {
+$('csv-input').addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-    document.getElementById('file-name').textContent = file.name;
+    $('file-name').textContent = file.name;
     const reader = new FileReader();
     reader.onload = ev => {
         try {
-            parsedRows = parseCSV(ev.target.result);
-            showPreview(parsedRows);
             hideError();
-        } catch (err) {
-            showError(err.message);
-        }
+            const { rows, rawHeaders } = parseCSV(ev.target.result);
+            parsedRows = rows;
+            showMapping(rawHeaders);
+        } catch (err) { showError(err.message); }
     };
-    reader.readAsText(file);
+    reader.readAsText(file, 'UTF-8');
 });
 
-function esc(s) {
-    if (!s) return '—';
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function showMapping(rawHeaders) {
+    const rows = Object.entries(colMap).map(([field, info]) => {
+        const found = info.idx >= 0;
+        return `<tr class="border-b border-gray-50">
+            <td class="px-4 py-2.5 text-xs font-semibold text-gray-700 w-28">${field}</td>
+            <td class="px-4 py-2.5 text-xs font-mono ${found ? 'text-gray-800' : 'text-gray-300'}">
+                ${found ? esc(info.header) : 'not found — will be blank'}
+            </td>
+            <td class="px-4 py-2.5 text-xs w-8 text-center">
+                ${found
+                    ? '<svg class="w-4 h-4 text-green-500 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+                    : '<svg class="w-4 h-4 text-gray-300 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>'
+                }
+            </td>
+        </tr>`;
+    }).join('');
+
+    $('mapping-table').innerHTML = `<table class="w-full">
+        <thead><tr class="bg-gray-50 border-b border-gray-100">
+            <th class="text-left px-4 py-2 text-xs font-semibold text-gray-500">CRM Field</th>
+            <th class="text-left px-4 py-2 text-xs font-semibold text-gray-500">Detected CSV Header</th>
+            <th class="px-4 py-2 w-8"></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+
+    $('raw-headers').textContent = 'All headers found in file: ' + rawHeaders.join(' | ');
+    $('step-mapping').classList.remove('hidden');
 }
+
+$('confirm-mapping-btn').addEventListener('click', () => {
+    $('step-mapping').classList.add('hidden');
+    showPreview(parsedRows);
+});
 
 function showPreview(rows) {
-    document.getElementById('preview-count').textContent =
-        rows.length + ' job' + (rows.length !== 1 ? 's' : '') + ' found — showing first 10 rows';
-    const tbody = document.getElementById('preview-body');
-    tbody.innerHTML = rows.slice(0, 10).map(r => `
+    $('preview-count').textContent =
+        rows.length + ' job' + (rows.length !== 1 ? 's' : '') + ' ready to import — previewing first 10 rows';
+    $('preview-body').innerHTML = rows.slice(0, 10).map(r => `
         <tr class="border-b border-gray-50 hover:bg-gray-50">
-            <td class="px-3 py-2 font-mono text-gray-700">${esc(r.jobNumber)}</td>
-            <td class="px-3 py-2 text-gray-800 font-medium">${esc(r.clientName)}</td>
-            <td class="px-3 py-2 text-gray-600">${esc(r.projectType)}</td>
-            <td class="px-3 py-2 text-gray-600 max-w-[180px] truncate">${esc(r.address)}</td>
-            <td class="px-3 py-2 text-gray-600">${esc(r.phone)}</td>
-            <td class="px-3 py-2 text-gray-600">${esc(r.email)}</td>
-            <td class="px-3 py-2 text-gray-600">${esc(r.referralSource)}</td>
+            <td class="px-3 py-2 font-mono text-gray-700 whitespace-nowrap">${esc(r.jobNumber)}</td>
+            <td class="px-3 py-2 text-gray-800 font-medium whitespace-nowrap">${esc(r.clientName)}</td>
+            <td class="px-3 py-2 text-gray-600 whitespace-nowrap">${esc(r.projectType)}</td>
+            <td class="px-3 py-2 text-gray-600 max-w-[160px] truncate">${esc(r.address)}</td>
+            <td class="px-3 py-2 text-gray-600 whitespace-nowrap">${esc(r.phone)}</td>
+            <td class="px-3 py-2 text-gray-600 whitespace-nowrap">${esc(r.email)}</td>
+            <td class="px-3 py-2 text-gray-600 whitespace-nowrap">${esc(r.referralSource)}</td>
         </tr>`).join('');
-    document.getElementById('step-preview').classList.remove('hidden');
+    $('step-preview').classList.remove('hidden');
 }
 
-// ── Import ──────────────────────────────────────────────────
-document.getElementById('import-btn').addEventListener('click', async () => {
+// ── Import ────────────────────────────────────────────────────
+$('import-btn').addEventListener('click', async () => {
     if (!parsedRows.length) return;
     if (!auth.currentUser) { showError('Please sign in first.'); return; }
 
-    // Use a base date well before any existing CRM jobs
-    // Each row gets a 1-minute increment to preserve original order
     const BASE_MS = new Date('2020-01-01T00:00:00Z').getTime();
     const total = parsedRows.length;
 
-    document.getElementById('step-preview').classList.add('hidden');
-    document.getElementById('step-progress').classList.remove('hidden');
+    $('step-preview').classList.add('hidden');
+    $('step-progress').classList.remove('hidden');
 
     let imported = 0, skipped = 0;
 
@@ -276,32 +350,25 @@ document.getElementById('import-btn').addEventListener('click', async () => {
                 createdBy:      auth.currentUser.email,
             });
             imported++;
-        } catch (err) {
-            skipped++;
-        }
+        } catch (_) { skipped++; }
 
-        // Update progress
         const pct = Math.round(((i + 1) / total) * 100);
-        document.getElementById('progress-bar').style.width = pct + '%';
-        document.getElementById('progress-label').textContent =
-            (i + 1) + ' of ' + total + ' jobs processed';
+        $('progress-bar').style.width = pct + '%';
+        $('progress-label').textContent = (i + 1) + ' of ' + total + ' jobs processed';
     }
 
-    document.getElementById('step-progress').classList.add('hidden');
-    document.getElementById('step-done').classList.remove('hidden');
-    document.getElementById('done-msg').textContent =
+    $('step-progress').classList.add('hidden');
+    $('step-done').classList.remove('hidden');
+    $('done-msg').textContent =
         imported + ' job' + (imported !== 1 ? 's' : '') + ' imported successfully' +
         (skipped ? ' · ' + skipped + ' skipped due to errors' : '') + '.';
 });
 
 function showError(msg) {
-    const el = document.getElementById('error-box');
-    el.textContent = 'Error: ' + msg;
-    el.classList.remove('hidden');
+    $('error-box').textContent = 'Error: ' + msg;
+    $('error-box').classList.remove('hidden');
 }
-function hideError() {
-    document.getElementById('error-box').classList.add('hidden');
-}
+function hideError() { $('error-box').classList.add('hidden'); }
 </script>
 </body>
 </html>
