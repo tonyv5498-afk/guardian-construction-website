@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Manager | Guardian Construction</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --gold:        #B69663;
+      --gold-light:  #C9A97A;
+      --gold-pale:   #D4B98A;
+      --gold-dim:    rgba(182,150,99,.18);
+      --gold-border: rgba(182,150,99,.30);
+      --navy:        #0D1521;
+      --navy-mid:    #121D2E;
+      --navy-soft:   #192336;
+      --navy-card:   #1A2B40;
+      --slate:       #2C3E55;
+      --cream:       #F4F1EB;
+      --cream-dark:  #EAE6DC;
+      --text-light:  #F2F4F6;
+      --text-mid:    #9AABB8;
+      --text-muted:  #6A7E90;
+      --white:       #FFFFFF;
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   14px;
+      --green:       #2ecc71;
+      --red:         #e74c3c;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Barlow', sans-serif; background: var(--navy); color: var(--text-light); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(13,21,33,.97); backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 68px;
+      border-bottom: 1px solid var(--gold-border);
+    }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: .5px; }
+    .nav-back { color: var(--text-mid); text-decoration: none; font-size: .85rem; font-weight: 500; transition: color .2s; }
+    .nav-back:hover { color: var(--white); }
+
+    /* LAYOUT */
+    .app { display: flex; min-height: calc(100vh - 68px); }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 300px; flex-shrink: 0;
+      background: var(--navy-mid); border-right: 1px solid var(--gold-border);
+      display: flex; flex-direction: column;
+      height: calc(100vh - 68px); position: sticky; top: 68px; overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 20px 18px 14px;
+      border-bottom: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-mid); letter-spacing: 1px; text-transform: uppercase; }
+    .btn-new-job {
+      background: var(--gold); color: var(--navy);
+      border: none; border-radius: var(--radius-sm);
+      padding: 7px 14px; font-weight: 700; font-size: .78rem; letter-spacing: .3px;
+      cursor: pointer; transition: background .2s;
+      font-family: 'Barlow', sans-serif;
+    }
+    .btn-new-job:hover { background: var(--gold-light); }
+    .sidebar-search { padding: 12px 18px; border-bottom: 1px solid rgba(182,150,99,.12); }
+    .sidebar-search input {
+      width: 100%; background: var(--navy-soft); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-light);
+      font-size: .83rem; font-family: 'Barlow', sans-serif; outline: none;
+    }
+    .sidebar-search input::placeholder { color: var(--text-muted); }
+    .sidebar-search input:focus { border-color: var(--gold); }
+    .job-list { overflow-y: auto; flex: 1; }
+    .job-item {
+      padding: 14px 18px; cursor: pointer;
+      border-bottom: 1px solid rgba(182,150,99,.08);
+      transition: background .15s;
+    }
+    .job-item:hover { background: var(--navy-soft); }
+    .job-item.active { background: var(--gold-dim); border-left: 3px solid var(--gold); }
+    .job-item-name { font-weight: 600; font-size: .9rem; color: var(--text-light); margin-bottom: 3px; }
+    .job-item-meta { font-size: .75rem; color: var(--text-muted); }
+    .job-item-status {
+      display: inline-block; margin-top: 5px;
+      padding: 2px 8px; border-radius: 20px; font-size: .68rem; font-weight: 600; letter-spacing: .3px;
+    }
+    .status-active { background: rgba(46,204,113,.15); color: var(--green); }
+    .status-complete { background: rgba(182,150,99,.15); color: var(--gold); }
+    .status-pending { background: rgba(154,171,184,.15); color: var(--text-mid); }
+    .empty-list { padding: 40px 18px; text-align: center; color: var(--text-muted); font-size: .85rem; }
+
+    /* MAIN CONTENT */
+    .main { flex: 1; overflow-y: auto; }
+    .welcome-screen {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; min-height: 400px; text-align: center; padding: 40px;
+    }
+    .welcome-icon { font-size: 3rem; margin-bottom: 16px; opacity: .4; }
+    .welcome-screen h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; color: var(--text-mid); margin-bottom: 8px; }
+    .welcome-screen p { color: var(--text-muted); font-size: .9rem; }
+
+    /* JOB DETAIL */
+    .job-detail { padding: 0; }
+    .job-detail-header {
+      background: var(--navy-soft); border-bottom: 1px solid var(--gold-border);
+      padding: 24px 32px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
+    }
+    .job-detail-header-left h1 {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 800;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .job-detail-header-left .meta { color: var(--text-muted); font-size: .85rem; display: flex; gap: 16px; flex-wrap: wrap; }
+    .job-detail-header-left .meta span { display: flex; align-items: center; gap: 5px; }
+    .header-actions { display: flex; gap: 10px; flex-shrink: 0; }
+    .btn { padding: 9px 18px; border-radius: var(--radius-sm); font-weight: 700; font-size: .8rem; font-family: 'Barlow', sans-serif; cursor: pointer; border: none; transition: all .2s; letter-spacing: .3px; }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-outline { background: transparent; color: var(--text-mid); border: 1px solid var(--gold-border); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--white); }
+    .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(231,76,60,.3); }
+    .btn-danger:hover { background: rgba(231,76,60,.1); }
+    .btn-report { background: var(--navy-card); color: var(--gold); border: 1px solid var(--gold-border); }
+    .btn-report:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+    /* TABS */
+    .tabs { display: flex; background: var(--navy-mid); border-bottom: 1px solid var(--gold-border); padding: 0 32px; }
+    .tab-btn {
+      padding: 14px 20px; background: none; border: none; color: var(--text-muted);
+      font-family: 'Barlow', sans-serif; font-size: .85rem; font-weight: 600;
+      cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color .2s, border-color .2s; letter-spacing: .2px;
+    }
+    .tab-btn:hover { color: var(--text-light); }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-content { display: none; padding: 28px 32px; }
+    .tab-content.active { display: block; }
+
+    /* OVERVIEW TAB */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .info-card {
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md); padding: 16px 18px;
+    }
+    .info-card-label { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--text-muted); margin-bottom: 6px; }
+    .info-card-value { font-size: 1rem; font-weight: 600; color: var(--text-light); }
+
+    /* NOTES TAB */
+    .notes-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .notes-toolbar h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-mid); letter-spacing: .5px; text-transform: uppercase; }
+    .note-entry {
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 12px;
+    }
+    .note-entry-meta { font-size: .72rem; color: var(--text-muted); margin-bottom: 8px; }
+    .note-entry-text { color: var(--text-light); font-size: .9rem; line-height: 1.65; white-space: pre-wrap; }
+    .note-add-form { margin-top: 16px; }
+    .note-add-form textarea {
+      width: 100%; background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md); padding: 14px 16px; color: var(--text-light);
+      font-family: 'Barlow', sans-serif; font-size: .9rem; resize: vertical;
+      min-height: 100px; outline: none; transition: border-color .2s;
+    }
+    .note-add-form textarea:focus { border-color: var(--gold); }
+    .note-add-form textarea::placeholder { color: var(--text-muted); }
+    .note-add-actions { margin-top: 10px; display: flex; gap: 8px; }
+    .empty-notes { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: .88rem; }
+
+    /* PHOTOS TAB */
+    .photos-upload-area {
+      border: 2px dashed var(--gold-border); border-radius: var(--radius-lg);
+      padding: 32px; text-align: center; margin-bottom: 24px;
+      cursor: pointer; transition: border-color .2s, background .2s;
+    }
+    .photos-upload-area:hover, .photos-upload-area.dragover {
+      border-color: var(--gold); background: var(--gold-dim);
+    }
+    .photos-upload-area p { color: var(--text-muted); font-size: .88rem; margin-top: 8px; }
+    .photos-upload-area .upload-icon { font-size: 2rem; margin-bottom: 8px; opacity: .5; }
+    .photos-upload-area input[type="file"] { display: none; }
+    .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .photo-thumb {
+      position: relative; border-radius: var(--radius-md); overflow: hidden;
+      aspect-ratio: 1; border: 1px solid var(--gold-border); background: var(--navy-card);
+    }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-thumb .photo-delete {
+      position: absolute; top: 6px; right: 6px;
+      background: rgba(0,0,0,.7); color: var(--red); border: none;
+      border-radius: 50%; width: 26px; height: 26px; font-size: 1rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s;
+    }
+    .photo-thumb:hover .photo-delete { opacity: 1; }
+    .photo-thumb .photo-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,.6); padding: 4px 8px;
+      font-size: .68rem; color: var(--text-light);
+    }
+    .empty-photos { text-align: center; padding: 20px; color: var(--text-muted); font-size: .88rem; }
+
+    /* REPORT TAB */
+    .report-generate-section {
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;
+      text-align: center;
+    }
+    .report-generate-section h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+    .report-generate-section p { color: var(--text-muted); font-size: .88rem; margin-bottom: 20px; line-height: 1.6; }
+    .btn-generate { background: var(--gold); color: var(--navy); padding: 12px 28px; font-size: .9rem; }
+    .btn-generate:hover { background: var(--gold-light); }
+    .btn-generate:disabled { opacity: .5; cursor: not-allowed; }
+    .report-output {
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg); padding: 28px;
+    }
+    .report-output-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .report-output-toolbar h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; color: var(--gold); font-weight: 700; }
+    .report-text { color: var(--text-light); font-size: .9rem; line-height: 1.8; white-space: pre-wrap; }
+    .report-text h2, .report-text strong { color: var(--gold-pale); }
+    .report-spinner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 30px; color: var(--text-muted); }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--gold-border); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .api-key-notice {
+      background: rgba(182,150,99,.08); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px;
+      font-size: .82rem; color: var(--text-muted); line-height: 1.6;
+    }
+    .api-key-notice strong { color: var(--gold-light); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 500;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: var(--navy-mid); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg); width: 100%; max-width: 580px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--white); }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: var(--white); }
+    .modal-body { padding: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: .78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: .3px; text-transform: uppercase; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: var(--navy-soft); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text-light);
+      font-family: 'Barlow', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-group select option { background: var(--navy-soft); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gold-border); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* PDF PREVIEW (hidden, only for generation) */
+    #pdf-report-preview {
+      position: absolute; left: -9999px; top: 0;
+      width: 800px; background: white; color: #111; font-family: 'Barlow', sans-serif;
+      padding: 60px 60px 40px;
+    }
+    .pdf-header { border-bottom: 3px solid #B69663; padding-bottom: 20px; margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; }
+    .pdf-company-name { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 800; color: #0D1521; }
+    .pdf-company-sub { font-size: 12px; color: #6A7E90; margin-top: 3px; }
+    .pdf-report-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: #B69663; text-align: right; }
+    .pdf-report-date { font-size: 11px; color: #6A7E90; text-align: right; margin-top: 3px; }
+    .pdf-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 28px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+    .pdf-meta-cell { padding: 12px 16px; background: #F8F6F2; }
+    .pdf-meta-cell:not(:last-child) { border-right: 1px solid #ddd; }
+    .pdf-meta-label { font-size: 9px; font-weight: 700; color: #9AABB8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .pdf-meta-value { font-size: 13px; font-weight: 600; color: #0D1521; }
+    .pdf-section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: #B69663; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid #e8e0d0; padding-bottom: 6px; margin-bottom: 12px; margin-top: 24px; }
+    .pdf-body-text { font-size: 12px; line-height: 1.75; color: #2C3E55; white-space: pre-wrap; }
+    .pdf-photos-section { margin-top: 0; }
+    .pdf-photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+    .pdf-photo-wrap { border-radius: 4px; overflow: hidden; border: 1px solid #ddd; }
+    .pdf-photo-wrap img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .pdf-footer { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 14px; display: flex; justify-content: space-between; font-size: 10px; color: #9AABB8; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .job-detail-header { flex-direction: column; }
+      .header-actions { flex-wrap: wrap; }
+      .tabs { padding: 0 16px; overflow-x: auto; }
+      .tab-content { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="/logo.png" alt="Guardian Construction"></div>
+  <span class="nav-title">Job Manager</span>
+  <a href="/" class="nav-back">← Back to Site</a>
+</nav>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Jobs</span>
+      <button class="btn-new-job" onclick="openNewJobModal()">+ New Job</button>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="job-search" placeholder="Search jobs..." oninput="renderJobList()">
+    </div>
+    <div class="job-list" id="job-list"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main-content">
+    <div class="welcome-screen" id="welcome-screen">
+      <div class="welcome-icon">🏗️</div>
+      <h2>Select or create a job</h2>
+      <p>Choose a job from the sidebar or create a new one to get started.</p>
+    </div>
+    <div class="job-detail hidden" id="job-detail"></div>
+  </main>
+</div>
+
+<!-- NEW JOB MODAL -->
+<div class="modal-overlay hidden" id="new-job-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">New Job</h2>
+      <button class="modal-close" onclick="closeNewJobModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Job Name *</label>
+          <input type="text" id="nj-name" placeholder="e.g. Smith Kitchen Remodel">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="nj-status">
+            <option value="pending">Pending</option>
+            <option value="active" selected>Active</option>
+            <option value="complete">Complete</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Client Name</label>
+        <input type="text" id="nj-client" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label>Property Address</label>
+        <input type="text" id="nj-address" placeholder="123 Main St, City, MI 48XXX">
+      </div>
+      <div class="form-group">
+        <label>Service Type</label>
+        <select id="nj-service">
+          <option value="">Select service...</option>
+          <optgroup label="Interior">
+            <option>Kitchen Remodeling</option>
+            <option>Bathroom Remodeling</option>
+            <option>Basement Finishing</option>
+            <option>Home Addition</option>
+            <option>Garage Build / Conversion</option>
+            <option>Full Home Remodel</option>
+          </optgroup>
+          <optgroup label="Exterior">
+            <option>Roof Replacement / Repair</option>
+            <option>Siding Installation</option>
+            <option>Attic & Wall Insulation</option>
+            <option>Gutter Installation</option>
+            <option>Masonry & Brick Work</option>
+            <option>Window & Door Replacement</option>
+          </optgroup>
+          <option value="Other">Other / Multiple</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="nj-start">
+        </div>
+        <div class="form-group">
+          <label>Completion Date</label>
+          <input type="date" id="nj-end">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Initial Notes</label>
+        <textarea id="nj-notes" placeholder="Describe the project scope, materials, special requirements, initial observations..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeNewJobModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveJob()">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF PREVIEW (off-screen) -->
+<div id="pdf-report-preview"></div>
+
+<script>
+/* ── DATA LAYER ──────────────────────────────────────────────────── */
+const STORE_KEY = 'guardian_jobs_v1';
+
+function loadJobs() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+}
+
+function saveJobs(jobs) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(jobs));
+}
+
+function getJob(id) {
+  return loadJobs().find(j => j.id === id);
+}
+
+function updateJob(id, patch) {
+  const jobs = loadJobs();
+  const idx = jobs.findIndex(j => j.id === id);
+  if (idx === -1) return;
+  jobs[idx] = { ...jobs[idx], ...patch, updatedAt: Date.now() };
+  saveJobs(jobs);
+  return jobs[idx];
+}
+
+function deleteJob(id) {
+  const jobs = loadJobs().filter(j => j.id !== id);
+  saveJobs(jobs);
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+/* ── STATE ───────────────────────────────────────────────────────── */
+let activeJobId = null;
+let activeTab = 'overview';
+let editingJobId = null;
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────── */
+function renderJobList() {
+  const query = document.getElementById('job-search').value.toLowerCase();
+  const jobs = loadJobs().filter(j =>
+    j.name.toLowerCase().includes(query) ||
+    (j.client || '').toLowerCase().includes(query) ||
+    (j.address || '').toLowerCase().includes(query)
+  ).sort((a, b) => b.updatedAt - a.updatedAt);
+
+  const el = document.getElementById('job-list');
+  if (!jobs.length) {
+    el.innerHTML = '<div class="empty-list">No jobs yet.<br>Click + New Job to create one.</div>';
+    return;
+  }
+  el.innerHTML = jobs.map(j => `
+    <div class="job-item ${j.id === activeJobId ? 'active' : ''}" onclick="selectJob('${j.id}')">
+      <div class="job-item-name">${esc(j.name)}</div>
+      <div class="job-item-meta">${esc(j.client || '—')} · ${esc(j.service || 'General')}</div>
+      <span class="job-item-status status-${j.status}">${j.status.charAt(0).toUpperCase() + j.status.slice(1)}</span>
+    </div>
+  `).join('');
+}
+
+/* ── JOB SELECTION ───────────────────────────────────────────────── */
+function selectJob(id) {
+  activeJobId = id;
+  activeTab = 'overview';
+  renderJobList();
+  renderJobDetail();
+}
+
+/* ── JOB DETAIL ──────────────────────────────────────────────────── */
+function renderJobDetail() {
+  const job = getJob(activeJobId);
+  document.getElementById('welcome-screen').classList.add('hidden');
+  const el = document.getElementById('job-detail');
+  el.classList.remove('hidden');
+
+  const notes = job.notes || [];
+  const photos = job.photos || [];
+
+  el.innerHTML = `
+    <div class="job-detail-header">
+      <div class="job-detail-header-left">
+        <h1>${esc(job.name)}</h1>
+        <div class="meta">
+          <span>👤 ${esc(job.client || 'No client')}</span>
+          <span>📍 ${esc(job.address || 'No address')}</span>
+          <span>🔧 ${esc(job.service || 'General')}</span>
+          ${job.startDate ? `<span>📅 Start: ${fmtDate(job.startDate)}</span>` : ''}
+          ${job.endDate ? `<span>✅ End: ${fmtDate(job.endDate)}</span>` : ''}
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="openEditModal()">Edit Job</button>
+        <button class="btn btn-report" onclick="switchTab('report')">📄 Generate Report</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn ${activeTab==='overview'?'active':''}" onclick="switchTab('overview')">Overview</button>
+      <button class="tab-btn ${activeTab==='notes'?'active':''}" onclick="switchTab('notes')">Notes (${notes.length})</button>
+      <button class="tab-btn ${activeTab==='photos'?'active':''}" onclick="switchTab('photos')">Photos (${photos.length})</button>
+      <button class="tab-btn ${activeTab==='report'?'active':''}" onclick="switchTab('report')">Report</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="tab-content ${activeTab==='overview'?'active':''}" id="tab-overview">
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-label">Status</div><div class="info-card-value">${capitalize(job.status)}</div></div>
+        <div class="info-card"><div class="info-card-label">Service</div><div class="info-card-value">${esc(job.service || '—')}</div></div>
+        <div class="info-card"><div class="info-card-label">Client</div><div class="info-card-value">${esc(job.client || '—')}</div></div>
+        <div class="info-card"><div class="info-card-label">Address</div><div class="info-card-value">${esc(job.address || '—')}</div></div>
+        <div class="info-card"><div class="info-card-label">Start Date</div><div class="info-card-value">${job.startDate ? fmtDate(job.startDate) : '—'}</div></div>
+        <div class="info-card"><div class="info-card-label">Completion Date</div><div class="info-card-value">${job.endDate ? fmtDate(job.endDate) : '—'}</div></div>
+        <div class="info-card"><div class="info-card-label">Notes</div><div class="info-card-value">${notes.length} entr${notes.length===1?'y':'ies'}</div></div>
+        <div class="info-card"><div class="info-card-label">Photos</div><div class="info-card-value">${photos.length} image${photos.length===1?'':'s'}</div></div>
+        <div class="info-card"><div class="info-card-label">Created</div><div class="info-card-value">${fmtDateLong(job.createdAt)}</div></div>
+      </div>
+      ${notes.length ? `<div class="info-card" style="margin-top:0"><div class="info-card-label">Latest Note</div><div class="note-entry-text" style="margin-top:8px;font-size:.88rem">${esc(notes[notes.length-1].text).slice(0,300)}${notes[notes.length-1].text.length>300?'…':''}</div></div>` : ''}
+    </div>
+
+    <!-- NOTES -->
+    <div class="tab-content ${activeTab==='notes'?'active':''}" id="tab-notes">
+      <div class="notes-toolbar">
+        <h3>Field Notes</h3>
+      </div>
+      ${notes.length === 0 ? '<div class="empty-notes">No notes yet. Add your first note below.</div>' : ''}
+      <div id="notes-list">
+        ${notes.map((n, i) => `
+          <div class="note-entry" id="note-${i}">
+            <div class="note-entry-meta">${fmtDateLong(n.timestamp)} · ${esc(n.author || 'Field crew')}</div>
+            <div class="note-entry-text">${esc(n.text)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="note-add-form">
+        <textarea id="new-note-text" placeholder="Enter field notes, observations, materials used, issues encountered..."></textarea>
+        <div class="note-add-actions">
+          <button class="btn btn-gold" onclick="addNote()">Add Note</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="tab-content ${activeTab==='photos'?'active':''}" id="tab-photos">
+      <div class="photos-upload-area" id="upload-area" onclick="document.getElementById('photo-file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="upload-icon">📸</div>
+        <strong style="color:var(--text-light)">Click to upload photos</strong>
+        <p>or drag and drop images here · JPG, PNG, HEIC supported</p>
+        <input type="file" id="photo-file-input" multiple accept="image/*" onchange="handleFileSelect(event)">
+      </div>
+      ${photos.length === 0 ? '<div class="empty-photos">No photos yet.</div>' : ''}
+      <div class="photos-grid" id="photos-grid">
+        ${photos.map((p, i) => `
+          <div class="photo-thumb">
+            <img src="${p.dataUrl}" alt="Project photo ${i+1}" loading="lazy">
+            <button class="photo-delete" onclick="deletePhoto(${i})" title="Remove photo">×</button>
+            <div class="photo-caption">${fmtDateShort(p.timestamp)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="tab-content ${activeTab==='report'?'active':''}" id="tab-report">
+      <div class="report-generate-section">
+        <h3>AI Project Report</h3>
+        <p>Generate a professional project completion report using all notes and job details.<br>The report will be written by AI and formatted for client or insurance use.</p>
+        <div class="api-key-notice">
+          <strong>Setup required:</strong> This feature uses the Claude AI API. Add your <code>ANTHROPIC_API_KEY</code> as an environment variable in your Vercel project settings to enable report generation.
+        </div>
+        <button class="btn btn-generate" id="generate-btn" onclick="generateReport()">✨ Generate AI Report</button>
+      </div>
+      <div id="report-output-area" style="display:none"></div>
+    </div>
+  `;
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  renderJobDetail();
+  if (tab === 'report') {
+    const stored = getJob(activeJobId)?.generatedReport;
+    if (stored) renderStoredReport(stored);
+  }
+}
+
+/* ── NOTES ───────────────────────────────────────────────────────── */
+function addNote() {
+  const text = document.getElementById('new-note-text').value.trim();
+  if (!text) return;
+  const job = getJob(activeJobId);
+  const notes = job.notes || [];
+  notes.push({ id: generateId(), text, timestamp: Date.now(), author: 'Field crew' });
+  updateJob(activeJobId, { notes });
+  renderJobDetail();
+}
+
+/* ── PHOTOS ──────────────────────────────────────────────────────── */
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-area').classList.add('dragover'); }
+function handleDragLeave() { document.getElementById('upload-area').classList.remove('dragover'); }
+function handleDrop(e) { e.preventDefault(); handleDragLeave(); processFiles(Array.from(e.dataTransfer.files)); }
+function handleFileSelect(e) { processFiles(Array.from(e.target.files)); }
+
+function processFiles(files) {
+  const imageFiles = files.filter(f => f.type.startsWith('image/'));
+  if (!imageFiles.length) return;
+  let processed = 0;
+  imageFiles.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const job = getJob(activeJobId);
+      const photos = job.photos || [];
+      photos.push({ id: generateId(), dataUrl: e.target.result, timestamp: Date.now(), name: file.name });
+      updateJob(activeJobId, { photos });
+      processed++;
+      if (processed === imageFiles.length) renderJobDetail();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function deletePhoto(index) {
+  if (!confirm('Remove this photo?')) return;
+  const job = getJob(activeJobId);
+  const photos = [...(job.photos || [])];
+  photos.splice(index, 1);
+  updateJob(activeJobId, { photos });
+  renderJobDetail();
+}
+
+/* ── REPORT GENERATION ───────────────────────────────────────────── */
+async function generateReport() {
+  const job = getJob(activeJobId);
+  const notes = (job.notes || []).map(n => n.text).join('\n\n---\n\n');
+  const initialNotes = job.initialNotes || '';
+  const allNotes = [initialNotes, notes].filter(Boolean).join('\n\n---\n\n');
+
+  if (!allNotes.trim()) {
+    alert('Please add some notes to this job before generating a report.');
+    return;
+  }
+
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  const outputArea = document.getElementById('report-output-area');
+  outputArea.style.display = 'block';
+  outputArea.innerHTML = `<div class="report-spinner"><div class="spinner"></div> Generating report with AI…</div>`;
+
+  try {
+    const res = await fetch('/api/generate-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jobName: job.name,
+        clientName: job.client,
+        address: job.address,
+        serviceType: job.service,
+        startDate: job.startDate,
+        completionDate: job.endDate,
+        notes: allNotes,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server error');
+
+    updateJob(activeJobId, { generatedReport: data.report });
+    renderStoredReport(data.report);
+  } catch (err) {
+    outputArea.innerHTML = `<div class="report-output"><p style="color:var(--red)">Error: ${esc(err.message)}</p><p style="color:var(--text-muted);margin-top:8px;font-size:.82rem">Make sure ANTHROPIC_API_KEY is set in your Vercel environment variables.</p></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Generate AI Report';
+  }
+}
+
+function renderStoredReport(reportText) {
+  const outputArea = document.getElementById('report-output-area');
+  if (!outputArea) return;
+  outputArea.style.display = 'block';
+  outputArea.innerHTML = `
+    <div class="report-output">
+      <div class="report-output-toolbar">
+        <h3>Generated Report</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="generateReport()">↺ Regenerate</button>
+          <button class="btn btn-gold" onclick="exportPDF()">⬇ Export PDF</button>
+        </div>
+      </div>
+      <div class="report-text" id="report-text-content">${formatReportText(reportText)}</div>
+    </div>
+  `;
+}
+
+function formatReportText(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^#{1,3} (.+)$/gm, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+/* ── PDF EXPORT ──────────────────────────────────────────────────── */
+async function exportPDF() {
+  const job = getJob(activeJobId);
+  const reportText = job.generatedReport || '';
+  const photos = job.photos || [];
+
+  const preview = document.getElementById('pdf-report-preview');
+  preview.innerHTML = `
+    <div class="pdf-header">
+      <div>
+        <div class="pdf-company-name">GUARDIAN CONSTRUCTION</div>
+        <div class="pdf-company-sub">Metro Detroit General Contractor · (313) 247-1064 · info@guardianbuild.com</div>
+      </div>
+      <div>
+        <div class="pdf-report-title">PROJECT REPORT</div>
+        <div class="pdf-report-date">Generated: ${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</div>
+      </div>
+    </div>
+
+    <div class="pdf-meta-grid">
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Project</div><div class="pdf-meta-value">${esc(job.name)}</div></div>
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Client</div><div class="pdf-meta-value">${esc(job.client || '—')}</div></div>
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Address</div><div class="pdf-meta-value">${esc(job.address || '—')}</div></div>
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Service</div><div class="pdf-meta-value">${esc(job.service || '—')}</div></div>
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Start Date</div><div class="pdf-meta-value">${job.startDate ? fmtDate(job.startDate) : '—'}</div></div>
+      <div class="pdf-meta-cell"><div class="pdf-meta-label">Completion Date</div><div class="pdf-meta-value">${job.endDate ? fmtDate(job.endDate) : '—'}</div></div>
+    </div>
+
+    <div class="pdf-section-title">Project Report</div>
+    <div class="pdf-body-text">${reportText
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^#{1,3} (.+)$/gm, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>')
+    }</div>
+
+    ${photos.length ? `
+      <div style="page-break-before:always; padding-top: 40px;">
+        <div class="pdf-section-title" style="margin-top:0">Project Photos</div>
+        <div class="pdf-photos-grid">
+          ${photos.map((p, i) => `
+            <div class="pdf-photo-wrap">
+              <img src="${p.dataUrl}" alt="Project photo ${i+1}">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="pdf-footer">
+      <span>Guardian Construction · guardianbuild.com</span>
+      <span>Report generated ${new Date().toLocaleDateString()}</span>
+    </div>
+  `;
+
+  const fileName = `${job.name.replace(/[^a-z0-9]/gi, '_')}_report.pdf`;
+  await html2pdf().set({
+    margin: 0,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.92 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait', hotfixes: ['px_scaling'] },
+    pagebreak: { mode: ['css', 'legacy'] },
+  }).from(preview).save();
+}
+
+/* ── NEW / EDIT JOB MODAL ────────────────────────────────────────── */
+function openNewJobModal() {
+  editingJobId = null;
+  document.getElementById('modal-title').textContent = 'New Job';
+  clearModalFields();
+  document.getElementById('new-job-modal').classList.remove('hidden');
+}
+
+function openEditModal() {
+  const job = getJob(activeJobId);
+  editingJobId = activeJobId;
+  document.getElementById('modal-title').textContent = 'Edit Job';
+  document.getElementById('nj-name').value = job.name || '';
+  document.getElementById('nj-status').value = job.status || 'active';
+  document.getElementById('nj-client').value = job.client || '';
+  document.getElementById('nj-address').value = job.address || '';
+  document.getElementById('nj-service').value = job.service || '';
+  document.getElementById('nj-start').value = job.startDate || '';
+  document.getElementById('nj-end').value = job.endDate || '';
+  document.getElementById('nj-notes').value = job.initialNotes || '';
+  document.getElementById('new-job-modal').classList.remove('hidden');
+}
+
+function closeNewJobModal() {
+  document.getElementById('new-job-modal').classList.add('hidden');
+}
+
+function clearModalFields() {
+  ['nj-name','nj-client','nj-address','nj-start','nj-end','nj-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('nj-status').value = 'active';
+  document.getElementById('nj-service').value = '';
+}
+
+function saveJob() {
+  const name = document.getElementById('nj-name').value.trim();
+  if (!name) { alert('Job name is required.'); return; }
+
+  const jobData = {
+    name,
+    status: document.getElementById('nj-status').value,
+    client: document.getElementById('nj-client').value.trim(),
+    address: document.getElementById('nj-address').value.trim(),
+    service: document.getElementById('nj-service').value,
+    startDate: document.getElementById('nj-start').value,
+    endDate: document.getElementById('nj-end').value,
+    initialNotes: document.getElementById('nj-notes').value.trim(),
+  };
+
+  if (editingJobId) {
+    updateJob(editingJobId, jobData);
+    closeNewJobModal();
+    renderJobList();
+    renderJobDetail();
+  } else {
+    const jobs = loadJobs();
+    const newJob = { id: generateId(), createdAt: Date.now(), updatedAt: Date.now(), notes: [], photos: [], ...jobData };
+    jobs.push(newJob);
+    saveJobs(jobs);
+    closeNewJobModal();
+    activeJobId = newJob.id;
+    renderJobList();
+    renderJobDetail();
+  }
+}
+
+function confirmDelete() {
+  if (!confirm('Delete this job? All notes and photos will be permanently removed.')) return;
+  deleteJob(activeJobId);
+  activeJobId = null;
+  document.getElementById('welcome-screen').classList.remove('hidden');
+  document.getElementById('job-detail').classList.add('hidden');
+  renderJobList();
+}
+
+/* ── UTILITIES ───────────────────────────────────────────────────── */
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function fmtDate(d) { if (!d) return '—'; const [y,m,day] = d.split('-'); return `${m}/${day}/${y}`; }
+function fmtDateLong(ts) { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function fmtDateShort(ts) { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); }
+
+/* ── INIT ────────────────────────────────────────────────────────── */
+document.getElementById('new-job-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('new-job-modal')) closeNewJobModal();
+});
+
+renderJobList();
+</script>
+</body>
+</html>
