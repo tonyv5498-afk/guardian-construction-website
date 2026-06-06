@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RGMD CRM — Import Jobs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen antialiased">
+
+<div class="max-w-4xl mx-auto px-4 py-10">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#1B3A6B">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">Import Historical Jobs</h1>
+      <p class="text-sm text-gray-500">One-time CSV import from your previous CRM</p>
+    </div>
+  </div>
+
+  <!-- Auth check -->
+  <div id="auth-banner" class="hidden mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+    You must be signed in to the RGMD CRM to import jobs.
+    <button id="signin-btn" class="ml-2 font-semibold underline">Sign in with Google</button>
+  </div>
+  <div id="auth-ok" class="hidden mb-6 p-3 bg-green-50 border border-green-100 rounded-xl text-sm text-green-700 flex items-center gap-2">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="auth-user-label">Signed in</span>
+  </div>
+
+  <!-- Step 1: Upload -->
+  <div id="step-upload" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+    <h2 class="font-bold text-gray-800 mb-1">Step 1 — Export &amp; Upload your CSV</h2>
+    <p class="text-sm text-gray-500 mb-4">In Excel: File → Save As → CSV UTF-8. The file must have these headers (exact or close match):<br>
+      <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Project, Customer, Type, Address, Customer Phone Number, Customer Email, Referrer Source</code>
+    </p>
+    <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-blue-400 rounded-xl py-10 px-6 cursor-pointer transition-colors">
+      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span class="text-sm font-semibold text-gray-600">Click to select CSV file</span>
+      <span id="file-name" class="text-xs text-gray-400">No file chosen</span>
+      <input type="file" id="csv-input" accept=".csv,text/csv" class="hidden">
+    </label>
+  </div>
+
+  <!-- Step 2: Preview -->
+  <div id="step-preview" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="font-bold text-gray-800">Step 2 — Preview &amp; Import</h2>
+        <p id="preview-count" class="text-sm text-gray-500"></p>
+      </div>
+      <button id="import-btn" class="text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors" style="background:#1B3A6B">
+        Import All Jobs
+      </button>
+    </div>
+    <div class="overflow-x-auto rounded-xl border border-gray-100">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="bg-gray-50 border-b border-gray-100">
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Job #</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Customer</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Type</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Address</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Phone</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Email</th>
+            <th class="text-left px-3 py-2 font-semibold text-gray-500">Referral</th>
+          </tr>
+        </thead>
+        <tbody id="preview-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Step 3: Progress -->
+  <div id="step-progress" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+    <h2 class="font-bold text-gray-800 mb-4">Importing…</h2>
+    <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+      <div id="progress-bar" class="h-2 rounded-full transition-all duration-300" style="background:#1B3A6B; width:0%"></div>
+    </div>
+    <p id="progress-label" class="text-sm text-gray-500">0 of 0 jobs imported</p>
+  </div>
+
+  <!-- Step 4: Done -->
+  <div id="step-done" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-6 mb-5 text-center">
+    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <h2 class="font-bold text-gray-900 text-lg mb-1">Import Complete</h2>
+    <p id="done-msg" class="text-sm text-gray-500 mb-5"></p>
+    <a href="/" class="inline-block text-white font-semibold px-6 py-2.5 rounded-xl text-sm" style="background:#1B3A6B;">
+      Go to CRM
+    </a>
+  </div>
+
+  <!-- Error -->
+  <div id="error-box" class="hidden bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700 mb-5"></div>
+
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey:            "AIzaSyD9huYJE69gbk4JWm3Q24tcXcZCDCK48bU",
+    authDomain:        "rgmd-crm.firebaseapp.com",
+    projectId:         "rgmd-crm",
+    storageBucket:     "rgmd-crm.firebasestorage.app",
+    messagingSenderId: "532112846968",
+    appId:             "1:532112846968:web:fb92ecc51192b2389b3d8d"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Auth ────────────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('auth-banner').classList.add('hidden');
+        document.getElementById('auth-ok').classList.remove('hidden');
+        document.getElementById('auth-user-label').textContent = 'Signed in as ' + (user.displayName || user.email);
+    } else {
+        document.getElementById('auth-banner').classList.remove('hidden');
+        document.getElementById('auth-ok').classList.add('hidden');
+    }
+});
+
+document.getElementById('signin-btn').addEventListener('click', () => {
+    const p = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(p).catch(err => showError(err.message));
+});
+
+// ── CSV parsing ─────────────────────────────────────────────
+let parsedRows = [];
+
+// Flexible column finder — matches even if the header has extra spaces or different casing
+function findCol(headers, ...candidates) {
+    for (const c of candidates) {
+        const i = headers.findIndex(h => h.trim().toLowerCase() === c.toLowerCase());
+        if (i !== -1) return i;
+    }
+    // Partial match fallback
+    for (const c of candidates) {
+        const i = headers.findIndex(h => h.trim().toLowerCase().includes(c.toLowerCase()));
+        if (i !== -1) return i;
+    }
+    return -1;
+}
+
+function parseCSV(text) {
+    // Handle \r\n and \r line endings
+    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('CSV appears empty or has no data rows.');
+
+    // Simple CSV field splitter (handles quoted fields)
+    function splitLine(line) {
+        const result = [];
+        let cur = '', inQ = false;
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (ch === '"') { inQ = !inQ; }
+            else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+            else { cur += ch; }
+        }
+        result.push(cur.trim());
+        return result;
+    }
+
+    const headers = splitLine(lines[0]);
+    const iJob  = findCol(headers, 'Project', 'Job', 'Job Number', 'Job#', 'Job #');
+    const iName = findCol(headers, 'Customer', 'Client', 'Name', 'Customer Name', 'Client Name');
+    const iType = findCol(headers, 'Type', 'Job Type', 'Project Type', 'Work Type');
+    const iAddr = findCol(headers, 'Address', 'Job Address');
+    const iPhone = findCol(headers, 'Customer Phone Number', 'Phone', 'Phone Number', 'Cell');
+    const iEmail = findCol(headers, 'Customer Email', 'Email', 'Email Address');
+    const iRef  = findCol(headers, 'Referrer Source', 'Referral', 'Referral Source', 'Referrer', 'Lead Source');
+
+    const missing = [];
+    if (iName < 0) missing.push('Customer');
+    if (missing.length) throw new Error('Could not find required column(s): ' + missing.join(', ') + '. Found headers: ' + headers.join(', '));
+
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        const cols = splitLine(lines[i]);
+        if (cols.every(c => !c)) continue; // skip blank rows
+        rows.push({
+            jobNumber:     iJob  >= 0 ? cols[iJob]   || '' : '',
+            clientName:    iName >= 0 ? cols[iName]  || '' : '',
+            projectType:   iType >= 0 ? cols[iType]  || '' : '',
+            address:       iAddr >= 0 ? cols[iAddr]  || '' : '',
+            phone:         iPhone >= 0 ? cols[iPhone] || '' : '',
+            email:         iEmail >= 0 ? cols[iEmail] || '' : '',
+            referralSource: iRef >= 0 ? cols[iRef]   || '' : '',
+        });
+    }
+    if (!rows.length) throw new Error('No data rows found in CSV.');
+    return rows;
+}
+
+document.getElementById('csv-input').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('file-name').textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            parsedRows = parseCSV(ev.target.result);
+            showPreview(parsedRows);
+            hideError();
+        } catch (err) {
+            showError(err.message);
+        }
+    };
+    reader.readAsText(file);
+});
+
+function esc(s) {
+    if (!s) return '—';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showPreview(rows) {
+    document.getElementById('preview-count').textContent =
+        rows.length + ' job' + (rows.length !== 1 ? 's' : '') + ' found — showing first 10 rows';
+    const tbody = document.getElementById('preview-body');
+    tbody.innerHTML = rows.slice(0, 10).map(r => `
+        <tr class="border-b border-gray-50 hover:bg-gray-50">
+            <td class="px-3 py-2 font-mono text-gray-700">${esc(r.jobNumber)}</td>
+            <td class="px-3 py-2 text-gray-800 font-medium">${esc(r.clientName)}</td>
+            <td class="px-3 py-2 text-gray-600">${esc(r.projectType)}</td>
+            <td class="px-3 py-2 text-gray-600 max-w-[180px] truncate">${esc(r.address)}</td>
+            <td class="px-3 py-2 text-gray-600">${esc(r.phone)}</td>
+            <td class="px-3 py-2 text-gray-600">${esc(r.email)}</td>
+            <td class="px-3 py-2 text-gray-600">${esc(r.referralSource)}</td>
+        </tr>`).join('');
+    document.getElementById('step-preview').classList.remove('hidden');
+}
+
+// ── Import ──────────────────────────────────────────────────
+document.getElementById('import-btn').addEventListener('click', async () => {
+    if (!parsedRows.length) return;
+    if (!auth.currentUser) { showError('Please sign in first.'); return; }
+
+    // Use a base date well before any existing CRM jobs
+    // Each row gets a 1-minute increment to preserve original order
+    const BASE_MS = new Date('2020-01-01T00:00:00Z').getTime();
+    const total = parsedRows.length;
+
+    document.getElementById('step-preview').classList.add('hidden');
+    document.getElementById('step-progress').classList.remove('hidden');
+
+    let imported = 0, skipped = 0;
+
+    for (let i = 0; i < parsedRows.length; i++) {
+        const r = parsedRows[i];
+        try {
+            const createdAt = firebase.firestore.Timestamp.fromMillis(BASE_MS + i * 60000);
+            await db.collection('jobs').add({
+                jobNumber:      r.jobNumber,
+                clientName:     r.clientName,
+                projectType:    r.projectType,
+                address:        r.address,
+                phone:          r.phone,
+                email:          r.email,
+                referralSource: r.referralSource,
+                status:         'completed',
+                notes:          '',
+                fieldLog:       [],
+                createdAt,
+                updatedAt:      createdAt,
+                createdBy:      auth.currentUser.email,
+            });
+            imported++;
+        } catch (err) {
+            skipped++;
+        }
+
+        // Update progress
+        const pct = Math.round(((i + 1) / total) * 100);
+        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-label').textContent =
+            (i + 1) + ' of ' + total + ' jobs processed';
+    }
+
+    document.getElementById('step-progress').classList.add('hidden');
+    document.getElementById('step-done').classList.remove('hidden');
+    document.getElementById('done-msg').textContent =
+        imported + ' job' + (imported !== 1 ? 's' : '') + ' imported successfully' +
+        (skipped ? ' · ' + skipped + ' skipped due to errors' : '') + '.';
+});
+
+function showError(msg) {
+    const el = document.getElementById('error-box');
+    el.textContent = 'Error: ' + msg;
+    el.classList.remove('hidden');
+}
+function hideError() {
+    document.getElementById('error-box').classList.add('hidden');
+}
+</script>
+</body>
+</html>
