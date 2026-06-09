@@ -3017,17 +3017,8 @@ function initApp() {
                     'PROJECT OVERVIEW:',
                     `This report documents project work performed at ${job.address || 'the subject property'} for client ${job.clientName || 'N/A'}. Project type: ${typeLabel}.`,
                     '',
-                    'SCOPE OF WORK:',
+                    'PROJECT SUMMARY:',
                     job.notes || 'Refer to the initial assessment and project notes on file.',
-                    '',
-                    'WORK PERFORMED:',
-                    fieldLog || 'See field log entries on file.',
-                    '',
-                    'CURRENT STATUS & OUTCOME:',
-                    `Project status: ${statusLabel || 'N/A'}.`,
-                    '',
-                    'RECOMMENDATIONS:',
-                    'Please refer to the project team for recommendations and next steps.',
                 ].join('\n');
             }
 
