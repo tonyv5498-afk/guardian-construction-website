@@ -3130,6 +3130,8 @@ function initApp() {
                 y += isBold ? 16 : 14;
             });
 
+            const reportTextPageCount = doc.internal.getNumberOfPages();
+
             // ── Photos page ──
             if (job.driveFolderPhotoId && driveToken) {
                 try {
@@ -3181,12 +3183,15 @@ function initApp() {
 
             const fname = `${(job.clientName||'Job').replace(/\s+/g,'_')}_Report_${new Date().toISOString().slice(0,10)}.pdf`;
 
-            // Append any selected signed documents
+            // Insert signed documents between report text and photos
             const checkedBoxes = Array.from(document.querySelectorAll('.report-doc-checkbox:checked'));
             if (checkedBoxes.length > 0 && window.PDFLib) {
                 const { PDFDocument } = window.PDFLib;
                 const mainBytes = doc.output('arraybuffer');
-                const merged = await PDFDocument.load(mainBytes);
+                const mainPdf = await PDFDocument.load(mainBytes);
+
+                // Collect signed doc pages into a staging doc
+                const sigStage = await PDFDocument.create();
                 for (const cb of checkedBoxes) {
                     try {
                         const snap = await db.collection('signingRequests').doc(cb.dataset.token).get();
@@ -3194,10 +3199,28 @@ function initApp() {
                         const sigDoc = generateSignedPDF(snap.data());
                         const sigBytes = sigDoc.output('arraybuffer');
                         const sigPdf = await PDFDocument.load(sigBytes);
-                        const copied = await merged.copyPages(sigPdf, sigPdf.getPageIndices());
-                        copied.forEach(p => merged.addPage(p));
+                        const copied = await sigStage.copyPages(sigPdf, sigPdf.getPageIndices());
+                        copied.forEach(p => sigStage.addPage(p));
                     } catch (_) {}
                 }
+
+                // Final order: report text → signed docs → photos
+                const merged = await PDFDocument.create();
+                const totalMain = mainPdf.getPageCount();
+
+                const textPages = await merged.copyPages(mainPdf, Array.from({length: reportTextPageCount}, (_, i) => i));
+                textPages.forEach(p => merged.addPage(p));
+
+                if (sigStage.getPageCount() > 0) {
+                    const sigPages = await merged.copyPages(sigStage, sigStage.getPageIndices());
+                    sigPages.forEach(p => merged.addPage(p));
+                }
+
+                if (totalMain > reportTextPageCount) {
+                    const photoPages = await merged.copyPages(mainPdf, Array.from({length: totalMain - reportTextPageCount}, (_, i) => i + reportTextPageCount));
+                    photoPages.forEach(p => merged.addPage(p));
+                }
+
                 const mergedBytes = await merged.save();
                 const blob = new Blob([mergedBytes], { type: 'application/pdf' });
                 const url = URL.createObjectURL(blob);
