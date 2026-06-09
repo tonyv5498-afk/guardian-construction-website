@@ -239,6 +239,80 @@
     }
     .api-key-notice strong { color: var(--gold-light); }
 
+    /* WARRANTY TAB */
+    .warranty-status-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 20px;
+    }
+    .warranty-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 14px; border-radius: 20px; font-size: .75rem; font-weight: 700; letter-spacing: .4px;
+    }
+    .warranty-badge.signed { background: rgba(46,204,113,.15); color: #2ecc71; }
+    .warranty-badge.unsigned { background: rgba(154,171,184,.12); color: var(--text-muted); }
+    .warranty-form-card {
+      background: var(--navy-card); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px;
+    }
+    .warranty-form-card h3 {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700;
+      color: var(--gold); margin-bottom: 18px; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .warranty-form-group { margin-bottom: 14px; }
+    .warranty-form-group label {
+      display: block; font-size: .73rem; font-weight: 600; color: var(--text-muted);
+      margin-bottom: 5px; letter-spacing: .3px; text-transform: uppercase;
+    }
+    .warranty-form-group input, .warranty-form-group textarea, .warranty-form-group select {
+      width: 100%; background: var(--navy-soft); border: 1px solid var(--gold-border);
+      border-radius: var(--radius-sm); padding: 9px 13px; color: var(--text-light);
+      font-family: 'Barlow', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s;
+    }
+    .warranty-form-group input:focus, .warranty-form-group textarea:focus { border-color: var(--gold); }
+    .warranty-form-group textarea { resize: vertical; min-height: 80px; }
+    .warranty-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sig-pad-wrap {
+      border: 1.5px solid var(--gold-border); border-radius: var(--radius-md);
+      background: #fff; overflow: hidden; position: relative;
+    }
+    .sig-canvas { display: block; width: 100%; height: 130px; cursor: crosshair; touch-action: none; }
+    .sig-placeholder {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      color: #ccc; font-size: .85rem; pointer-events: none;
+      font-style: italic; white-space: nowrap;
+    }
+    .sig-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .warranty-divider { border: none; border-top: 1px solid rgba(182,150,99,.15); margin: 20px 0; }
+    .warranty-export-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .warranty-export-row .note { font-size: .78rem; color: var(--text-muted); }
+
+    /* WARRANTY PDF (off-screen) */
+    #pdf-warranty-preview {
+      position: absolute; left: -9999px; top: 0;
+      width: 760px; background: white; color: #111;
+      font-family: Georgia, 'Times New Roman', serif;
+      padding: 56px 60px 48px;
+    }
+    .wpdf-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 32px; }
+    .wpdf-addr { font-family: Arial, sans-serif; font-size: 11px; color: #444; text-align: left; align-self: flex-start; line-height: 1.6; margin-bottom: 16px; }
+    .wpdf-title { font-family: Arial, sans-serif; font-size: 20px; font-weight: 700; color: #111; text-decoration: underline; margin-bottom: 4px; }
+    .wpdf-body { font-size: 12px; line-height: 1.8; color: #222; }
+    .wpdf-body p { margin-bottom: 14px; }
+    .wpdf-body strong { font-weight: bold; }
+    .wpdf-blank { display: inline-block; min-width: 180px; border-bottom: 1px solid #333; }
+    .wpdf-section-title { font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; text-decoration: underline; margin: 20px 0 8px; }
+    .wpdf-disclaimer { font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; line-height: 1.6; color: #111; margin-bottom: 14px; }
+    .wpdf-sig-section { margin-top: 36px; }
+    .wpdf-sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .wpdf-sig-col {}
+    .wpdf-sig-line { border-bottom: 1px solid #333; margin-bottom: 4px; height: 52px; display: flex; align-items: flex-end; }
+    .wpdf-sig-line img { max-height: 48px; max-width: 100%; object-fit: contain; }
+    .wpdf-sig-name { font-size: 11px; font-weight: 700; font-family: Arial, sans-serif; }
+    .wpdf-sig-role { font-size: 10px; color: #555; font-style: italic; font-family: Arial, sans-serif; }
+    .wpdf-property-label { font-family: Arial, sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .wpdf-footer-line { margin-top: 40px; border-top: 1px solid #bbb; padding-top: 10px; font-family: Arial, sans-serif; font-size: 10px; color: #888; display: flex; justify-content: space-between; }
+
     /* MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 500;
@@ -415,6 +489,7 @@
 
 <!-- PDF PREVIEW (off-screen) -->
 <div id="pdf-report-preview"></div>
+<div id="pdf-warranty-preview"></div>
 
 <script>
 /* ── DATA LAYER ──────────────────────────────────────────────────── */
@@ -520,6 +595,7 @@ function renderJobDetail() {
       <button class="tab-btn ${activeTab==='notes'?'active':''}" onclick="switchTab('notes')">Notes (${notes.length})</button>
       <button class="tab-btn ${activeTab==='photos'?'active':''}" onclick="switchTab('photos')">Photos (${photos.length})</button>
       <button class="tab-btn ${activeTab==='report'?'active':''}" onclick="switchTab('report')">Report</button>
+      <button class="tab-btn ${activeTab==='warranty'?'active':''}" onclick="switchTab('warranty')">Warranty${job.warranty?.clientSig ? ' ✓' : ''}</button>
     </div>
 
     <!-- OVERVIEW -->
@@ -592,6 +668,83 @@ function renderJobDetail() {
       </div>
       <div id="report-output-area" style="display:none"></div>
     </div>
+
+    <!-- WARRANTY -->
+    <div class="tab-content ${activeTab==='warranty'?'active':''}" id="tab-warranty">
+      <div class="warranty-status-bar">
+        <div>
+          <span class="warranty-badge ${job.warranty?.clientSig ? 'signed' : 'unsigned'}">
+            ${job.warranty?.clientSig ? '✓ Signed' : '○ Not Yet Signed'}
+          </span>
+          ${job.warranty?.signedAt ? `<span style="font-size:.75rem;color:var(--text-muted);margin-left:12px">Signed ${fmtDateLong(job.warranty.signedAt)}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:8px">
+          ${job.warranty?.clientSig ? `<button class="btn btn-gold" onclick="exportWarrantyPDF()">⬇ Download Warranty PDF</button>` : ''}
+          ${job.warranty?.clientSig ? `<button class="btn btn-outline" onclick="clearWarrantySignature()">Clear & Re-sign</button>` : ''}
+        </div>
+      </div>
+
+      <!-- FILL-IN FIELDS -->
+      <div class="warranty-form-card">
+        <h3>Warranty Details</h3>
+        <div class="warranty-form-row">
+          <div class="warranty-form-group">
+            <label>Client / Homeowner Name</label>
+            <input type="text" id="w-client" value="${esc(job.warranty?.clientName || job.client || '')}" placeholder="Full legal name">
+          </div>
+          <div class="warranty-form-group">
+            <label>Property Address</label>
+            <input type="text" id="w-address" value="${esc(job.warranty?.address || job.address || '')}" placeholder="123 Main St, City, MI">
+          </div>
+        </div>
+        <div class="warranty-form-row">
+          <div class="warranty-form-group">
+            <label>Date of Completion</label>
+            <input type="date" id="w-completion" value="${job.warranty?.completionDate || job.endDate || ''}">
+          </div>
+          <div class="warranty-form-group">
+            <label>Warranty Term</label>
+            <select id="w-term">
+              <option value="1 Year" ${(job.warranty?.term||'5 Years')==='1 Year'?'selected':''}>1 Year</option>
+              <option value="2 Years" ${(job.warranty?.term||'5 Years')==='2 Years'?'selected':''}>2 Years</option>
+              <option value="5 Years" ${(job.warranty?.term||'5 Years')==='5 Years'?'selected':''}>5 Years</option>
+              <option value="10 Years" ${(job.warranty?.term||'5 Years')==='10 Years'?'selected':''}>10 Years</option>
+              <option value="Lifetime" ${(job.warranty?.term||'5 Years')==='Lifetime'?'selected':''}>Lifetime</option>
+            </select>
+          </div>
+        </div>
+        <div class="warranty-form-group">
+          <label>Work / Area Covered by This Warranty</label>
+          <textarea id="w-area" placeholder="Describe the specific work performed and areas covered...">${esc(job.warranty?.areaCovered || job.service || '')}</textarea>
+        </div>
+        <div class="warranty-form-group">
+          <label>Additional Warranty Notes (optional)</label>
+          <textarea id="w-notes" placeholder="Any exclusions, maintenance instructions, or special conditions...">${esc(job.warranty?.notes || '')}</textarea>
+        </div>
+        <button class="btn btn-outline" onclick="saveWarrantyFields()" style="margin-top:4px">Save Fields</button>
+      </div>
+
+      <!-- SIGNATURE PAD -->
+      <div class="warranty-form-card">
+        <h3>Client Signature</h3>
+        <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:16px">Have the client sign below with a mouse, stylus, or finger (touch screen). The signature will be embedded in the warranty PDF.</p>
+        <div class="sig-pad-wrap" id="sig-pad-wrap">
+          <canvas class="sig-canvas" id="sig-canvas" width="700" height="130"></canvas>
+          <div class="sig-placeholder" id="sig-placeholder">Sign here →</div>
+        </div>
+        <div class="sig-actions">
+          <button class="btn btn-outline" onclick="clearSigCanvas()">Clear</button>
+          <button class="btn btn-gold" onclick="acceptSignature()">Accept & Save Signature</button>
+        </div>
+        ${job.warranty?.clientSig ? `<p style="color:#2ecc71;font-size:.82rem;margin-top:10px">✓ Signature saved. Export the PDF below.</p>` : ''}
+      </div>
+
+      <hr class="warranty-divider">
+      <div class="warranty-export-row">
+        <button class="btn btn-gold" onclick="exportWarrantyPDF()" ${!job.warranty?.clientSig ? 'disabled style="opacity:.5;cursor:not-allowed"' : ''}>⬇ Export Signed Warranty PDF</button>
+        <span class="warranty-export-note" style="font-size:.78rem;color:var(--text-muted)">${!job.warranty?.clientSig ? 'Collect client signature first, then export.' : 'Ready to download.'}</span>
+      </div>
+    </div>
   `;
 }
 
@@ -601,6 +754,11 @@ function switchTab(tab) {
   if (tab === 'report') {
     const stored = getJob(activeJobId)?.generatedReport;
     if (stored) renderStoredReport(stored);
+  }
+  if (tab === 'warranty') {
+    initSigCanvas();
+    const job = getJob(activeJobId);
+    if (job.warranty?.clientSig) renderSavedSig(job.warranty.clientSig);
   }
 }
 
@@ -871,6 +1029,202 @@ function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 function fmtDate(d) { if (!d) return '—'; const [y,m,day] = d.split('-'); return `${m}/${day}/${y}`; }
 function fmtDateLong(ts) { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function fmtDateShort(ts) { return new Date(ts).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); }
+
+/* ── WARRANTY FIELDS ─────────────────────────────────────────────── */
+function saveWarrantyFields() {
+  const job = getJob(activeJobId);
+  const w = job.warranty || {};
+  updateJob(activeJobId, { warranty: {
+    ...w,
+    clientName:     document.getElementById('w-client')?.value.trim() || '',
+    address:        document.getElementById('w-address')?.value.trim() || '',
+    completionDate: document.getElementById('w-completion')?.value || '',
+    term:           document.getElementById('w-term')?.value || '5 Years',
+    areaCovered:    document.getElementById('w-area')?.value.trim() || '',
+    notes:          document.getElementById('w-notes')?.value.trim() || '',
+  }});
+  const btn = event.target;
+  btn.textContent = '✓ Saved'; btn.style.color = '#2ecc71';
+  setTimeout(() => { btn.textContent = 'Save Fields'; btn.style.color = ''; }, 2000);
+}
+
+function clearWarrantySignature() {
+  if (!confirm('Clear the saved signature? The warranty will be marked unsigned.')) return;
+  const job = getJob(activeJobId);
+  const w = { ...(job.warranty || {}) };
+  delete w.clientSig; delete w.signedAt;
+  updateJob(activeJobId, { warranty: w });
+  renderJobDetail();
+  setTimeout(() => { initSigCanvas(); }, 50);
+}
+
+/* ── SIGNATURE CANVAS ────────────────────────────────────────────── */
+let _sigDrawing = false;
+let _sigCtx = null;
+let _sigCanvas = null;
+let _sigHasStrokes = false;
+
+function initSigCanvas() {
+  _sigCanvas = document.getElementById('sig-canvas');
+  if (!_sigCanvas) return;
+  const placeholder = document.getElementById('sig-placeholder');
+  _sigCtx = _sigCanvas.getContext('2d');
+  _sigCtx.strokeStyle = '#0D1521';
+  _sigCtx.lineWidth = 2.2;
+  _sigCtx.lineCap = 'round';
+  _sigCtx.lineJoin = 'round';
+  _sigHasStrokes = false;
+
+  function pos(e) {
+    const r = _sigCanvas.getBoundingClientRect();
+    const scaleX = _sigCanvas.width / r.width;
+    const scaleY = _sigCanvas.height / r.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * scaleX, y: (src.clientY - r.top) * scaleY };
+  }
+
+  function start(e) {
+    e.preventDefault();
+    _sigDrawing = true;
+    _sigHasStrokes = true;
+    if (placeholder) placeholder.style.display = 'none';
+    const p = pos(e);
+    _sigCtx.beginPath();
+    _sigCtx.moveTo(p.x, p.y);
+  }
+  function move(e) {
+    e.preventDefault();
+    if (!_sigDrawing) return;
+    const p = pos(e);
+    _sigCtx.lineTo(p.x, p.y);
+    _sigCtx.stroke();
+    _sigCtx.beginPath();
+    _sigCtx.moveTo(p.x, p.y);
+  }
+  function end(e) { e.preventDefault(); _sigDrawing = false; _sigCtx.beginPath(); }
+
+  _sigCanvas.addEventListener('mousedown', start);
+  _sigCanvas.addEventListener('mousemove', move);
+  _sigCanvas.addEventListener('mouseup', end);
+  _sigCanvas.addEventListener('mouseleave', end);
+  _sigCanvas.addEventListener('touchstart', start, { passive: false });
+  _sigCanvas.addEventListener('touchmove', move, { passive: false });
+  _sigCanvas.addEventListener('touchend', end, { passive: false });
+}
+
+function clearSigCanvas() {
+  if (!_sigCanvas || !_sigCtx) return;
+  _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+  _sigHasStrokes = false;
+  const placeholder = document.getElementById('sig-placeholder');
+  if (placeholder) placeholder.style.display = '';
+}
+
+function renderSavedSig(dataUrl) {
+  if (!_sigCanvas || !_sigCtx) return;
+  const img = new Image();
+  img.onload = () => { _sigCtx.drawImage(img, 0, 0); };
+  img.src = dataUrl;
+  const placeholder = document.getElementById('sig-placeholder');
+  if (placeholder) placeholder.style.display = 'none';
+}
+
+function acceptSignature() {
+  if (!_sigCanvas) return;
+  if (!_sigHasStrokes) { alert('Please draw a signature before accepting.'); return; }
+  const dataUrl = _sigCanvas.toDataURL('image/png');
+  const job = getJob(activeJobId);
+  updateJob(activeJobId, { warranty: { ...(job.warranty || {}), clientSig: dataUrl, signedAt: Date.now() } });
+  renderJobDetail();
+  setTimeout(() => { switchTab('warranty'); }, 50);
+}
+
+/* ── WARRANTY PDF EXPORT ─────────────────────────────────────────── */
+async function exportWarrantyPDF() {
+  const job = getJob(activeJobId);
+  const w = job.warranty || {};
+  if (!w.clientSig) { alert('No signature found. Please have the client sign the warranty first.'); return; }
+
+  const clientName = w.clientName || job.client || '________________________';
+  const address    = w.address    || job.address || '________________________';
+  const compDate   = w.completionDate ? fmtDate(w.completionDate) : '________________';
+  const term       = w.term || '5 Years';
+  const area       = w.areaCovered || job.service || '________________________';
+  const wNotes     = w.notes || '';
+  const signedDate = w.signedAt ? new Date(w.signedAt).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}) : new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
+
+  const preview = document.getElementById('pdf-warranty-preview');
+  preview.innerHTML = `
+    <div class="wpdf-header">
+      <div class="wpdf-addr">
+        Guardian Construction<br>
+        Metro Detroit, MI<br>
+        (313) 247-1064 · info@guardianbuild.com
+      </div>
+      <div class="wpdf-title">Limited Workmanship Warranty</div>
+    </div>
+
+    <div class="wpdf-body">
+      <p>Guardian Construction provided construction and renovation services at the property listed below. Guardian Construction performed the work according to industry standards and agrees to warrant the workmanship of all services rendered.</p>
+
+      <p>The specific work covered under this warranty includes: <strong>${esc(area)}</strong>.</p>
+
+      <p>This limited warranty lasts for <strong>${esc(term)}</strong> from the date Guardian Construction completes its work at your property and may be transferred to a third-party within that warranty period. The recorded date of completion was <strong>${esc(compDate)}</strong> per the certificate of completion (COC).</p>
+
+      <p>In the event that you believe that you are entitled to warranty relief under this Agreement or otherwise, you should contact your Guardian Construction representative or call <strong>(313) 247-1064</strong>.</p>
+
+      <p>Guardian Construction is not responsible or liable for damage caused by acts of nature, misuse, neglect, unauthorized modifications, or conditions pre-existing before Guardian Construction's work was performed at the property. Guardian Construction is neither an insurer nor guarantor against damage caused by events outside the scope of the services performed.</p>
+
+      <p>Guardian Construction assumes no responsibility for the cost of repairing conditions not caused by Guardian Construction's work or services. Guardian Construction is not responsible or liable for any future failures or repairs at your property not caused by Guardian Construction's work or services.</p>
+
+      <p>By signing this Agreement, you understand the nature of this limited warranty and agree to its terms. You understand that it is solely your responsibility to maintain the property in accordance with any maintenance instructions provided by Guardian Construction.</p>
+
+      ${wNotes ? `<p><strong>Additional Terms &amp; Conditions:</strong> ${esc(wNotes)}</p>` : ''}
+
+      <div class="wpdf-section-title">Warranty Disclaimer</div>
+      <div class="wpdf-disclaimer">GUARDIAN CONSTRUCTION MAKES NO WARRANTIES OTHER THAN THE LIMITED WARRANTY FOR SERVICES SET FORTH ABOVE. PRODUCTS AND GOODS ARE SOLD OR PROVIDED "AS IS." GUARDIAN CONSTRUCTION SHALL NOT BE RESPONSIBLE FOR ANY IMPLIED WARRANTIES WHATSOEVER, INCLUDING THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</div>
+
+      <div class="wpdf-section-title">Limitation of Liability</div>
+      <p>Except for the express limited warranty set forth above, or any implied warranties mandated under applicable law, Guardian Construction makes no express or implied representations in this Agreement or otherwise. Any warranty redemption for any express or implied warranties shall be limited in duration to the warranty period set forth in this Agreement only.</p>
+
+      <div class="wpdf-property-label">Property: ${esc(address)}</div>
+    </div>
+
+    <div class="wpdf-sig-section">
+      <div class="wpdf-sig-grid">
+        <div class="wpdf-sig-col">
+          <div class="wpdf-sig-line"></div>
+          <div class="wpdf-sig-name">Tony Vannoy | LEED AP BD+C, WRT, ASD, CMR</div>
+          <div class="wpdf-sig-role">Owner — Guardian Construction</div>
+          <div style="font-size:10px;color:#666;font-family:Arial,sans-serif;margin-top:3px">(313) 247-1064</div>
+        </div>
+        <div class="wpdf-sig-col">
+          <div class="wpdf-sig-line">
+            <img src="${w.clientSig}" alt="Client signature">
+          </div>
+          <div class="wpdf-sig-name">${esc(clientName)}</div>
+          <div class="wpdf-sig-role">Client / Property Owner</div>
+          <div style="font-size:10px;color:#666;font-family:Arial,sans-serif;margin-top:3px">Signed: ${signedDate}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wpdf-footer-line">
+      <span>Guardian Construction · guardianbuild.com · Michigan Builders License #262600486</span>
+      <span>Warranty issued ${new Date().toLocaleDateString()}</span>
+    </div>
+  `;
+
+  const fileName = `${(clientName || job.name).replace(/[^a-z0-9]/gi,'_')}_Warranty.pdf`;
+  await html2pdf().set({
+    margin: 0,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait', hotfixes: ['px_scaling'] },
+    pagebreak: { mode: ['css', 'legacy'] },
+  }).from(preview).save();
+}
 
 /* ── INIT ────────────────────────────────────────────────────────── */
 document.getElementById('new-job-modal').addEventListener('click', e => {
