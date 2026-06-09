@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -1480,6 +1481,10 @@
         </div>
         <div id="report-modal-body" class="flex-1 overflow-y-auto px-6 py-5">
             <!-- Content injected by JS -->
+        </div>
+        <div id="report-docs-section" class="hidden px-6 pt-3 pb-2 border-t border-gray-100 flex-shrink-0">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Include Signed Documents</p>
+            <div id="report-docs-list" class="space-y-1.5"></div>
         </div>
         <div class="px-6 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
             <button id="report-download-btn" class="hidden flex-1 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors" style="background:#e97316;">
@@ -2973,6 +2978,8 @@ function initApp() {
                 <p class="text-sm text-gray-500">Writing report with AI…</p>
             </div>`;
         $('report-download-btn').classList.add('hidden');
+        $('report-docs-section').classList.add('hidden');
+        $('report-docs-list').innerHTML = '';
         $('report-modal').classList.remove('hidden');
 
         try {
@@ -3027,6 +3034,9 @@ function initApp() {
             $('report-download-btn').classList.remove('hidden');
 
             $('report-download-btn').onclick = () => downloadReportPDF(job, report);
+
+            // Populate signed-document checkboxes (async, non-blocking)
+            loadReportDocOptions(job);
         } catch (err) {
             $('report-modal-body').innerHTML = `<p class="text-red-500 text-sm text-center py-10">Failed to generate report: ${esc(err.message)}</p>`;
         } finally {
@@ -3034,6 +3044,33 @@ function initApp() {
             $('generate-report-btn').disabled = false;
         }
     });
+
+    async function loadReportDocOptions(job) {
+        const listEl = $('report-docs-list');
+        const section = $('report-docs-section');
+        const entries = [];
+        for (const [key, dt] of Object.entries(DOC_TYPES)) {
+            const token = key === 'wa'
+                ? (job[dt.tokenField] || job.sigToken || null)
+                : (job[dt.tokenField] || null);
+            if (!token) continue;
+            try {
+                const snap = await db.collection('signingRequests').doc(token).get();
+                if (snap.exists && snap.data().signed) {
+                    entries.push({ key, label: dt.label, token });
+                }
+            } catch (_) {}
+        }
+        if (!entries.length) return;
+        listEl.innerHTML = entries.map(e =>
+            `<label class="flex items-center gap-2.5 cursor-pointer text-sm text-gray-700">
+                <input type="checkbox" class="report-doc-checkbox w-4 h-4 rounded accent-orange-500"
+                    data-token="${esc(e.token)}" checked>
+                ${esc(e.label)}
+            </label>`
+        ).join('');
+        section.classList.remove('hidden');
+    }
 
     async function downloadReportPDF(job, reportText) {
         const btn = $('report-download-btn');
@@ -3145,7 +3182,33 @@ function initApp() {
             }
 
             const fname = `${(job.clientName||'Job').replace(/\s+/g,'_')}_Report_${new Date().toISOString().slice(0,10)}.pdf`;
-            doc.save(fname);
+
+            // Append any selected signed documents
+            const checkedBoxes = Array.from(document.querySelectorAll('.report-doc-checkbox:checked'));
+            if (checkedBoxes.length > 0 && window.PDFLib) {
+                const { PDFDocument } = window.PDFLib;
+                const mainBytes = doc.output('arraybuffer');
+                const merged = await PDFDocument.load(mainBytes);
+                for (const cb of checkedBoxes) {
+                    try {
+                        const snap = await db.collection('signingRequests').doc(cb.dataset.token).get();
+                        if (!snap.exists) continue;
+                        const sigDoc = generateSignedPDF(snap.data());
+                        const sigBytes = sigDoc.output('arraybuffer');
+                        const sigPdf = await PDFDocument.load(sigBytes);
+                        const copied = await merged.copyPages(sigPdf, sigPdf.getPageIndices());
+                        copied.forEach(p => merged.addPage(p));
+                    } catch (_) {}
+                }
+                const mergedBytes = await merged.save();
+                const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = fname; a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+            } else {
+                doc.save(fname);
+            }
         } catch (err) {
             toast('PDF error: ' + err.message, true);
         } finally {
