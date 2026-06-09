@@ -3018,8 +3018,7 @@ function initApp() {
 
             if (!report) {
                 // Build a basic structured report from available job data without AI
-                const statusLabel = (job.status || '').replace(/_/g, ' ');
-                const typeLabel   = [job.projectType, job.subCategory].filter(Boolean).join(' — ') || 'N/A';
+                const typeLabel = [job.projectType, job.subCategory].filter(Boolean).join(' — ') || 'N/A';
                 report = [
                     'PROJECT OVERVIEW:',
                     `This report documents project work performed at ${job.address || 'the subject property'} for client ${job.clientName || 'N/A'}. Project type: ${typeLabel}.`,
@@ -3104,7 +3103,6 @@ function initApp() {
                 ['Address',      job.address     || '—'],
                 ['Project Type', [job.projectType, job.subCategory].filter(Boolean).join(' — ') || '—'],
                 ['Job #',        job.jobNumber   || '—'],
-                ['Status',       (job.status || '').replace(/_/g, ' ')],
             ];
             const colW = usable / 2;
             metaItems.forEach(([label, val], i) => {
