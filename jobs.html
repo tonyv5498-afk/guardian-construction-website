@@ -476,6 +476,10 @@
         </div>
       </div>
       <div class="form-group">
+        <label>Project Scope / Sub-type</label>
+        <input type="text" id="nj-scope" placeholder="e.g. Full gut remodel, new cabinets, quartz countertops, tile backsplash">
+      </div>
+      <div class="form-group">
         <label>Initial Notes</label>
         <textarea id="nj-notes" placeholder="Describe the project scope, materials, special requirements, initial observations..."></textarea>
       </div>
@@ -714,8 +718,12 @@ function renderJobDetail() {
           </div>
         </div>
         <div class="warranty-form-group">
-          <label>Work / Area Covered by This Warranty</label>
-          <textarea id="w-area" placeholder="Describe the specific work performed and areas covered...">${esc(job.warranty?.areaCovered || job.service || '')}</textarea>
+          <label>Project Type</label>
+          <input type="text" id="w-area" value="${esc(job.warranty?.areaCovered || job.service || '')}" placeholder="e.g. Kitchen Remodeling">
+        </div>
+        <div class="warranty-form-group">
+          <label>Project Scope / Sub-type</label>
+          <input type="text" id="w-scope" value="${esc(job.projectScope || job.warranty?.projectScope || '')}" placeholder="e.g. Full gut remodel, new cabinets, quartz countertops">
         </div>
         <div class="warranty-form-group">
           <label>Additional Warranty Notes (optional)</label>
@@ -756,8 +764,19 @@ function switchTab(tab) {
     if (stored) renderStoredReport(stored);
   }
   if (tab === 'warranty') {
-    initSigCanvas();
     const job = getJob(activeJobId);
+    // Auto-sync job fields into warranty so PDF always has current data
+    const w = job.warranty || {};
+    updateJob(activeJobId, { warranty: {
+      ...w,
+      clientName:     w.clientName     || job.client       || '',
+      address:        w.address        || job.address       || '',
+      completionDate: w.completionDate || job.endDate       || '',
+      areaCovered:    w.areaCovered    || job.service       || '',
+      projectScope:   job.projectScope || w.projectScope    || '',
+      term:           w.term           || '5 Years',
+    }});
+    initSigCanvas();
     if (job.warranty?.clientSig) renderSavedSig(job.warranty.clientSig);
   }
 }
@@ -964,6 +983,7 @@ function openEditModal() {
   document.getElementById('nj-service').value = job.service || '';
   document.getElementById('nj-start').value = job.startDate || '';
   document.getElementById('nj-end').value = job.endDate || '';
+  document.getElementById('nj-scope').value = job.projectScope || '';
   document.getElementById('nj-notes').value = job.initialNotes || '';
   document.getElementById('new-job-modal').classList.remove('hidden');
 }
@@ -973,7 +993,7 @@ function closeNewJobModal() {
 }
 
 function clearModalFields() {
-  ['nj-name','nj-client','nj-address','nj-start','nj-end','nj-notes'].forEach(id => {
+  ['nj-name','nj-client','nj-address','nj-start','nj-end','nj-scope','nj-notes'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('nj-status').value = 'active';
@@ -992,6 +1012,7 @@ function saveJob() {
     service: document.getElementById('nj-service').value,
     startDate: document.getElementById('nj-start').value,
     endDate: document.getElementById('nj-end').value,
+    projectScope: document.getElementById('nj-scope').value.trim(),
     initialNotes: document.getElementById('nj-notes').value.trim(),
   };
 
@@ -1041,6 +1062,7 @@ function saveWarrantyFields() {
     completionDate: document.getElementById('w-completion')?.value || '',
     term:           document.getElementById('w-term')?.value || '5 Years',
     areaCovered:    document.getElementById('w-area')?.value.trim() || '',
+    projectScope:   document.getElementById('w-scope')?.value.trim() || '',
     notes:          document.getElementById('w-notes')?.value.trim() || '',
   }});
   const btn = event.target;
@@ -1145,11 +1167,13 @@ async function exportWarrantyPDF() {
   const w = job.warranty || {};
   if (!w.clientSig) { alert('No signature found. Please have the client sign the warranty first.'); return; }
 
-  const clientName = w.clientName || job.client || '________________________';
-  const address    = w.address    || job.address || '________________________';
-  const compDate   = w.completionDate ? fmtDate(w.completionDate) : '________________';
+  // Always pull live from job data first, fall back to saved warranty fields
+  const clientName = job.client       || w.clientName     || '________________________';
+  const address    = job.address      || w.address        || '________________________';
+  const compDate   = (job.endDate     || w.completionDate) ? fmtDate(job.endDate || w.completionDate) : '________________';
   const term       = w.term || '5 Years';
-  const area       = w.areaCovered || job.service || '________________________';
+  const area       = job.service      || w.areaCovered    || '________________________';
+  const scope      = job.projectScope || w.projectScope   || '';
   const wNotes     = w.notes || '';
   const signedDate = w.signedAt ? new Date(w.signedAt).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}) : new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
 
@@ -1167,7 +1191,7 @@ async function exportWarrantyPDF() {
     <div class="wpdf-body">
       <p>Guardian Construction provided construction and renovation services at the property listed below. Guardian Construction performed the work according to industry standards and agrees to warrant the workmanship of all services rendered.</p>
 
-      <p>The specific work covered under this warranty includes: <strong>${esc(area)}</strong>.</p>
+      <p>The specific work covered under this warranty includes: <strong>${esc(area)}${scope ? ` — ${esc(scope)}` : ''}</strong>.</p>
 
       <p>This limited warranty lasts for <strong>${esc(term)}</strong> from the date Guardian Construction completes its work at your property and may be transferred to a third-party within that warranty period. The recorded date of completion was <strong>${esc(compDate)}</strong> per the certificate of completion (COC).</p>
 
@@ -1187,7 +1211,26 @@ async function exportWarrantyPDF() {
       <div class="wpdf-section-title">Limitation of Liability</div>
       <p>Except for the express limited warranty set forth above, or any implied warranties mandated under applicable law, Guardian Construction makes no express or implied representations in this Agreement or otherwise. Any warranty redemption for any express or implied warranties shall be limited in duration to the warranty period set forth in this Agreement only.</p>
 
-      <div class="wpdf-property-label">Property: ${esc(address)}</div>
+      <table style="width:100%;border-collapse:collapse;margin-top:20px;font-family:Arial,sans-serif;font-size:11px;">
+        <tr>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;width:130px;color:#555;text-transform:uppercase;letter-spacing:.5px">Client</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${esc(clientName)}</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;width:130px;color:#555;text-transform:uppercase;letter-spacing:.5px">Property</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${esc(address)}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px">Project Type</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${esc(area)}</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px">Scope</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${esc(scope) || '—'}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px">Completion</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${compDate}</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;background:#f8f6f2;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px">Warranty Term</td>
+          <td style="padding:6px 10px;border:1px solid #ccc;font-weight:600">${esc(term)}</td>
+        </tr>
+      </table>
     </div>
 
     <div class="wpdf-sig-section">
