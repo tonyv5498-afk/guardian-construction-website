@@ -96,7 +96,6 @@
         <div class="flex gap-1 mb-5 bg-gray-100 p-1 rounded-xl w-fit">
             <button id="tab-jobs" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white transition-all" style="background:#1B3A6B;">Jobs</button>
             <button id="tab-network" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all">Network</button>
-            <button id="tab-calendar" class="px-4 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-gray-800 transition-all">Calendar</button>
         </div>
 
         <div id="jobs-section">
@@ -247,65 +246,6 @@
                         <tbody id="network-tbody" class="divide-y divide-gray-50"></tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <!-- Calendar Section -->
-        <div id="calendar-section" class="hidden">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">Calendar</h2>
-                    <p class="text-gray-500 text-xs mt-0.5">Appointments and scheduling</p>
-                </div>
-                <div class="flex gap-2">
-                    <button id="manage-team-btn"
-                        class="flex items-center gap-2 text-sm font-semibold border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        Team
-                    </button>
-                    <button id="add-event-btn"
-                        class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        Add Event
-                    </button>
-                </div>
-            </div>
-
-            <!-- Calendar reconnect notice -->
-            <div id="calendar-reconnect-notice" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-semibold text-yellow-800">Google Calendar access needed</p>
-                    <p class="text-xs text-yellow-600 mt-0.5">Click Re-connect and grant Calendar access when prompted.</p>
-                </div>
-                <button id="calendar-reconnect-btn"
-                    class="text-xs font-semibold text-white px-3 py-1.5 rounded-lg" style="background:#1B3A6B;">
-                    Re-connect
-                </button>
-            </div>
-
-            <!-- Month view -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                    <button id="cal-prev-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <h3 id="cal-month-label" class="text-base font-bold text-gray-900"></h3>
-                    <button id="cal-next-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-                <!-- Day-of-week headers -->
-                <div class="grid grid-cols-7 border-b border-gray-100">
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Sun</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Mon</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Tue</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Wed</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Thu</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Fri</div>
-                    <div class="text-center text-xs font-semibold text-gray-400 py-2">Sat</div>
-                </div>
-                <!-- Grid cells -->
-                <div id="cal-grid" class="grid grid-cols-7"></div>
             </div>
         </div>
 
@@ -2294,8 +2234,8 @@ function initApp() {
     }
 
     function switchTab(tab) {
-        const tabs = { jobs: 'tab-jobs', network: 'tab-network', calendar: 'tab-calendar' };
-        const sections = { jobs: 'jobs-section', network: 'network-section', calendar: 'calendar-section' };
+        const tabs = { jobs: 'tab-jobs', network: 'tab-network' };
+        const sections = { jobs: 'jobs-section', network: 'network-section' };
         Object.entries(tabs).forEach(([t, btnId]) => {
             const btn = $(btnId);
             const sec = $(sections[t]);
@@ -2315,21 +2255,6 @@ function initApp() {
     }
 
     // ── Calendar event listeners ──────────────────────────────────
-    $('tab-calendar').addEventListener('click', () => {
-        switchTab('calendar');
-        fetchAndRenderCalendar();
-    });
-    $('cal-prev-btn').addEventListener('click', () => {
-        calMonth--;
-        if (calMonth < 0) { calMonth = 11; calYear--; }
-        fetchAndRenderCalendar();
-    });
-    $('cal-next-btn').addEventListener('click', () => {
-        calMonth++;
-        if (calMonth > 11) { calMonth = 0; calYear++; }
-        fetchAndRenderCalendar();
-    });
-    $('add-event-btn').addEventListener('click', () => openEventModal());
     $('event-modal-close').addEventListener('click', closeEventModal);
     $('event-form-cancel').addEventListener('click', closeEventModal);
     $('event-modal').addEventListener('click', e => { if (e.target === $('event-modal')) closeEventModal(); });
@@ -2420,35 +2345,6 @@ function initApp() {
         }
     });
 
-    $('calendar-reconnect-btn').addEventListener('click', async () => {
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('https://www.googleapis.com/auth/drive.file');
-            provider.addScope('https://www.googleapis.com/auth/calendar');
-            provider.setCustomParameters({ prompt: 'consent' });
-            const result = await auth.signInWithPopup(provider);
-            const token = result.credential?.accessToken;
-            if (!token) { toast('Could not get access token — try signing out and back in.', true); return; }
-            driveToken = token;
-            sessionStorage.setItem('driveToken', driveToken);
-            $('calendar-reconnect-notice').classList.add('hidden');
-            await fetchAndRenderCalendar();
-            // Only confirm success if the notice didn't re-appear (i.e. API call worked)
-            if ($('calendar-reconnect-notice').classList.contains('hidden')) {
-                toast('Google Calendar connected');
-            }
-        } catch (err) {
-            const ignoredCodes = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
-            if (!ignoredCodes.includes(err.code)) {
-                toast('Connection failed: ' + err.message, true);
-            }
-        }
-    });
-
-    $('manage-team-btn').addEventListener('click', () => {
-        renderTeamModal();
-        $('team-modal').classList.remove('hidden');
-    });
     $('team-modal-close').addEventListener('click', () => $('team-modal').classList.add('hidden'));
     $('team-modal').addEventListener('click', e => { if (e.target === $('team-modal')) $('team-modal').classList.add('hidden'); });
 
