@@ -1006,7 +1006,7 @@
                         <div class="flex gap-2"><span class="font-semibold text-gray-500 w-20 flex-shrink-0">Claim #:</span><span id="sc-claim" class="text-gray-900"></span></div>
                     </div>
                     <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Insurance Agent:</span><span id="sc-ins-agent" class="text-gray-900"></span></div>
-                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Due Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
+                    <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Est. Start Date:</span><span id="sc-due-date" class="text-gray-900"></span></div>
                     <div class="flex gap-2 pb-1 border-b border-gray-100"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Project Type:</span><span id="sc-project-type" class="text-gray-900"></span></div>
                     <div id="sc-rwa-cost-fields" class="hidden grid grid-cols-2 gap-x-4 pb-1">
                         <div class="flex gap-2"><span class="font-semibold text-gray-500 w-36 flex-shrink-0">Estimated Cost:</span><span id="sc-estimated-cost" class="text-gray-900"></span></div>
@@ -1123,7 +1123,7 @@
             </div>
             <p class="text-xs text-gray-500">The document auto-fills all job data. Generate the signing link to send to the client.</p>
             <div id="sig-req-due-date-wrap">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Due Date</label>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Estimated Start Date</label>
                 <input id="sig-req-due-date" type="text" placeholder="e.g. 06/30/2026"
                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
             </div>
@@ -4317,7 +4317,7 @@ function _generateAuthPDF(d, docType) {
     fieldRow('Policy #', d.insPolicy);
     fieldRow('Insurance Agent', d.insAdjusterName);
     fieldRow('Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — '));
-    fieldRow('Due Date', d.dueDate);
+    fieldRow('Est. Start Date', d.dueDate);
     if (docType === 'rwa') {
         fieldRow('Estimated Cost', d.estimatedCost);
         fieldRow('Deposit Amount', d.depositAmount);
