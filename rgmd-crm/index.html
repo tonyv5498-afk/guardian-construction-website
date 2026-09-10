@@ -665,6 +665,13 @@
                     </div>
                     <div id="sig-status-warranty"></div>
                 </div>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Contractor Certificate/Notice of Completion</span>
+                        <span id="sig-pill-contractor_coc" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-contractor_coc"></div>
+                </div>
             </div>
         </div>
 
@@ -1091,6 +1098,23 @@
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
                 </div>
             </div>
+            <div id="sig-req-contractor-coc-wrap" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Completion Date</label>
+                    <input id="sig-req-contractor-completion-date" type="text" placeholder="e.g. 06/15/2026"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Date(s) COC Requested from Owner</label>
+                    <input id="sig-req-contractor-dates-requested" type="text" placeholder="e.g. 06/12/2026, 06/14/2026"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Project Manager Name</label>
+                    <input id="sig-req-contractor-pm-name" type="text" placeholder="Full name"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+            </div>
             <div id="sig-req-aob-wrap" class="border border-gray-200 rounded-xl p-3 space-y-2.5">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Optional Add-on</p>
                 <label class="flex items-center gap-3 cursor-pointer">
@@ -1476,8 +1500,9 @@ const DOC_TYPES = {
     rwa:           { label: 'Reconstruction Work Authorization',      tokenField: 'sigTokenRWA',          hasAob: true,  simpleDoc: false },
     coc_mit:       { label: 'Certificate of Completion — Mitigation', tokenField: 'sigTokenCOCMit',       hasAob: false, simpleDoc: true  },
     coc_rebuild:   { label: 'Certificate of Completion — Rebuild',    tokenField: 'sigTokenCOCRebuild',   hasAob: false, simpleDoc: true  },
-    hold_harmless: { label: 'Hold Harmless Agreement',                tokenField: 'sigTokenHoldHarmless', hasAob: false, simpleDoc: true  },
-    warranty:      { label: 'Restoration Limited Warranty',            tokenField: 'sigTokenWarranty',     hasAob: false, simpleDoc: true  },
+    hold_harmless:    { label: 'Hold Harmless Agreement',                       tokenField: 'sigTokenHoldHarmless',    hasAob: false, simpleDoc: true  },
+    warranty:         { label: 'Restoration Limited Warranty',                  tokenField: 'sigTokenWarranty',        hasAob: false, simpleDoc: true  },
+    contractor_coc:   { label: 'Contractor Certificate/Notice of Completion',   tokenField: 'sigTokenContractorCOC',   hasAob: false, simpleDoc: true  },
 };
 
 const WA_PARAGRAPHS = [
@@ -1488,7 +1513,7 @@ const WA_PARAGRAPHS = [
     'Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer.',
     'Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.',
     'I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin restoration immediately.',
-    'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.',
+    'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
 ];
 
 const RWA_PARAGRAPHS = [
@@ -1505,7 +1530,7 @@ const RWA_PARAGRAPHS = [
     'Restoration Group of Metro Detroit LLC will not be liable for any delays caused by weather conditions, the unavailability of materials or workers, or for reasons beyond Restoration Group of Metro Detroit LLC\'s reasonable control, such as local, county, state, national or international health crises or so-called "acts of God."',
     'I (we) understand that I (we) may cancel this Contract by contacting Restoration Group of Metro Detroit LLC by phone, text, or email within three (3) calendar days of signing. If balance in full is not paid to Restoration Group of Metro Detroit LLC within 30 days of job completion, I hereby authorize Restoration Group of Metro Detroit LLC to charge my credit card for the unpaid balance.',
     'This Contract contains the entire understanding of you and Restoration Group of Metro Detroit LLC concerning the Project. All prior written or oral understandings or agreements are merged into this Contract. This Contract may be altered only in writing signed by me (us) and Restoration Group of Metro Detroit LLC.',
-    'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.',
+    'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -1553,23 +1578,27 @@ async function initSigningPage(token) {
 
         // Set page title and signature label based on doc type
         const titles = {
-            wa:            'Service Authorization Contract',
-            rwa:           'Reconstruction Work Authorization',
-            coc_mit:       'Mitigation Certificate of Completion and Satisfaction',
-            coc_rebuild:   'Rebuild Certificate of Completion and Satisfaction',
-            hold_harmless: 'Indemnification, Hold Harmless Agreement',
-            warranty:      'Restoration Limited Warranty',
+            wa:             'Service Authorization Contract',
+            rwa:            'Reconstruction Work Authorization',
+            coc_mit:        'Mitigation Certificate of Completion and Satisfaction',
+            coc_rebuild:    'Rebuild Certificate of Completion and Satisfaction',
+            hold_harmless:  'Indemnification, Hold Harmless Agreement',
+            warranty:       'Restoration Limited Warranty',
+            contractor_coc: 'Contractor Certificate / Notice of Completion',
         };
         const sigLabels = {
-            wa: 'Signature — Service Authorization', rwa: 'Signature — Reconstruction Work Authorization',
-            coc_mit: 'Signature — Certificate of Completion', coc_rebuild: 'Signature — Certificate of Completion',
-            hold_harmless: 'Signature — Hold Harmless Agreement',
-            warranty: 'Signature — Warranty Acceptance',
+            wa:             'Signature — Service Authorization',
+            rwa:            'Signature — Reconstruction Work Authorization',
+            coc_mit:        'Signature — Certificate of Completion',
+            coc_rebuild:    'Signature — Certificate of Completion',
+            hold_harmless:  'Signature — Hold Harmless Agreement',
+            warranty:       'Signature — Warranty Acceptance',
+            contractor_coc: 'Signature — Authorized Representative',
         };
         document.getElementById('sc-doc-title').textContent  = titles[docType]    || titles.wa;
         document.getElementById('sc-sig-label').textContent  = sigLabels[docType] || sigLabels.wa;
 
-        const isSimple = (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'warranty');
+        const isSimple = (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'warranty' || docType === 'contractor_coc');
 
         // Populate fields
         document.getElementById('sc-customer').textContent = d.clientName || '';
@@ -1599,9 +1628,9 @@ async function initSigningPage(token) {
         } else if (docType === 'rwa') {
             bodyEl.innerHTML = RWA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'coc_mit') {
-            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p><p class="text-sm text-gray-700 mt-4">The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.</p>`;
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
         } else if (docType === 'coc_rebuild') {
-            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p><p class="text-sm text-gray-700 mt-4">The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.</p>`;
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
         } else if (docType === 'warranty') {
             const area = esc(d.areaRemediated || '________________________');
             const cdate = esc(d.completionDate || '________________________');
@@ -1615,6 +1644,22 @@ async function initSigningPage(token) {
                 `<p class="font-semibold uppercase text-xs tracking-wide text-gray-500 mt-4">LIMITATION OF LIABILITY</p>`,
                 `<p style="font-size:0.72rem;">IN NO EVENT SHALL RESTORATION GROUP OF METRO DETROIT LLC BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO THIS WARRANTY OR THE SERVICES PROVIDED, EVEN IF THE COMPANY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE COMPANY'S TOTAL LIABILITY SHALL NOT EXCEED THE ORIGINAL CONTRACT PRICE FOR THE REMEDIATION SERVICES.</p>`,
                 `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs text-gray-500">Restoration Group of Metro Detroit LLC · 3319 Greenfield Rd. #107, Dearborn MI 48120</p><p class="text-xs font-semibold mt-2">Authorized by: Tony Vannoy, Owner — Restoration Group of Metro Detroit LLC</p></div>`,
+            ].join('');
+        } else if (docType === 'contractor_coc') {
+            const cn    = esc(d.clientName  || '________________________');
+            const addr  = esc(d.address     || '________________________');
+            const jn    = esc(d.jobNumber   || '________________________');
+            const cdate = esc(d.contractorCompletionDate || '________________________');
+            const dreq  = esc(d.datesRequested           || '________________________');
+            const pm    = esc(d.pmName                   || '________________________');
+            bodyEl.innerHTML = [
+                `<p class="font-semibold text-sm">CONTRACTOR CERTIFICATE / NOTICE OF COMPLETION</p>`,
+                `<p>This document is issued by <strong>Restoration Group of Metro Detroit LLC</strong> ("Contractor") as an independent record of project completion pursuant to applicable Michigan law.</p>`,
+                `<p><strong>Client / Property Owner:</strong> ${cn}<br><strong>Property Address:</strong> ${addr}<br><strong>Job / Contract Reference:</strong> ${jn}<br><strong>Date of Substantial Completion:</strong> ${cdate}</p>`,
+                `<p>The Contractor hereby certifies that the contracted scope of work has been substantially completed at the above-referenced property. The Certificate of Completion (COC) was requested from the property owner/client on the following date(s): <strong>${dreq}</strong>. As of the issuance of this certificate, the property owner/client has not executed the Certificate of Completion.</p>`,
+                `<p class="text-red-700 font-semibold text-xs uppercase tracking-wide">NOTICE: This certificate does NOT constitute, substitute for, or replace the property owner's/client's signature or acceptance on the Certificate of Completion. The Contractor does not sign, and has no authority to sign, on behalf of the property owner/client.</p>`,
+                `<p>This certificate is issued solely as the Contractor's independent documentation of project completion for purposes of final payment obligations under the contract and for the Contractor's business records.</p>`,
+                `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs font-semibold">Issued by: ${pm} — Authorized Representative, Restoration Group of Metro Detroit LLC</p><p class="text-xs text-gray-500 mt-1">Restoration Group of Metro Detroit LLC · 3319 Greenfield Rd. #107, Dearborn MI 48120</p></div>`,
             ].join('');
         } else {
             // hold_harmless
@@ -1786,10 +1831,14 @@ function initApp() {
         $('sig-req-deposit-amount').value = '';
         $('sig-req-area-remediated').value = '';
         $('sig-req-completion-date').value = '';
+        $('sig-req-contractor-completion-date').value = '';
+        $('sig-req-contractor-dates-requested').value = '';
+        $('sig-req-contractor-pm-name').value = '';
         $('sig-req-due-date-wrap').classList.toggle('hidden', dt.simpleDoc);
         $('sig-req-aob-wrap').classList.toggle('hidden', !dt.hasAob);
         $('sig-req-rwa-cost-wrap').classList.toggle('hidden', docType !== 'rwa');
         $('sig-req-warranty-wrap').classList.toggle('hidden', docType !== 'warranty');
+        $('sig-req-contractor-coc-wrap').classList.toggle('hidden', docType !== 'contractor_coc');
         $('sig-req-modal').classList.remove('hidden');
     }
 
@@ -1872,8 +1921,9 @@ function initApp() {
         loadDocSigStatus(job, 'rwa',           job.sigTokenRWA          || null);
         loadDocSigStatus(job, 'coc_mit',       job.sigTokenCOCMit       || null);
         loadDocSigStatus(job, 'coc_rebuild',   job.sigTokenCOCRebuild   || null);
-        loadDocSigStatus(job, 'hold_harmless', job.sigTokenHoldHarmless || null);
-        loadDocSigStatus(job, 'warranty',      job.sigTokenWarranty     || null);
+        loadDocSigStatus(job, 'hold_harmless',  job.sigTokenHoldHarmless  || null);
+        loadDocSigStatus(job, 'warranty',       job.sigTokenWarranty      || null);
+        loadDocSigStatus(job, 'contractor_coc', job.sigTokenContractorCOC || null);
     }
 
     $('sig-req-close').addEventListener('click', () => $('sig-req-modal').classList.add('hidden'));
@@ -1886,8 +1936,11 @@ function initApp() {
         const includeAob     = dt.hasAob ? $('sig-req-include-aob').checked : false;
         const estimatedCost  = currentSigDocType === 'rwa'      ? $('sig-req-estimated-cost').value.trim()  : '';
         const depositAmount  = currentSigDocType === 'rwa'      ? $('sig-req-deposit-amount').value.trim()  : '';
-        const areaRemediated = currentSigDocType === 'warranty' ? $('sig-req-area-remediated').value.trim() : '';
-        const completionDate = currentSigDocType === 'warranty' ? $('sig-req-completion-date').value.trim() : '';
+        const areaRemediated        = currentSigDocType === 'warranty'       ? $('sig-req-area-remediated').value.trim()             : '';
+        const completionDate        = currentSigDocType === 'warranty'       ? $('sig-req-completion-date').value.trim()             : '';
+        const contractorCompletionDate = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-completion-date').value.trim() : '';
+        const datesRequested        = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-dates-requested').value.trim()  : '';
+        const pmName                = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-pm-name').value.trim()         : '';
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -1901,6 +1954,7 @@ function initApp() {
                 insPolicy: job.insPolicy||'', insAdjusterName: job.insAdjusterName||'',
                 projectType: job.projectType||'', subCategory: job.subCategory||'',
                 dueDate, includeAob, estimatedCost, depositAmount, areaRemediated, completionDate,
+                contractorCompletionDate, datesRequested, pmName,
                 signed: false, signatureDataURL: null, aobSignatureDataURL: null,
                 signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -3923,7 +3977,8 @@ let _logoDataURL = null;
 
 function generateSignedPDF(d) {
     const docType = d.docType || 'wa';
-    if (docType === 'warranty') return _generateWarrantyPDF(d);
+    if (docType === 'warranty')        return _generateWarrantyPDF(d);
+    if (docType === 'contractor_coc')  return _generateContractorCOCPDF(d);
     if (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'hold_harmless') return _generateCOCPDF(d, docType);
     return _generateAuthPDF(d, docType);
 }
@@ -3981,11 +4036,7 @@ function _generateCOCPDF(d, docType) {
             : 'This is to certify that the rebuild performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.';
         doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(40,40,40);
         const bodyLines = doc.splitTextToSize(bodyText, tw-40);
-        doc.text(bodyLines, pw/2, y+20, {align:'center'}); y += bodyLines.length*16+30;
-        const cocClause = 'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.';
-        doc.setFontSize(9); doc.setTextColor(60,60,60);
-        const clauseLines = doc.splitTextToSize(cocClause, tw);
-        doc.text(clauseLines, ml, y); y += clauseLines.length*12+30;
+        doc.text(bodyLines, pw/2, y+20, {align:'center'}); y += bodyLines.length*16+60;
     } else {
         // hold_harmless — longer paragraphs
         const paras = [
@@ -4019,6 +4070,85 @@ function _generateCOCPDF(d, docType) {
     doc.text('Printed Name:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
     doc.text(d.signerName||'', ml+86, y); y += 16;
+    doc.setFont('helvetica','bold'); doc.setTextColor(70,70,70);
+    doc.text('Date:', ml, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(signedDate, ml+38, y);
+
+    return doc;
+}
+
+function _generateContractorCOCPDF(d) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const pw = 612, ph = 792, ml = 70, mr = 70, tw = pw - ml - mr;
+    const signedDate = d.signedAt
+        ? new Date(d.signedAt.seconds*1000).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+        : new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+    // Header
+    doc.setFillColor(27,58,107); doc.rect(0,0,pw,64,'F');
+    if (_logoDataURL) doc.addImage(_logoDataURL,'PNG',ml,8,48,48);
+    const textX = _logoDataURL ? ml+56 : ml;
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text('Restoration Group of Metro Detroit LLC', textX, 30);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.text('rgmd-crm.web.app', textX, 46);
+
+    doc.setTextColor(20,20,20);
+    let y = 86;
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    const titleLines = doc.splitTextToSize('CONTRACTOR CERTIFICATE / NOTICE OF COMPLETION', tw);
+    doc.text(titleLines, pw/2, y, {align:'center'}); y += titleLines.length*16+16;
+
+    doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 18;
+
+    // Fields
+    const field = (label, val) => {
+        doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(100,100,100);
+        doc.text(label+':', ml, y);
+        doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+        const vlines = doc.splitTextToSize(val||'', tw-120);
+        doc.text(vlines, ml+120, y); y += Math.max(16, vlines.length*13);
+    };
+    field('Client / Owner',         d.clientName||'');
+    field('Property Address',        d.address||'');
+    field('Job / Contract Ref.',     d.jobNumber||'');
+    field('Date of Completion',      d.contractorCompletionDate||'');
+    field('COC Requested On',        d.datesRequested||'');
+    y += 8; doc.setDrawColor(200,200,200); doc.line(ml,y,pw-mr,y); y += 18;
+
+    // Body paragraphs
+    const paras = [
+        'This document is issued by Restoration Group of Metro Detroit LLC ("Contractor") as an independent record of project completion pursuant to applicable Michigan law.',
+        'The Contractor hereby certifies that the contracted scope of work has been substantially completed at the above-referenced property. The Certificate of Completion (COC) was requested from the property owner/client on the date(s) listed above. As of the issuance of this certificate, the property owner/client has not executed the Certificate of Completion.',
+        'NOTICE: This certificate does NOT constitute, substitute for, or replace the property owner\'s/client\'s signature or acceptance on the Certificate of Completion. The Contractor does not sign, and has no authority to sign, on behalf of the property owner/client.',
+        'This certificate is issued solely as the Contractor\'s independent documentation of project completion for purposes of final payment obligations under the contract and for the Contractor\'s business records.',
+    ];
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(40,40,40);
+    for (const p of paras) {
+        const lines = doc.splitTextToSize(p, tw);
+        if (y + lines.length*12 > ph-80) { doc.addPage(); y = 50; }
+        doc.text(lines, ml, y); y += lines.length*12 + 10;
+    }
+    y += 10;
+
+    // Signature block — Authorized Representative only
+    if (d.signatureDataURL) {
+        if (y+120 > ph-40) { doc.addPage(); y=50; }
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(110,110,110);
+        doc.text('Signature — Authorized Representative:', ml, y); y += 8;
+        doc.addImage(d.signatureDataURL,'PNG',ml,y,220,55); y += 65;
+    }
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(70,70,70);
+    doc.text('Printed Name:', ml, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(d.signerName||'', ml+86, y); y += 16;
+    doc.setFont('helvetica','bold'); doc.setTextColor(70,70,70);
+    doc.text('Title / Role:', ml, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
+    doc.text(d.pmName ? 'Project Manager — Restoration Group of Metro Detroit LLC' : 'Authorized Representative', ml+76, y); y += 16;
     doc.setFont('helvetica','bold'); doc.setTextColor(70,70,70);
     doc.text('Date:', ml, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(20,20,20);
