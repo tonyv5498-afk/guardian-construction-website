@@ -1488,6 +1488,7 @@ const WA_PARAGRAPHS = [
     'Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer.',
     'Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.',
     'I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin restoration immediately.',
+    'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.',
 ];
 
 const RWA_PARAGRAPHS = [
@@ -1504,6 +1505,7 @@ const RWA_PARAGRAPHS = [
     'Restoration Group of Metro Detroit LLC will not be liable for any delays caused by weather conditions, the unavailability of materials or workers, or for reasons beyond Restoration Group of Metro Detroit LLC\'s reasonable control, such as local, county, state, national or international health crises or so-called "acts of God."',
     'I (we) understand that I (we) may cancel this Contract by contacting Restoration Group of Metro Detroit LLC by phone, text, or email within three (3) calendar days of signing. If balance in full is not paid to Restoration Group of Metro Detroit LLC within 30 days of job completion, I hereby authorize Restoration Group of Metro Detroit LLC to charge my credit card for the unpaid balance.',
     'This Contract contains the entire understanding of you and Restoration Group of Metro Detroit LLC concerning the Project. All prior written or oral understandings or agreements are merged into this Contract. This Contract may be altered only in writing signed by me (us) and Restoration Group of Metro Detroit LLC.',
+    'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.',
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -1597,9 +1599,9 @@ async function initSigningPage(token) {
         } else if (docType === 'rwa') {
             bodyEl.innerHTML = RWA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'coc_mit') {
-            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p><p class="text-sm text-gray-700 mt-4">The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.</p>`;
         } else if (docType === 'coc_rebuild') {
-            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
+            bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the rebuild performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p><p class="text-sm text-gray-700 mt-4">The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.</p>`;
         } else if (docType === 'warranty') {
             const area = esc(d.areaRemediated || '________________________');
             const cdate = esc(d.completionDate || '________________________');
@@ -3979,7 +3981,11 @@ function _generateCOCPDF(d, docType) {
             : 'This is to certify that the rebuild performed by Restoration Group of Metro Detroit LLC has been completed in a satisfactory manner.';
         doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(40,40,40);
         const bodyLines = doc.splitTextToSize(bodyText, tw-40);
-        doc.text(bodyLines, pw/2, y+20, {align:'center'}); y += bodyLines.length*16+60;
+        doc.text(bodyLines, pw/2, y+20, {align:'center'}); y += bodyLines.length*16+30;
+        const cocClause = 'The Certificate of Completion (COC) must be signed by the client within three (3) calendar days from the last day of work performed at the property. In the event the COC is not signed within this period, the determination of project completion shall be made by the project manager at Restoration Group of Metro Detroit LLC assigned to the project, who is authorized to sign and complete the COC on their behalf.';
+        doc.setFontSize(9); doc.setTextColor(60,60,60);
+        const clauseLines = doc.splitTextToSize(cocClause, tw);
+        doc.text(clauseLines, ml, y); y += clauseLines.length*12+30;
     } else {
         // hold_harmless — longer paragraphs
         const paras = [
