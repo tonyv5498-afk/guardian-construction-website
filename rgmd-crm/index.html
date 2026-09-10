@@ -1643,7 +1643,7 @@ async function initSigningPage(token) {
                 `<p style="font-size:0.72rem;">THE WARRANTIES SET FORTH HEREIN ARE THE SOLE AND EXCLUSIVE WARRANTIES PROVIDED BY THE COMPANY. THE COMPANY MAKES NO OTHER WARRANTIES, EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. THE COMPANY'S LIABILITY UNDER THIS WARRANTY IS LIMITED SOLELY TO RE-PERFORMANCE OF THE REMEDIATION SERVICES AND SHALL NOT INCLUDE ANY CONSEQUENTIAL, INCIDENTAL, OR SPECIAL DAMAGES OF ANY KIND.</p>`,
                 `<p class="font-semibold uppercase text-xs tracking-wide text-gray-500 mt-4">LIMITATION OF LIABILITY</p>`,
                 `<p style="font-size:0.72rem;">IN NO EVENT SHALL RESTORATION GROUP OF METRO DETROIT LLC BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO THIS WARRANTY OR THE SERVICES PROVIDED, EVEN IF THE COMPANY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE COMPANY'S TOTAL LIABILITY SHALL NOT EXCEED THE ORIGINAL CONTRACT PRICE FOR THE REMEDIATION SERVICES.</p>`,
-                `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs text-gray-500">Restoration Group of Metro Detroit LLC · 3319 Greenfield Rd. #107, Dearborn MI 48120</p><p class="text-xs font-semibold mt-2">Authorized by: Tony Vannoy, Owner — Restoration Group of Metro Detroit LLC</p></div>`,
+                `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs text-gray-500">Restoration Group of Metro Detroit LLC · 6632 Telegraph Rd. #116 Bloomfield Hills MI 48301</p><p class="text-xs font-semibold mt-2">Authorized by: Tony Vannoy, Owner — Restoration Group of Metro Detroit LLC</p></div>`,
             ].join('');
         } else if (docType === 'contractor_coc') {
             const cn    = esc(d.clientName  || '________________________');
@@ -1659,7 +1659,7 @@ async function initSigningPage(token) {
                 `<p>The Contractor hereby certifies that the contracted scope of work has been substantially completed at the above-referenced property. The Certificate of Completion (COC) was requested from the property owner/client on the following date(s): <strong>${dreq}</strong>. As of the issuance of this certificate, the property owner/client has not executed the Certificate of Completion.</p>`,
                 `<p class="text-red-700 font-semibold text-xs uppercase tracking-wide">NOTICE: This certificate does NOT constitute, substitute for, or replace the property owner's/client's signature or acceptance on the Certificate of Completion. The Contractor does not sign, and has no authority to sign, on behalf of the property owner/client.</p>`,
                 `<p>This certificate is issued solely as the Contractor's independent documentation of project completion for purposes of final payment obligations under the contract and for the Contractor's business records.</p>`,
-                `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs font-semibold">Issued by: ${pm} — Authorized Representative, Restoration Group of Metro Detroit LLC</p><p class="text-xs text-gray-500 mt-1">Restoration Group of Metro Detroit LLC · 3319 Greenfield Rd. #107, Dearborn MI 48120</p></div>`,
+                `<div class="mt-6 pt-4 border-t border-gray-200"><p class="text-xs font-semibold">Issued by: ${pm} — Authorized Representative, Restoration Group of Metro Detroit LLC</p><p class="text-xs text-gray-500 mt-1">Restoration Group of Metro Detroit LLC · 6632 Telegraph Rd. #116 Bloomfield Hills MI 48301</p></div>`,
             ].join('');
         } else {
             // hold_harmless
@@ -4006,7 +4006,7 @@ function _generateCOCPDF(d, docType) {
     doc.setFont('helvetica','bold'); doc.setFontSize(10);
     doc.text('Restoration Group of Metro Detroit LLC', textX, 30);
     doc.setFont('helvetica','normal'); doc.setFontSize(8);
-    doc.text('rgmd-crm.web.app', textX, 46);
+    doc.text('6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', textX, 46);
 
     doc.setTextColor(20,20,20);
     let y = 86;
@@ -4094,7 +4094,7 @@ function _generateContractorCOCPDF(d) {
     doc.setFont('helvetica','bold'); doc.setFontSize(10);
     doc.text('Restoration Group of Metro Detroit LLC', textX, 30);
     doc.setFont('helvetica','normal'); doc.setFontSize(8);
-    doc.text('rgmd-crm.web.app', textX, 46);
+    doc.text('6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', textX, 46);
 
     doc.setTextColor(20,20,20);
     let y = 86;
@@ -4173,7 +4173,7 @@ function _generateWarrantyPDF(d) {
     doc.setFont('helvetica','bold'); doc.setFontSize(10);
     doc.text('Restoration Group of Metro Detroit LLC', textX, 30);
     doc.setFont('helvetica','normal'); doc.setFontSize(8);
-    doc.text('3319 Greenfield Rd. #107, Dearborn MI 48120', textX, 46);
+    doc.text('6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', textX, 46);
 
     doc.setTextColor(20,20,20);
     let y = 86;
@@ -4273,6 +4273,7 @@ function _generateWarrantyPDF(d) {
 }
 
 function _generateAuthPDF(d, docType) {
+    if (docType === 'rwa') return _generateRWACompactPDF(d);
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'pt', format: 'letter' });
     const pw = 612, ph = 792, ml = 50, mr = 50, tw = pw - ml - mr;
@@ -4336,9 +4337,7 @@ function _generateAuthPDF(d, docType) {
         ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    // ── Page 1: WA or RWA ──────────────────────────────────
-    const authTitle = docType === 'rwa' ? 'Reconstruction Work Authorization' : 'Service Authorization Contract';
-    pageHeader(authTitle, 'Restoration Group of Metro Detroit LLC');
+    pageHeader('Service Authorization Contract', 'Restoration Group of Metro Detroit LLC');
 
     fieldRow('Customer', d.clientName);
     fieldRow('Address', d.address);
@@ -4350,16 +4349,10 @@ function _generateAuthPDF(d, docType) {
     fieldRow('Insurance Agent', d.insAdjusterName);
     fieldRow('Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — '));
     fieldRow('Est. Start Date', d.dueDate);
-    if (docType === 'rwa') {
-        fieldRow('Estimated Cost', d.estimatedCost);
-        fieldRow('Deposit Amount', d.depositAmount);
-    }
     y += 6; divider();
 
-    const paragraphs = docType === 'rwa' ? RWA_PARAGRAPHS : WA_PARAGRAPHS;
-    paragraphs.forEach(p => bodyPara(p));
+    WA_PARAGRAPHS.forEach(p => bodyPara(p));
 
-    // WA signature block
     newPageIfNeeded(140);
     divider();
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
@@ -4374,7 +4367,7 @@ function _generateAuthPDF(d, docType) {
 
     if (d.signatureDataURL) {
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
-        doc.text('Signature — ' + authTitle, ml, y);
+        doc.text('Signature — Service Authorization Contract', ml, y);
         y += 8;
         doc.addImage(d.signatureDataURL, 'PNG', ml, y, 300, 76);
         y += 86;
@@ -4399,7 +4392,6 @@ function _generateAuthPDF(d, docType) {
         sectionHeading('II. DIRECT PAYMENT AUTHORIZATION');
         bodyPara('I hereby authorize and unequivocally instruct direct payment of any benefits or proceeds to Company. The payment of any benefits or proceeds to Company must be sent directly to Company and payment made solely to Company. I understand that I am responsible for payment for any services provided by Company for which payment is not recoverable from my insurance company, including any applicable deductible.');
 
-        // AOB signature block
         newPageIfNeeded(140);
         divider();
         doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
@@ -4419,6 +4411,120 @@ function _generateAuthPDF(d, docType) {
             doc.addImage(d.aobSignatureDataURL, 'PNG', ml, y, 260, 66);
             y += 76;
         }
+    }
+
+    return doc;
+}
+
+function _generateRWACompactPDF(d) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const pw = 612, ph = 792, ml = 36, mr = 36, tw = pw - ml - mr;
+    let y = 0;
+
+    const signedDate = d.signedAt
+        ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Header bar
+    doc.setFillColor(27, 58, 107);
+    doc.rect(0, 0, pw, 54, 'F');
+    if (_logoDataURL) doc.addImage(_logoDataURL, 'PNG', ml, 5, 44, 44);
+    const hx = _logoDataURL ? ml + 52 : ml;
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+    doc.text('Reconstruction Work Authorization', hx, 24);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+    doc.text('Restoration Group of Metro Detroit LLC  ·  6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', hx, 40);
+    doc.setTextColor(20, 20, 20);
+    y = 62;
+
+    // 2-column info grid — no per-row separator lines to avoid clipping text
+    const colW = (tw - 14) / 2;
+    const c2x = ml + colW + 14;
+    const ROW_H = 16;
+
+    const leftFields = [
+        ['Customer',     d.clientName     || ''],
+        ['Address',      d.address        || ''],
+        ['Phone',        d.phone          || ''],
+        ['Email',        d.email          || ''],
+        ['Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — ')],
+        ['Est. Start',   d.dueDate        || ''],
+    ];
+    const rightFields = [
+        ['Insurance Co.', d.insCarrier       || ''],
+        ['Claim #',       d.insClaim         || ''],
+        ['Policy #',      d.insPolicy        || ''],
+        ['Ins. Agent',    d.insAdjusterName  || ''],
+        ['Est. Cost',     d.estimatedCost    || ''],
+        ['Deposit',       d.depositAmount    || ''],
+    ];
+
+    for (let i = 0; i < leftFields.length; i++) {
+        // Draw separator between rows AFTER the previous row's text,
+        // positioned far enough below the descenders so it doesn't clip text.
+        // We draw it 5pt below the previous baseline (i.e. at y - ROW_H + 5).
+        if (i > 0) {
+            doc.setDrawColor(225, 225, 225);
+            doc.line(ml, y - ROW_H + 5, pw - mr, y - ROW_H + 5);
+        }
+
+        // Left cell
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+        doc.text(leftFields[i][0] + ':', ml, y);
+        const lw = doc.getTextWidth(leftFields[i][0] + ': ');
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        const lv = doc.splitTextToSize(String(leftFields[i][1] || '—'), colW - lw);
+        doc.text(lv[0], ml + lw, y);
+
+        // Right cell
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+        doc.text(rightFields[i][0] + ':', c2x, y);
+        const rw = doc.getTextWidth(rightFields[i][0] + ': ');
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        const rv = doc.splitTextToSize(String(rightFields[i][1] || '—'), colW - rw);
+        doc.text(rv[0], c2x + rw, y);
+
+        y += ROW_H;
+    }
+
+    y += 4;
+    doc.setDrawColor(185, 185, 185); doc.line(ml, y, pw - mr, y); y += 9;
+
+    // Body paragraphs — compact 7pt / 8.2pt leading
+    const LINE_H = 8.2, PARA_GAP = 3.5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(35, 35, 35);
+
+    for (const p of RWA_PARAGRAPHS) {
+        const lines = doc.splitTextToSize(p, tw);
+        if (y + lines.length * LINE_H > ph - 62) { doc.addPage(); y = 40; }
+        doc.text(lines, ml, y);
+        y += lines.length * LINE_H + PARA_GAP;
+    }
+
+    // Signature block
+    y += 5;
+    doc.setDrawColor(185, 185, 185); doc.line(ml, y, pw - mr, y); y += 9;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(70, 70, 70);
+    doc.text('Printed Name:', ml, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(d.signerName || '', ml + 84, y);
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 70);
+    doc.text('Date:', ml + 330, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(signedDate, ml + 356, y);
+    y += 16;
+
+    if (d.signatureDataURL) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+        doc.text('Signature — Reconstruction Work Authorization', ml, y); y += 7;
+        doc.addImage(d.signatureDataURL, 'PNG', ml, y, 280, 70);
+    } else {
+        doc.setDrawColor(175, 175, 175); doc.line(ml, y + 38, ml + 280, y + 38);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(140, 140, 140);
+        doc.text('Signature — Reconstruction Work Authorization', ml, y + 44);
     }
 
     return doc;
