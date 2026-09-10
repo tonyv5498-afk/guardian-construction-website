@@ -4283,7 +4283,7 @@ function _generateAuthPDF(d, docType) {
         if (y + needed > ph - 40) { doc.addPage(); y = 50; }
     }
 
-    function pageHeader(title, subtitle) {
+    function pageHeader(title) {
         doc.setFillColor(27, 58, 107);
         doc.rect(0, 0, pw, 64, 'F');
         if (_logoDataURL) doc.addImage(_logoDataURL, 'PNG', ml, 8, 48, 48);
@@ -4291,20 +4291,44 @@ function _generateAuthPDF(d, docType) {
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
         doc.text(title, hx, 32);
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
-        doc.text(subtitle, hx, 48);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+        doc.text('Restoration Group of Metro Detroit LLC  ·  6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', hx, 48);
         doc.setTextColor(30, 30, 30);
         y = 78;
     }
 
-    function fieldRow(label, value) {
-        if (!value) return;
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(110, 110, 110);
-        doc.text(label + ':', ml, y);
-        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
-        const lines = doc.splitTextToSize(String(value), tw - 118);
-        doc.text(lines, ml + 118, y);
-        y += Math.max(13, lines.length * 11);
+    // 2-column info grid — same style as RWA
+    function infoGrid(rows) {
+        const colW = (tw - 14) / 2;
+        const c2x  = ml + colW + 14;
+        const ROW_H = 16;
+        rows.forEach(([lLabel, lVal, rLabel, rVal], i) => {
+            if (i > 0) {
+                doc.setDrawColor(225, 225, 225);
+                doc.line(ml, y - ROW_H + 5, pw - mr, y - ROW_H + 5);
+            }
+            // left cell
+            if (lLabel) {
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+                doc.text(lLabel + ':', ml, y);
+                const lw = doc.getTextWidth(lLabel + ': ');
+                doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+                const lv = doc.splitTextToSize(String(lVal || '—'), colW - lw);
+                doc.text(lv[0], ml + lw, y);
+            }
+            // right cell
+            if (rLabel) {
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+                doc.text(rLabel + ':', c2x, y);
+                const rw = doc.getTextWidth(rLabel + ': ');
+                doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+                const rv = doc.splitTextToSize(String(rVal || '—'), colW - rw);
+                doc.text(rv[0], c2x + rw, y);
+            }
+            y += ROW_H;
+        });
+        y += 4;
+        doc.setDrawColor(185, 185, 185); doc.line(ml, y, pw - mr, y); y += 10;
     }
 
     function divider() {
@@ -4337,19 +4361,16 @@ function _generateAuthPDF(d, docType) {
         ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    pageHeader('Service Authorization Contract', 'Restoration Group of Metro Detroit LLC');
+    const projType = [d.projectType, d.subCategory].filter(Boolean).join(' — ');
 
-    fieldRow('Customer', d.clientName);
-    fieldRow('Address', d.address);
-    fieldRow('Phone', d.phone);
-    fieldRow('Email', d.email);
-    fieldRow('Insurance Co.', d.insCarrier);
-    fieldRow('Claim #', d.insClaim);
-    fieldRow('Policy #', d.insPolicy);
-    fieldRow('Insurance Agent', d.insAdjusterName);
-    fieldRow('Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — '));
-    fieldRow('Est. Start Date', d.dueDate);
-    y += 6; divider();
+    pageHeader('Service Authorization Contract');
+    infoGrid([
+        ['Customer',     d.clientName,      'Insurance Co.',  d.insCarrier],
+        ['Address',      d.address,          'Claim #',        d.insClaim],
+        ['Phone',        d.phone,            'Policy #',       d.insPolicy],
+        ['Email',        d.email,            'Ins. Agent',     d.insAdjusterName],
+        ['Project Type', projType,           'Est. Start Date', d.dueDate],
+    ]);
 
     WA_PARAGRAPHS.forEach(p => bodyPara(p));
 
@@ -4376,15 +4397,12 @@ function _generateAuthPDF(d, docType) {
     // ── AOB page (if applicable) ────────────────────────────
     if (d.includeAob) {
         doc.addPage(); y = 0;
-        pageHeader('Assignment of Insurance Benefits', 'Restoration Group of Metro Detroit LLC');
-
-        fieldRow('Client/Insured', d.clientName);
-        fieldRow('Policy Number', d.insPolicy);
-        fieldRow('Claim Number', d.insClaim);
-        fieldRow('Insurer', d.insCarrier);
-        fieldRow('Address', d.address);
-        fieldRow('Phone', d.phone);
-        y += 6; divider();
+        pageHeader('Assignment of Insurance Benefits');
+        infoGrid([
+            ['Client/Insured', d.clientName,  'Claim Number', d.insClaim],
+            ['Policy Number',  d.insPolicy,   'Insurer',      d.insCarrier],
+            ['Address',        d.address,     'Phone',        d.phone],
+        ]);
 
         sectionHeading('I. ASSIGNMENT OF INSURANCE BENEFITS');
         bodyPara('I, hereby, assign any and all insurance rights, benefits, proceeds and any causes of action under any applicable insurance policies to Restoration Group of Metro Detroit LLC (hereinafter referred to as "Company"), for services rendered, or to be rendered by Company. In this regard, I waive my privacy rights. I make this assignment in consideration of Company\'s agreement to perform services and supply materials and otherwise perform its obligations under this contract, including not requiring full payment at the time of service. I also hereby direct my insurance carrier(s) to release any and all information requested by Company, its representative, and/or its Attorney for the direct purpose of obtaining actual benefits to be paid by my insurance carrier(s) for services rendered or to be rendered. I believe the appropriate insurance carrier to be ' + (d.insCarrier || '________________________') + '.');
