@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Service — Restoration Group of Metro Detroit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 w-full max-w-lg">
+        <!-- Header -->
+        <div class="px-8 py-5 border-b border-gray-100 flex items-center gap-3" style="background:#1B3A6B;" class="rounded-t-2xl">
+            <img src="logo.png" alt="RGMD" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/30">
+            <div>
+                <div class="font-bold text-white text-sm leading-tight">Restoration Group of Metro Detroit</div>
+                <div class="text-blue-200 text-xs leading-tight">Request a Service</div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div id="form-view">
+            <form id="lead-form" class="px-8 py-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                        Full Name <span class="text-red-400 normal-case font-normal tracking-normal">required</span>
+                    </label>
+                    <input id="lf-name" type="text" required
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="John Smith">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                            Email <span class="text-red-400 normal-case font-normal tracking-normal">required</span>
+                        </label>
+                        <input id="lf-email" type="email" required
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            placeholder="john@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Phone</label>
+                        <input id="lf-phone" type="tel"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            placeholder="(555) 123-4567">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Property Address</label>
+                    <input id="lf-address" type="text"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        placeholder="123 Main St, Detroit, MI 48201">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Service Type</label>
+                    <select id="lf-project-type"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">Select type…</option>
+                        <option>Water Damage</option>
+                        <option>Mold</option>
+                        <option>Fire</option>
+                        <option>Smoke</option>
+                        <option>Odor</option>
+                        <option>Reconstruction</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Describe the Damage</label>
+                    <textarea id="lf-message" rows="3"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                        placeholder="Tell us what happened and what you need help with…"></textarea>
+                </div>
+                <p id="lf-error" class="hidden text-xs text-red-500 text-center"></p>
+                <button type="submit" id="lf-submit"
+                    class="w-full text-white font-semibold py-3 rounded-xl text-sm transition-opacity hover:opacity-90"
+                    style="background:#e97316;">
+                    <span id="lf-submit-text">Submit Request</span>
+                </button>
+                <p class="text-xs text-gray-400 text-center">Our team will contact you within 1 business day.</p>
+            </form>
+        </div>
+
+        <!-- Success -->
+        <div id="success-view" class="hidden px-8 py-14 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Request Received!</h2>
+            <p class="text-gray-500 text-sm leading-relaxed">
+                Thank you for contacting Restoration Group of Metro Detroit.<br>
+                Our team will be in touch with you shortly.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyD9huYJE69gbk4JWm3Q24tcXcZCDCK48bU",
+            authDomain:        "rgmd-crm.firebaseapp.com",
+            projectId:         "rgmd-crm",
+            storageBucket:     "rgmd-crm.firebasestorage.app",
+            messagingSenderId: "532112846968",
+            appId:             "1:532112846968:web:fb92ecc51192b2389b3d8d"
+        });
+        const db = firebase.firestore();
+
+        document.getElementById('lead-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('lf-submit');
+            const txt = document.getElementById('lf-submit-text');
+            const err = document.getElementById('lf-error');
+            txt.textContent = 'Submitting…';
+            btn.disabled = true;
+            err.classList.add('hidden');
+            try {
+                await db.collection('webLeads').add({
+                    clientName:  document.getElementById('lf-name').value.trim(),
+                    email:       document.getElementById('lf-email').value.trim(),
+                    phone:       document.getElementById('lf-phone').value.trim(),
+                    address:     document.getElementById('lf-address').value.trim(),
+                    projectType: document.getElementById('lf-project-type').value,
+                    message:     document.getElementById('lf-message').value.trim(),
+                    reviewed:    false,
+                    dismissed:   false,
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                document.getElementById('form-view').classList.add('hidden');
+                document.getElementById('success-view').classList.remove('hidden');
+            } catch (ex) {
+                err.textContent = 'Error submitting. Please try again.';
+                err.classList.remove('hidden');
+                txt.textContent = 'Submit Request';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
