@@ -1656,7 +1656,10 @@ async function initSigningPage(token) {
             bodyEl.innerHTML = wap.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'rwa') {
             const rwap = [...RWA_PARAGRAPHS]; rwap[2] = rwaPaymentClause(d.balanceDueDays, d.lateFeeDays);
-            bodyEl.innerHTML = rwap.map(p => `<p>${p}</p>`).join('');
+            const descBlock = d.workDescription
+                ? `<div style="background:#f0f4ff;border:1px solid #c7d4f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;"><p style="margin:0;font-size:0.8rem;font-weight:600;color:#4b5e8a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Description of Work</p><p style="margin:0;">${esc(d.workDescription)}</p></div>`
+                : '';
+            bodyEl.innerHTML = descBlock + rwap.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'coc_mit') {
             bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
         } else if (docType === 'coc_rebuild') {
