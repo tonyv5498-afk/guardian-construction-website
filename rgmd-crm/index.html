@@ -1115,6 +1115,18 @@
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
                 </div>
             </div>
+            <div id="sig-req-payment-terms-wrap" class="hidden grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Balance Due After (Days)</label>
+                    <input id="sig-req-balance-due-days" type="number" min="1" placeholder="7"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Late Fee After (Days)</label>
+                    <input id="sig-req-late-fee-days" type="number" min="1" placeholder="15"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                </div>
+            </div>
             <div id="sig-req-aob-wrap" class="border border-gray-200 rounded-xl p-3 space-y-2.5">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Optional Add-on</p>
                 <label class="flex items-center gap-3 cursor-pointer">
@@ -1533,6 +1545,17 @@ const RWA_PARAGRAPHS = [
     'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
 ];
 
+function waPaymentClause(bd, lf) {
+    const bdNum = parseInt(bd) || 7;
+    const lfNum = parseInt(lf) || 15;
+    return `Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. ${bdNum} calendar day${bdNum===1?'':'s'} after Contractor completes its final Work, Client shall pay 100% of the total fee. Late fees past ${lfNum} days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.`;
+}
+function rwaPaymentClause(bd, lf) {
+    const bdNum = parseInt(bd) || 7;
+    const lfNum = parseInt(lf) || 15;
+    return `When this Contract is signed, you (we) agree to pay Restoration Group of Metro Detroit LLC our home/auto/commercial insurance deductible plus the deposits for labor and materials (if any). The remaining balance shall be paid in full within ${bdNum} calendar day${bdNum===1?'':'s'} after Contractor completes its final Work. Late fees past ${lfNum} days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.`;
+}
+
 // ────────────────────────────────────────────────────────────
 // INIT — detect signing page vs CRM
 // ────────────────────────────────────────────────────────────
@@ -1624,9 +1647,11 @@ async function initSigningPage(token) {
         // Populate contract body
         const bodyEl = document.getElementById('sc-contract-body');
         if (docType === 'wa') {
-            bodyEl.innerHTML = WA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
+            const wap = [...WA_PARAGRAPHS]; wap[3] = waPaymentClause(d.balanceDueDays, d.lateFeeDays);
+            bodyEl.innerHTML = wap.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'rwa') {
-            bodyEl.innerHTML = RWA_PARAGRAPHS.map(p => `<p>${p}</p>`).join('');
+            const rwap = [...RWA_PARAGRAPHS]; rwap[2] = rwaPaymentClause(d.balanceDueDays, d.lateFeeDays);
+            bodyEl.innerHTML = rwap.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'coc_mit') {
             bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
         } else if (docType === 'coc_rebuild') {
@@ -1834,11 +1859,14 @@ function initApp() {
         $('sig-req-contractor-completion-date').value = '';
         $('sig-req-contractor-dates-requested').value = '';
         $('sig-req-contractor-pm-name').value = '';
+        $('sig-req-balance-due-days').value = '';
+        $('sig-req-late-fee-days').value = '';
         $('sig-req-due-date-wrap').classList.toggle('hidden', dt.simpleDoc);
         $('sig-req-aob-wrap').classList.toggle('hidden', !dt.hasAob);
         $('sig-req-rwa-cost-wrap').classList.toggle('hidden', docType !== 'rwa');
         $('sig-req-warranty-wrap').classList.toggle('hidden', docType !== 'warranty');
         $('sig-req-contractor-coc-wrap').classList.toggle('hidden', docType !== 'contractor_coc');
+        $('sig-req-payment-terms-wrap').classList.toggle('hidden', docType !== 'wa' && docType !== 'rwa');
         $('sig-req-modal').classList.remove('hidden');
     }
 
@@ -1941,6 +1969,9 @@ function initApp() {
         const contractorCompletionDate = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-completion-date').value.trim() : '';
         const datesRequested        = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-dates-requested').value.trim()  : '';
         const pmName                = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-pm-name').value.trim()         : '';
+        const isPaymentDoc          = currentSigDocType === 'wa' || currentSigDocType === 'rwa';
+        const balanceDueDays        = isPaymentDoc ? ($('sig-req-balance-due-days').value.trim() || '7')  : '';
+        const lateFeeDays           = isPaymentDoc ? ($('sig-req-late-fee-days').value.trim()    || '15') : '';
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -1954,7 +1985,7 @@ function initApp() {
                 insPolicy: job.insPolicy||'', insAdjusterName: job.insAdjusterName||'',
                 projectType: job.projectType||'', subCategory: job.subCategory||'',
                 dueDate, includeAob, estimatedCost, depositAmount, areaRemediated, completionDate,
-                contractorCompletionDate, datesRequested, pmName,
+                contractorCompletionDate, datesRequested, pmName, balanceDueDays, lateFeeDays,
                 signed: false, signatureDataURL: null, aobSignatureDataURL: null,
                 signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -4372,7 +4403,8 @@ function _generateAuthPDF(d, docType) {
         ['Project Type', projType,           'Est. Start Date', d.dueDate],
     ]);
 
-    WA_PARAGRAPHS.forEach(p => bodyPara(p));
+    const waParagraphs = [...WA_PARAGRAPHS]; waParagraphs[3] = waPaymentClause(d.balanceDueDays, d.lateFeeDays);
+    waParagraphs.forEach(p => bodyPara(p));
 
     newPageIfNeeded(140);
     divider();
@@ -4514,7 +4546,8 @@ function _generateRWACompactPDF(d) {
     const LINE_H = 8.2, PARA_GAP = 3.5;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(35, 35, 35);
 
-    for (const p of RWA_PARAGRAPHS) {
+    const rwaParagraphs = [...RWA_PARAGRAPHS]; rwaParagraphs[2] = rwaPaymentClause(d.balanceDueDays, d.lateFeeDays);
+    for (const p of rwaParagraphs) {
         const lines = doc.splitTextToSize(p, tw);
         if (y + lines.length * LINE_H > ph - 62) { doc.addPage(); y = 40; }
         doc.text(lines, ml, y);
