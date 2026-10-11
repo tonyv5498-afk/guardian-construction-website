@@ -672,13 +672,6 @@
                     </div>
                     <div id="sig-status-contractor_coc"></div>
                 </div>
-                <div class="border border-gray-100 rounded-xl p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold text-gray-700">Travelers Work Authorization</span>
-                        <span id="sig-pill-travelers_wa" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
-                    </div>
-                    <div id="sig-status-travelers_wa"></div>
-                </div>
             </div>
         </div>
 
@@ -1092,11 +1085,6 @@
                     <input id="sig-req-deposit-amount" type="text" placeholder="e.g. $5,000"
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
                 </div>
-            </div>
-            <div id="sig-req-travelers-wa-wrap" class="hidden">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Date of Loss</label>
-                <input id="sig-req-date-of-loss" type="text" placeholder="e.g. 09/15/2026"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
             </div>
             <div id="sig-req-rwa-desc-wrap" class="hidden">
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Description of Work</label>
@@ -1532,7 +1520,6 @@ const DOC_TYPES = {
     hold_harmless:    { label: 'Hold Harmless Agreement',                       tokenField: 'sigTokenHoldHarmless',    hasAob: false, simpleDoc: true  },
     warranty:         { label: 'Restoration Limited Warranty',                  tokenField: 'sigTokenWarranty',        hasAob: false, simpleDoc: true  },
     contractor_coc:   { label: 'Contractor Certificate/Notice of Completion',   tokenField: 'sigTokenContractorCOC',   hasAob: false, simpleDoc: true  },
-    travelers_wa:     { label: 'Travelers Work Authorization',                  tokenField: 'sigTokenTravelersWA',     hasAob: false, simpleDoc: false },
 };
 
 const WA_PARAGRAPHS = [
@@ -1561,20 +1548,6 @@ const RWA_PARAGRAPHS = [
     'I (we) understand that I (we) may cancel this Contract by contacting Restoration Group of Metro Detroit LLC by phone, text, or email within three (3) calendar days of signing. If balance in full is not paid to Restoration Group of Metro Detroit LLC within 30 days of job completion, I hereby authorize Restoration Group of Metro Detroit LLC to charge my credit card for the unpaid balance.',
     'This Contract contains the entire understanding of you and Restoration Group of Metro Detroit LLC concerning the Project. All prior written or oral understandings or agreements are merged into this Contract. This Contract may be altered only in writing signed by me (us) and Restoration Group of Metro Detroit LLC.',
     'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
-];
-
-const TRAVELERS_WA_PARAGRAPHS = [
-    'Customer desires to mitigate, restore, and / or repair the property at the Loss Location indicated above (the "Services") and, has identified the Contractor indicated above through the platform ("Platform") provided by West Hill Global, Inc. ("Westhill") to perform the Services. Customer agrees to hire Contractor to perform the Services at the Loss Location as set forth on the estimate approved by "Travelers" (the "Estimate").',
-    'Customer understands that they have the right and option to select any contractor(s) to perform the Services outlined in the Estimate. Customer understands and expressly acknowledges that Customer has chosen to hire Contractor and that Contractor is working exclusively for Customer. Contractor is not working for Travelers or Westhill. Contractor is part of the Westhill network of contractors but is not an employee or agent of Westhill; Customer further understands that Westhill is not a licensed contractor and will not complete nor be responsible for the Services provided by Contractor. Customer agrees to indemnify and hold harmless Travelers, Westhill, and their officers, and employees from any claims, damages, or liabilities arising from Contractor\'s performance of the Services or any disputes between Customer and Contractor. Contractor shall be solely responsible for obtaining all necessary licenses, permits, and approvals required for the performance of the Services.',
-    'Customer understands that Travelers will pay for the Services covered by the Customer\'s insurance policy with Travelers (the "Policy") in connection with the loss related to the Claim indicated above, subject to the applicable deductible and the Policy\'s terms and conditions which are subject to change, up to the amount reflected in the Estimate.',
-    'Customer hereby directs Travelers to pay Westhill directly in connection with the Claim. Customer agrees that Westhill is authorized to pay Contractor for all labor, materials, and equipment utilized to perform the Services. If Customer receives a payment via check or other method from Travelers, Customer agrees to facilitate or deliver payment to Westhill, including endorsing checks and remitting payment to Westhill. Customer agrees to secure all necessary endorsements for payees other than Westhill as required. Customer agrees to pay Customer\'s deductible applicable to the Services in connection with the loss related to the Claim.',
-    'Contractor may require the Customer to sign a detailed scope of work outlining the nature and cost of the Services. It is Customer\'s responsibility to enter into a Contractor Agreement with Contractor.',
-    'Changes to the scope of repairs to the covered damage which exceed the original Estimate must be submitted by Westhill and/or Contractor to Travelers for approval. Unapproved changes may not be covered by Travelers and shall become the sole responsibility of Customer.',
-    'Customer understands that the cost of any upgrades or any services not covered by the Policy in connection with the Claim are Customer\'s responsibility ("Non-Covered Services"). If there are amounts owed to Contractor for Non-Covered Services, Customer agrees to pay those amounts directly to Contractor. Customer understands that Travelers will not pay for and Westhill will not remit payment to Contractor for Non-Covered Services.',
-    'Customer authorizes Contractor to forward to Travelers all photographs, estimates and documents of any other type concerning or relating to the Services. In addition, Customer authorizes and directs Westhill and Contractor to cooperate with Travelers in its investigation of the loss related to the Claim. This includes, but is not limited to, providing updates to Travelers, and advising when there are adjustments to the estimate of work encompassed in the Services.',
-    'Customer will timely sign a Certificate of Completion and Satisfaction when the Services are satisfactorily completed to enable payment by Westhill to Contractor. Contractor guarantees all work associated with the Services performed under this Authorization, once the customer signs a Certificate of Completion, as follows: 5-year warranty on full roof and/or siding replacement; 1-year warranty on any other exterior repairs; 3-year warranty on interior repairs; 2-years for Emergency services.',
-    'Customer may terminate this Work Authorization and Direction to Pay upon written notice to the Contractor and Westhill to the email addresses listed below. Customer understands, this will not cancel, modify, or affect the rights, obligations, or responsibilities under the applicable insurance policy between Customer and Travelers.',
-    'This authorization may be executed electronically and is binding upon execution. Verbal agreements shall not modify this authorization unless confirmed in writing by all parties.',
 ];
 
 function waPaymentClause(bd, lf) {
@@ -1640,7 +1613,6 @@ async function initSigningPage(token) {
             hold_harmless:  'Indemnification, Hold Harmless Agreement',
             warranty:       'Restoration Limited Warranty',
             contractor_coc: 'Contractor Certificate / Notice of Completion',
-            travelers_wa:   'Travelers Work Authorization and Direction to Pay',
         };
         const sigLabels = {
             wa:             'Signature — Service Authorization',
@@ -1650,7 +1622,6 @@ async function initSigningPage(token) {
             hold_harmless:  'Signature — Hold Harmless Agreement',
             warranty:       'Signature — Warranty Acceptance',
             contractor_coc: 'Signature — Authorized Representative',
-            travelers_wa:   'Customer Signature',
         };
         document.getElementById('sc-doc-title').textContent  = titles[docType]    || titles.wa;
         document.getElementById('sc-sig-label').textContent  = sigLabels[docType] || sigLabels.wa;
@@ -1689,41 +1660,6 @@ async function initSigningPage(token) {
                 ? `<div style="background:#f0f4ff;border:1px solid #c7d4f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;"><p style="margin:0;font-size:0.8rem;font-weight:600;color:#4b5e8a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Description of Work</p><p style="margin:0;">${esc(d.workDescription)}</p></div>`
                 : '';
             bodyEl.innerHTML = descBlock + rwap.map(p => `<p>${p}</p>`).join('');
-        } else if (docType === 'travelers_wa') {
-            document.getElementById('sc-fields-section').classList.add('hidden');
-            const cell = (lbl, val) =>
-                `<div style="padding:6px 10px 6px 0;border-bottom:1px solid #e8ecf5;">
-                    <div style="font-size:0.65rem;font-weight:700;color:#7a8aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">${lbl}</div>
-                    <div style="font-size:0.82rem;color:#1a1a2e;font-weight:500;">${esc(val||'—')}</div>
-                </div>`;
-            bodyEl.innerHTML =
-                // Travelers branded header bar
-                `<div style="background:#1B3A6B;color:#fff;padding:14px 18px;margin:-20px -32px 18px;border-radius:0;">
-                    <div style="font-size:0.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-bottom:3px;">MyTravelers® Repair Network</div>
-                    <div style="font-size:1.05rem;font-weight:700;">Work Authorization and Direction to Pay</div>
-                </div>`
-                // 2-column info grid
-                + `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-bottom:16px;">
-                    ${cell('Customer Name', d.clientName)}
-                    ${cell('Date of Loss', d.dateOfLoss)}
-                    ${cell('Loss Location', d.address)}
-                    ${cell('Estimated Repair Start Date', d.dueDate)}
-                    ${cell('Claim Number', d.insClaim)}
-                    ${cell('Insurance Underwriting Company', 'Travelers')}
-                    ${cell('Contractor Name', 'Restoration Group of Metro Detroit LLC')}
-                    ${cell('Contractor Email', 'info@rgmdrestoration.com')}
-                </div>
-                <div style="border-top:2px solid #1B3A6B;margin-bottom:14px;"></div>`
-                // Contract paragraphs
-                + TRAVELERS_WA_PARAGRAPHS.map(p => `<p style="margin:0 0 10px;font-size:0.8rem;line-height:1.55;">${p}</p>`).join('')
-                // Contractor block
-                + `<div style="margin-top:14px;padding:12px 16px;border:1px solid #d0d8ee;border-radius:8px;background:#f7f9ff;font-size:0.8rem;">
-                    <div style="font-weight:700;margin-bottom:6px;color:#1B3A6B;">Acknowledged and Agreed by Contractor:</div>
-                    <div>Contractor: <strong>Restoration Group of Metro Detroit LLC</strong></div>
-                    <div style="margin-top:3px;">Authorized Name: <strong>_______________________________</strong>&nbsp;&nbsp;&nbsp;Title: <strong>Project Manager</strong></div>
-                    <div style="margin-top:3px;">Email for Notice: <strong>info@rgmdrestoration.com</strong></div>
-                </div>
-                <p style="margin:14px 0 0;font-size:0.75rem;color:#888;font-style:italic;">By signing below, Customer acknowledges that they have read this Work Authorization and Direction to Pay and agrees to the same.</p>`;
         } else if (docType === 'coc_mit') {
             bodyEl.innerHTML = `<p class="text-center text-base font-medium py-4">This is to certify that the mitigation performed by <strong>Restoration Group of Metro Detroit LLC</strong> has been completed in a satisfactory manner.</p>`;
         } else if (docType === 'coc_rebuild') {
@@ -1934,7 +1870,6 @@ function initApp() {
         $('sig-req-balance-due-days').value = '';
         $('sig-req-late-fee-days').value = '';
         $('sig-req-work-description').value = '';
-        $('sig-req-date-of-loss').value = '';
         $('sig-req-due-date-wrap').classList.toggle('hidden', dt.simpleDoc);
         $('sig-req-aob-wrap').classList.toggle('hidden', !dt.hasAob);
         $('sig-req-rwa-cost-wrap').classList.toggle('hidden', docType !== 'rwa');
@@ -1942,7 +1877,6 @@ function initApp() {
         $('sig-req-contractor-coc-wrap').classList.toggle('hidden', docType !== 'contractor_coc');
         $('sig-req-payment-terms-wrap').classList.toggle('hidden', docType !== 'wa' && docType !== 'rwa');
         $('sig-req-rwa-desc-wrap').classList.toggle('hidden', docType !== 'rwa');
-        $('sig-req-travelers-wa-wrap').classList.toggle('hidden', docType !== 'travelers_wa');
         $('sig-req-modal').classList.remove('hidden');
     }
 
@@ -2028,7 +1962,6 @@ function initApp() {
         loadDocSigStatus(job, 'hold_harmless',  job.sigTokenHoldHarmless  || null);
         loadDocSigStatus(job, 'warranty',       job.sigTokenWarranty      || null);
         loadDocSigStatus(job, 'contractor_coc', job.sigTokenContractorCOC || null);
-        loadDocSigStatus(job, 'travelers_wa',   job.sigTokenTravelersWA   || null);
     }
 
     $('sig-req-close').addEventListener('click', () => $('sig-req-modal').classList.add('hidden'));
@@ -2050,7 +1983,6 @@ function initApp() {
         const balanceDueDays        = isPaymentDoc ? ($('sig-req-balance-due-days').value.trim() || '7')  : '';
         const lateFeeDays           = isPaymentDoc ? ($('sig-req-late-fee-days').value.trim()    || '15') : '';
         const workDescription       = currentSigDocType === 'rwa'          ? $('sig-req-work-description').value.trim() : '';
-        const dateOfLoss            = currentSigDocType === 'travelers_wa' ? $('sig-req-date-of-loss').value.trim()     : '';
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -2064,7 +1996,7 @@ function initApp() {
                 insPolicy: job.insPolicy||'', insAdjusterName: job.insAdjusterName||'',
                 projectType: job.projectType||'', subCategory: job.subCategory||'',
                 dueDate, includeAob, estimatedCost, depositAmount, areaRemediated, completionDate,
-                contractorCompletionDate, datesRequested, pmName, balanceDueDays, lateFeeDays, workDescription, dateOfLoss,
+                contractorCompletionDate, datesRequested, pmName, balanceDueDays, lateFeeDays, workDescription,
                 signed: false, signatureDataURL: null, aobSignatureDataURL: null,
                 signerName: null, signedAt: null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -4089,106 +4021,8 @@ function generateSignedPDF(d) {
     const docType = d.docType || 'wa';
     if (docType === 'warranty')        return _generateWarrantyPDF(d);
     if (docType === 'contractor_coc')  return _generateContractorCOCPDF(d);
-    if (docType === 'travelers_wa')    return _generateTravelersWAPDF(d);
     if (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'hold_harmless') return _generateCOCPDF(d, docType);
     return _generateAuthPDF(d, docType);
-}
-
-function _generateTravelersWAPDF(d) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
-    const pw = 612, ph = 792, ml = 54, mr = 54, tw = pw - ml - mr;
-    const signedDate = d.signedAt
-        ? new Date(d.signedAt.seconds*1000).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
-        : new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-    let y = 0;
-
-    // Header bar
-    doc.setFillColor(27, 58, 107); doc.rect(0, 0, pw, 56, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
-    doc.text('Work Authorization and Direction to Pay', ml, 24);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-    doc.text('MyTravelers® Repair Network  ·  Westhill / Travelers', ml, 38);
-    doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5);
-    doc.text('Restoration Group of Metro Detroit LLC  ·  6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', ml, 50);
-    doc.setTextColor(20, 20, 20);
-    y = 68;
-
-    // Info fields section
-    function labeledField(label, value, x, w) {
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(100, 100, 100);
-        doc.text(label + ':', x, y);
-        const lw = doc.getTextWidth(label + ': ');
-        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
-        const lines = doc.splitTextToSize(String(value || '—'), w - lw - 4);
-        doc.text(lines[0], x + lw, y);
-    }
-    const half = (tw - 12) / 2, c2 = ml + half + 12;
-    const ROW = 16;
-
-    const leftF  = [['Customer Name', d.clientName], ['Loss Location', d.address], ['Claim Number', d.insClaim], ['Contractor Name', 'Restoration Group of Metro Detroit LLC']];
-    const rightF = [['Date of Loss', d.dateOfLoss], ['Est. Repair Start', d.dueDate], ['Insurance Co.', 'Travelers'], ['Contractor Email', 'info@rgmdrestoration.com']];
-
-    for (let i = 0; i < leftF.length; i++) {
-        if (i > 0) { doc.setDrawColor(220,220,220); doc.line(ml, y - ROW + 5, pw - mr, y - ROW + 5); }
-        labeledField(leftF[i][0],  leftF[i][1],  ml,  half);
-        labeledField(rightF[i][0], rightF[i][1], c2,  half);
-        y += ROW;
-    }
-    y += 4; doc.setDrawColor(175,175,175); doc.line(ml, y, pw-mr, y); y += 10;
-
-    // Body paragraphs
-    const LH = 9, PG = 4;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(35, 35, 35);
-
-    for (const p of TRAVELERS_WA_PARAGRAPHS) {
-        const lines = doc.splitTextToSize(p, tw);
-        if (y + lines.length * LH > ph - 110) { doc.addPage(); y = 48; }
-        doc.text(lines, ml, y);
-        y += lines.length * LH + PG;
-    }
-
-    // Signature divider
-    y += 6; doc.setDrawColor(175,175,175); doc.line(ml, y, pw-mr, y); y += 10;
-
-    // Sig-page intro
-    const introLines = doc.splitTextToSize('By signing below, Customer acknowledges that they have read this Work Authorization and Direction to Pay and agrees to the same. Customer acknowledges that a separate agreement outlining the scope of repairs and the cost of the project may be executed by Customer and Contractor.', tw);
-    if (y + introLines.length * LH + 120 > ph) { doc.addPage(); y = 48; }
-    doc.setFont('helvetica', 'italic'); doc.setFontSize(8);
-    doc.text(introLines, ml, y); y += introLines.length * LH + 10;
-
-    // Customer sig block
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(70,70,70);
-    doc.text('Customer Printed Name:', ml, y);
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(20,20,20);
-    doc.text(d.signerName || '', ml + 130, y);
-    doc.setFont('helvetica', 'bold'); doc.setTextColor(70,70,70);
-    doc.text('Date:', ml + 340, y);
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(20,20,20);
-    doc.text(signedDate, ml + 368, y); y += 18;
-
-    if (d.signatureDataURL) {
-        try { doc.addImage(d.signatureDataURL, 'PNG', ml, y, 180, 36); } catch(_){}
-    }
-    doc.setDrawColor(160,160,160); doc.line(ml, y + 36, ml + 260, y + 36); y += 42;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(140,140,140);
-    doc.text('Customer Signature', ml, y);
-    doc.text('Customer Email for Notice: ' + (d.email || ''), ml + 170, y); y += 18;
-
-    // Contractor block
-    doc.setDrawColor(185,185,185); doc.line(ml, y, pw-mr, y); y += 10;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(50,50,50);
-    doc.text('Acknowledged and Agreed by Contractor:', ml, y); y += 14;
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(20,20,20);
-    doc.text('Contractor: Restoration Group of Metro Detroit LLC', ml, y); y += 12;
-    doc.text('Authorized Name: ___________________________     Title: Project Manager', ml, y); y += 12;
-    doc.text('Email for Notice: info@rgmdrestoration.com', ml, y);
-
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(160,160,160);
-    doc.text('© 2025 The Travelers Indemnity Company. All Rights Reserved  ·  Revision Date: 02/2025', pw/2, ph - 18, { align: 'center' });
-
-    return doc;
 }
 
 function _generateCOCPDF(d, docType) {
