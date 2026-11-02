@@ -1810,8 +1810,21 @@ function initApp() {
     let crmCalendarId    = sessionStorage.getItem('crmCalendarId') || null;
 
     // ── Auth ───────────────────────────────────────────────
+    const ALLOWED_EMAILS = new Set([
+        'tonyv5498@gmail.com',
+        'imsjablonski@gmail.com',
+        'lance@clearperformanceads.com',
+    ]);
+
     auth.onAuthStateChanged(user => {
         document.getElementById('loading-screen').classList.add('hidden');
+        if (user && !ALLOWED_EMAILS.has(user.email.toLowerCase())) {
+            auth.signOut();
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('app').classList.add('hidden');
+            toast('Access denied. This account is not authorized.', true);
+            return;
+        }
         currentUser = user;
         if (user) {
             document.getElementById('auth-screen').classList.add('hidden');
