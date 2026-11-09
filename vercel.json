@@ -86,28 +86,386 @@
       "source": "/cities/roscommon-mi-contractor.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/cities/grosse-pointe-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/grosse-pointe-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/livonia-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/livonia-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/dearborn-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/dearborn-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/westland-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/westland-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/taylor-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/taylor-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/wyandotte-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/wyandotte-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/allen-park-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/allen-park-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/romulus-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/romulus-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/dearborn-heights-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/dearborn-heights-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/lincoln-park-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/lincoln-park-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/southgate-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/southgate-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/trenton-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/trenton-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/riverview-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/riverview-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/woodhaven-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/woodhaven-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/garden-city-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/garden-city-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/inkster-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/inkster-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/wayne-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/wayne-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/harper-woods-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/harper-woods-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/redford-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/redford-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/hamtramck-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/hamtramck-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/highland-park-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/highland-park-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/ecorse-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/ecorse-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/melvindale-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/melvindale-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/royal-oak-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/royal-oak-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/oak-park-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/oak-park-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/madison-heights-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/madison-heights-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/hazel-park-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/hazel-park-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/ferndale-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/ferndale-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/berkley-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/berkley-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/st-clair-shores-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/st-clair-shores-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/warren-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/warren-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/roseville-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/roseville-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/eastpointe-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/eastpointe-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/center-line-mi-roofing-contractor",
+      "destination": "/#cities",
+      "permanent": true
+    },
+    {
+      "source": "/cities/center-line-mi-roofing-contractor.html",
+      "destination": "/#cities",
+      "permanent": true
     }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     },
     {
       "source": "/images/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/(.*).html",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
       ]
     }
   ],
