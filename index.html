@@ -11,7 +11,7 @@
   <meta name="author" content="Guardian Construction">
   <meta name="geo.region" content="US-MI">
   <meta name="geo.placename" content="Metro Detroit">
-  <meta name="keywords" content="general contractor Metro Detroit, kitchen remodel Metro Detroit, bathroom remodel Wayne County, basement finishing Metro Detroit, roofing contractor Metro Detroit, siding contractor Oakland County, insulation contractor Macomb County, gutters Metro Detroit MI">
+  <meta name="keywords" content="kitchen remodel Metro Detroit, bathroom remodel Oakland County, basement finishing Macomb County, water damage restoration Metro Detroit, post-mitigation rebuild Michigan, insurance claim contractor Metro Detroit, remodeling contractor Wayne County">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Guardian Construction">
   <meta property="og:title" content="Guardian Construction | Kitchen, Bath & Basement Remodeling | Metro Detroit">
@@ -51,7 +51,7 @@
       ],
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "Interior & Exterior Services",
+        "name": "Remodeling & Restoration Services",
         "itemListElement": [
           {"@type": "Offer","itemOffered": {"@type": "Service","name": "Kitchen Remodeling"}},
           {"@type": "Offer","itemOffered": {"@type": "Service","name": "Bathroom Remodeling"}},
@@ -82,7 +82,7 @@
       "@id": "https://guardianbuild.com/#website",
       "url": "https://guardianbuild.com",
       "name": "Guardian Construction",
-      "description": "Metro Detroit Full-Service General Contractor — Interior & Exterior",
+      "description": "Metro Detroit kitchen, bath & basement remodeling plus restoration and insurance rebuilds",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -127,7 +127,9 @@
       --cream-dark:  #EAE6DC;
       --text-light:  #F2F4F6;
       --text-mid:    #9AABB8;
-      --text-muted:  #6A7E90;
+      --text-muted:  #56687A;  /* on light surfaces: ≥4.5:1 on white/cream */
+      --text-muted-dark: #8195A7;  /* on navy surfaces: ≥4.5:1 */
+      --gold-ink:    #7A5E32;  /* gold for text on light surfaces (raw gold is 2.2–2.8:1) */
       --white:       #FFFFFF;
       --radius-sm:   4px;
       --radius-md:   8px;
@@ -314,7 +316,7 @@
     }
     .form-group input::placeholder,
     .form-group select::placeholder,
-    .form-group textarea::placeholder { color: var(--text-muted); }
+    .form-group textarea::placeholder { color: var(--text-mid); }  /* 5.4:1 on hero inputs */
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
@@ -362,9 +364,12 @@
     .trust-item svg { width: 14px; height: 14px; fill: var(--gold); flex-shrink: 0; }
 
     /* ── SECTION SHARED ─────────────────────────────────────────── */
+    /* Dark surfaces get the lighter muted tone */
+    nav, .mobile-nav, .hero, .why, footer { --text-muted: var(--text-muted-dark); }
+
     .section-eyebrow {
       text-transform: uppercase; letter-spacing: 3px; font-size: .7rem;
-      font-weight: 700; color: var(--gold); margin-bottom: 10px;
+      font-weight: 700; color: var(--gold-ink); margin-bottom: 10px;
       display: flex; align-items: center; gap: 10px;
     }
     .section-eyebrow::before {
@@ -433,11 +438,11 @@
     .service-card p { color: var(--text-muted); font-size: .87rem; line-height: 1.65; font-weight: 400; }
     .service-link {
       display: inline-flex; align-items: center; gap: 5px;
-      color: var(--gold); font-weight: 700; font-size: .8rem;
+      color: var(--gold-ink); font-weight: 700; font-size: .8rem;
       margin-top: 14px; text-decoration: none; text-transform: uppercase;
       letter-spacing: .5px; transition: gap .2s;
     }
-    .service-link svg { width: 12px; height: 12px; fill: var(--gold); transition: transform .2s; }
+    .service-link svg { width: 12px; height: 12px; fill: var(--gold-ink); transition: transform .2s; }
     .service-card:hover .service-link { gap: 9px; }
     .service-card:hover .service-link svg { transform: translateX(2px); }
     .featured-card { grid-column: span 2; display: grid; grid-template-columns: 1.3fr 1fr; }
@@ -486,7 +491,7 @@
       line-height: 1; letter-spacing: -0.5px;
     }
     .why-stat-label { color: var(--text-mid); font-size: .71rem; text-transform: uppercase; letter-spacing: .9px; margin-top: 5px; font-weight: 600; }
-    .why-stat-sub { color: #4a6070; font-size: .62rem; margin-top: 2px; }
+    .why-stat-sub { color: var(--text-muted); font-size: .62rem; margin-top: 2px; }
     .why-badge {
       background: var(--gold-dim); border: 1px solid var(--gold-border);
       border-radius: var(--radius-md); padding: 20px 22px;
@@ -554,7 +559,7 @@
       margin: 0 0 16px; box-shadow: none;
       font-family: var(--font-display);
       font-size: 3rem; font-weight: 400; font-style: italic;
-      color: var(--gold); line-height: 1; display: block;
+      color: var(--gold-ink); line-height: 1; display: block;
     }
     .step h4 {
       font-family: 'Barlow Condensed', sans-serif;
@@ -669,7 +674,7 @@
     }
     .contact-form-card .form-group input::placeholder,
     .contact-form-card .form-group select::placeholder,
-    .contact-form-card .form-group textarea::placeholder { color: #9aabb8; }
+    .contact-form-card .form-group textarea::placeholder { color: var(--text-muted); }  /* 5.1:1 on cream inputs */
     .contact-form-card .form-group input:focus,
     .contact-form-card .form-group select:focus,
     .contact-form-card .form-group textarea:focus {
@@ -749,7 +754,7 @@
       display: flex; align-items: center; justify-content: space-between;
       font-size: .78rem; flex-wrap: wrap; gap: 10px;
     }
-    .footer-lic { color: #4a5f72; }
+    .footer-lic { color: var(--text-muted); }
 
     /* ── MOBILE HAMBURGER ───────────────────────────────────────── */
     .hamburger {
@@ -817,6 +822,15 @@
       .contact-inner { grid-template-columns: 1fr; }
       .footer-top { grid-template-columns: 1fr 1fr; }
     }
+    .nav-links a, .nav-phone { white-space: nowrap; }
+    @media (max-width: 1180px) {
+      .nav-links { gap: 24px; }
+      .nav-phone { display: none; }
+    }
+    @media (min-width: 769px) and (max-width: 960px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
     @media (min-width: 769px) and (max-width: 1100px) {
       .hero-inner { grid-template-columns: 1fr 360px; gap: 40px; }
       .services-grid { grid-template-columns: repeat(3, 1fr); }
@@ -831,7 +845,8 @@
     <img src="logo.png" alt="Guardian Construction">
   </a>
   <ul class="nav-links">
-    <li><a href="#interior-services">Services</a></li>
+    <li><a href="#services">Restoration</a></li>
+    <li><a href="#interior-services">Remodeling</a></li>
     <li><a href="#cities">Service Areas</a></li>
     <li><a href="#process">Our Process</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -845,7 +860,8 @@
   </div>
 </nav>
 <div class="mobile-nav" id="mobileNav">
-  <a href="#interior-services" onclick="closeMobile()">Services</a>
+  <a href="#services" onclick="closeMobile()">Restoration</a>
+  <a href="#interior-services" onclick="closeMobile()">Remodeling</a>
   <a href="#cities" onclick="closeMobile()">Service Areas</a>
   <a href="#process" onclick="closeMobile()">Our Process</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
@@ -929,7 +945,7 @@
         </div>
         <div class="form-group">
           <label for="h_message">Additional Details (optional)</label>
-          <textarea id="h_message" name="message" placeholder="Roof age, description of issue, best time to call..."></textarea>
+          <textarea id="h_message" name="message" placeholder="Room or area, any water damage or open claim, best time to call..."></textarea>
         </div>
         <button type="submit" class="form-submit-btn" id="heroSubmitBtn">Request Free Estimate →</button>
         <div class="form-status" id="heroFormStatus"></div>
@@ -1132,7 +1148,7 @@
           <div class="why-stat-sub">Water Damage &amp; Rebuilds</div>
         </div>
         <div class="why-stat">
-          <div class="why-stat-num">74</div>
+          <div class="why-stat-num">40</div>
           <div class="why-stat-label">Cities Covered</div>
           <div class="why-stat-sub">Wayne, Oakland, Macomb</div>
         </div>
@@ -1339,7 +1355,7 @@
         </div>
         <div class="form-group">
           <label for="c_message">Project Details</label>
-          <textarea id="c_message" name="message" placeholder="Describe your project, roof age, current issues, timeline, or anything else helpful..."></textarea>
+          <textarea id="c_message" name="message" placeholder="Describe your project, any water damage or insurance claim, timeline, or anything else helpful..."></textarea>
         </div>
         <button type="submit" class="form-submit-btn" id="contactSubmitBtn">Send Message →</button>
         <div class="form-status" id="contactFormStatus"></div>
@@ -1386,7 +1402,7 @@
         <li><a href="cities/birmingham-mi-roofing-contractor.html">Birmingham</a></li>
         <li><a href="cities/sterling-heights-mi-roofing-contractor.html">Sterling Heights</a></li>
         <li><a href="cities/canton-mi-roofing-contractor.html">Canton</a></li>
-        <li><a href="#cities">View All 74 Cities →</a></li>
+        <li><a href="#cities">View All 40 Cities →</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1400,7 +1416,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 Guardian Construction. All rights reserved.</span>
+    <span>© 2026 Guardian Construction. All rights reserved.</span>
     <span class="footer-lic">Michigan Builders License #262600486</span>
   </div>
 </footer>
