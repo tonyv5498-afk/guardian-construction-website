@@ -97,7 +97,7 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
   <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
@@ -132,6 +132,9 @@
       --radius-sm:   4px;
       --radius-md:   8px;
       --radius-lg:   14px;
+      --font-display:  'Cormorant Garamond', Georgia, serif;
+      --charcoal:      #1C1C1C;
+      --warm-off:      #F7F4EF;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,13 +182,11 @@
       display: flex; align-items: center;
       position: relative; overflow: hidden; padding-top: 72px;
     }
-    /* Geometric grid overlay */
+    /* Subtle noise texture instead of grid */
     .hero::before {
       content: ''; position: absolute; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(182,150,99,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(182,150,99,.04) 1px, transparent 1px);
-      background-size: 56px 56px;
+      background: radial-gradient(ellipse 120% 80% at 60% 110%, rgba(182,150,99,.08) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 40% at 10% 20%, rgba(255,255,255,.025) 0%, transparent 50%);
     }
     /* Radial spotlight from top-right */
     .hero::after {
@@ -206,13 +207,13 @@
 
     /* Hero left */
     .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--gold-dim); border: 1px solid var(--gold-border);
-      color: var(--gold-light); padding: 6px 16px; border-radius: 100px;
-      font-size: .73rem; font-weight: 700; letter-spacing: 1.8px;
-      text-transform: uppercase; margin-bottom: 24px;
+      display: inline-block;
+      color: var(--text-muted); padding: 0;
+      font-size: .72rem; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 20px;
+      border-left: 2px solid var(--gold); padding-left: 12px;
     }
-    .hero-eyebrow-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; }
+    .hero-eyebrow-dot { display: none; }
     .hero h1 {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: clamp(3.2rem, 7.5vw, 7rem);
@@ -224,6 +225,16 @@
     .hero h1 .outline {
       -webkit-text-stroke: 2px rgba(255,255,255,.25);
       color: transparent;
+    }
+    .hero-serif {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: .78em;
+      letter-spacing: 0;
+      text-transform: none;
+      color: rgba(255,255,255,.65);
+      display: block;
     }
     .hero-sub {
       font-size: 1.05rem; color: var(--text-mid);
@@ -366,13 +377,22 @@
       text-transform: uppercase; letter-spacing: -1px;
       margin-bottom: 16px;
     }
+    .section-label {
+      font-size: .7rem; font-weight: 600; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+    }
+    .serif-title {
+      font-family: var(--font-display) !important;
+      font-weight: 600; font-style: italic;
+      text-transform: none !important; letter-spacing: -0.5px !important;
+    }
     .section-sub {
       color: var(--text-muted); font-size: .98rem; max-width: 560px;
       line-height: 1.8; font-weight: 300;
     }
 
     /* ── SERVICES ───────────────────────────────────────────────── */
-    .services { padding: 108px 5%; background: var(--cream); }
+    .services { padding: 96px 5% 112px; background: var(--cream); }
     .services-inner { max-width: 1240px; margin: 0 auto; }
     .services-head { margin-bottom: 54px; }
     .services .section-title { color: var(--navy); }
@@ -420,15 +440,17 @@
     .service-link svg { width: 12px; height: 12px; fill: var(--gold); transition: transform .2s; }
     .service-card:hover .service-link { gap: 9px; }
     .service-card:hover .service-link svg { transform: translateX(2px); }
+    .featured-card { grid-column: span 2; display: grid; grid-template-columns: 1.3fr 1fr; }
+    .featured-card .service-img { height: 100%; min-height: 220px; }
+    @media (max-width: 768px) {
+      .featured-card { grid-column: span 1; display: block; }
+    }
 
     /* ── WHY GUARDIAN ───────────────────────────────────────────── */
-    .why { padding: 108px 5%; background: var(--navy); position: relative; overflow: hidden; }
+    .why { padding: 120px 5% 96px; background: var(--navy); position: relative; overflow: hidden; }
     .why::before {
       content: ''; position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(182,150,99,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(182,150,99,.03) 1px, transparent 1px);
-      background-size: 56px 56px;
+      background: radial-gradient(ellipse 80% 70% at 90% 50%, rgba(182,150,99,.06) 0%, transparent 55%);
     }
     .why-inner {
       max-width: 1240px; margin: 0 auto;
@@ -440,20 +462,12 @@
     .why-points { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 32px; }
     .why-point {
       display: flex; gap: 16px; align-items: flex-start;
-      padding: 18px 20px; border-radius: var(--radius-md);
-      border: 1px solid transparent; transition: all .25s;
+      padding: 16px 0 16px 20px;
+      border-left: 2px solid transparent; transition: border-color .25s;
       cursor: default;
     }
-    .why-point:hover {
-      background: rgba(182,150,99,.05);
-      border-color: var(--gold-border);
-    }
-    .why-check {
-      width: 24px; height: 24px; background: var(--gold);
-      border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; flex-shrink: 0; margin-top: 1px;
-    }
-    .why-check svg { width: 11px; height: 11px; fill: var(--navy); }
+    .why-point:hover { border-left-color: var(--gold); }
+    .why-check { display: none; }
     .why-point-body h4 { color: var(--white); font-weight: 600; margin-bottom: 4px; font-size: .92rem; }
     .why-point-body p { color: var(--text-muted); font-size: .85rem; line-height: 1.65; font-weight: 300; }
 
@@ -483,7 +497,7 @@
     .why-badge-text p { color: var(--text-muted); font-size: .78rem; margin-top: 2px; }
 
     /* ── PROCESS ────────────────────────────────────────────────── */
-    .process { padding: 108px 5%; background: var(--cream-dark); }
+    .process { padding: 88px 5% 108px; background: var(--cream-dark); }
     .process-inner { max-width: 1240px; margin: 0 auto; }
     .process .section-title { color: var(--navy); }
     .steps {
@@ -497,6 +511,12 @@
       height: 1px; background: linear-gradient(to right, var(--gold), rgba(182,150,99,.2), var(--gold));
       z-index: 0;
     }
+    .steps-list {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; margin-top: 56px; position: relative;
+      border-top: 1px solid rgba(13,21,33,.1);
+    }
+    .steps-list::before { display: none; }
     .step {
       background: var(--white); border-radius: var(--radius-lg);
       padding: 36px 24px 30px; text-align: center;
@@ -509,6 +529,18 @@
       box-shadow: 0 16px 40px rgba(13,21,33,.11);
       border-color: var(--gold-border);
     }
+    .steps-list .step {
+      border-radius: 0; box-shadow: none;
+      border: none; border-right: 1px solid rgba(13,21,33,.08);
+      border-bottom: 1px solid rgba(13,21,33,.08);
+      text-align: left; padding: 36px 32px;
+      background: transparent;
+    }
+    .steps-list .step:nth-child(3n) { border-right: none; }
+    .steps-list .step:hover {
+      transform: none; box-shadow: none;
+      background: rgba(182,150,99,.04);
+    }
     .step-number {
       width: 56px; height: 56px; background: var(--gold);
       border-radius: 50%; display: flex; align-items: center;
@@ -517,10 +549,22 @@
       font-size: 1.6rem; font-weight: 900; color: var(--navy);
       box-shadow: 0 4px 16px rgba(182,150,99,.35);
     }
+    .steps-list .step-number {
+      width: auto; height: auto; background: none; border-radius: 0;
+      margin: 0 0 16px; box-shadow: none;
+      font-family: var(--font-display);
+      font-size: 3rem; font-weight: 400; font-style: italic;
+      color: var(--gold); line-height: 1; display: block;
+    }
     .step h4 {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 1.2rem; font-weight: 800; color: var(--navy);
       text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;
+    }
+    .steps-list .step h4 {
+      font-family: 'Barlow', sans-serif;
+      font-size: .88rem; font-weight: 700; text-transform: none;
+      letter-spacing: 0; margin-bottom: 8px; color: var(--navy);
     }
     .step p { color: var(--text-muted); font-size: .85rem; line-height: 1.65; font-weight: 300; }
 
@@ -579,7 +623,7 @@
     .northern-note a:hover { color: var(--gold-light); }
 
     /* ── CONTACT ────────────────────────────────────────────────── */
-    .contact-section { padding: 108px 5%; background: var(--cream); }
+    .contact-section { padding: 96px 5% 120px; background: var(--cream); }
     .contact-inner {
       max-width: 1240px; margin: 0 auto;
       display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start;
@@ -652,6 +696,11 @@
       text-transform: uppercase; margin-bottom: 16px;
     }
     .cta-band h2 span { color: var(--gold); }
+    .cta-serif {
+      font-family: var(--font-display) !important;
+      font-weight: 600; font-style: italic;
+      text-transform: none !important; letter-spacing: -0.5px !important;
+    }
     .cta-band p {
       color: var(--text-mid); font-size: 1.05rem; max-width: 500px;
       margin: 0 auto 40px; font-weight: 300; line-height: 1.75;
@@ -808,11 +857,8 @@
   <div class="hero-accent"></div>
   <div class="hero-inner">
     <div>
-      <div class="hero-eyebrow">
-        <div class="hero-eyebrow-dot"></div>
-        Metro Detroit's Full-Service General Contractor
-      </div>
-      <h1>DESIGNED<br>WITH <span class="accent">PURPOSE.</span><br><span class="outline">BUILT TO LAST.</span></h1>
+      <div class="hero-eyebrow">Metro Detroit · Interior Remodeling &amp; Restoration</div>
+      <h1>DESIGNED<br>WITH <span class="accent">PURPOSE.</span><br><em class="hero-serif">Built to last.</em></h1>
       <p class="hero-sub">Metro Detroit's interior remodeling specialists — kitchens, bathrooms &amp; basements built thoughtfully. Our restoration background means we design to protect your investment, not just finish the space.</p>
       <div class="hero-actions">
         <a href="#contact" class="btn-primary">Get a Free Estimate</a>
@@ -919,13 +965,13 @@
 <section class="services" id="services" style="background:var(--white)">
   <div class="services-inner">
     <div class="services-head">
-      <div class="section-eyebrow">Our Specialty</div>
-      <h2 class="section-title">Restoration &amp;<br>Insurance Work</h2>
+      <div class="section-label">Our Specialty</div>
+      <h2 class="section-title serif-title">Restoration &amp;<br>Insurance Work</h2>
       <p class="section-sub">Guardian's roots are in water damage and restoration. We work directly with insurance adjusters, speak their language, and rebuild homes to pre-loss condition — or better.</p>
     </div>
     <div class="services-grid">
       <!-- Post-Mitigation -->
-      <a href="#contact" class="service-card">
+      <a href="#contact" class="service-card featured-card">
         <div class="service-img" style="background-image:url('images/drywall.png')"></div>
         <div class="service-body">
           <div class="service-icon">
@@ -968,7 +1014,7 @@
 <section class="services" id="interior-services" style="background:var(--cream-dark)">
   <div class="services-inner">
     <div class="services-head">
-      <div class="section-eyebrow">What We Do</div>
+      <div class="section-label">What We Do</div>
       <h2 class="section-title">Interior Remodeling<br>Done Right</h2>
       <p class="section-sub">Kitchens, bathrooms, and basements designed with intention — by a team that has spent years in water damage and restoration, and knows exactly what protects a home long-term.</p>
     </div>
@@ -1018,7 +1064,7 @@
   <div class="why-inner">
     <div>
       <div class="section-eyebrow" style="color:var(--gold)">Why Choose Guardian</div>
-      <h2 class="section-title">We've Seen What<br><span style="color:var(--gold)">Can Go Wrong.</span></h2>
+      <h2 class="section-title serif-title">We've Seen What<br><span style="color:var(--gold)">Can Go Wrong.</span></h2>
       <p class="section-sub">Guardian Construction was built from years of water damage and restoration work. That experience is why we design differently — proactively, thoughtfully, and with your long-term investment in mind.</p>
       <ul class="why-points">
         <li class="why-point">
@@ -1123,9 +1169,9 @@
 <section class="process" id="process">
   <div class="process-inner">
     <div class="section-eyebrow">How It Works</div>
-    <h2 class="section-title">How We Work</h2>
+    <h2 class="section-title serif-title">How We Work</h2>
     <p class="section-sub">No pressure, no surprises. Every project — remodel or insurance rebuild — follows the same thoughtful process.</p>
-    <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+    <div class="steps steps-list">
       <div class="step">
         <div class="step-number">01</div>
         <h4>Free Consultation</h4>
@@ -1305,7 +1351,7 @@
 <!-- ── CTA BAND ────────────────────────────────────────────────────── -->
 <section class="cta-band">
   <div class="cta-band-inner">
-    <h2>Ready to Build It <span>Right?</span></h2>
+    <h2 class="cta-serif">Ready to Build It <span>Right?</span></h2>
     <p>Get a free, no-obligation estimate from Metro Detroit's interior remodeling and restoration specialists. We respond within 24 hours.</p>
     <div class="cta-actions">
       <a href="tel:+13132471064" class="btn-gold">Call (313) 247-1064</a>
