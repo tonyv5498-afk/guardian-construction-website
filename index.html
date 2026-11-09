@@ -100,12 +100,15 @@
 <!-- page CSS: only what the kit lacks (the logo image size, the estimate form's panel on the surface ground) -->
 <style>
   .nav__logo img { height: 28px; }
+  @media (max-width: 639px) { .nav__name { display: none; } .nav__logo img { height: 32px; } }
   .footer .nav__logo img { height: 40px; }
   .estimate-card { background: var(--surface); border-radius: var(--r-lg); padding: var(--s-7); }
   @media (max-width: 1279px) { .estimate-card { padding: var(--s-6); } }
   @media (max-width: 639px) { .estimate-card { padding: var(--s-5); } }
-  #work .frame { aspect-ratio: 3 / 2; }
-  @media (min-width: 640px) and (max-width: 1023px) { #services { --h: 2; } #work .grid > .frame { grid-column: span 6; } }
+  #work .frame { aspect-ratio: 6 / 5; }
+  @media (max-width: 639px) { #work .frame { aspect-ratio: 3 / 2; } }
+  @media (max-width: 639px) { #services .frame--fill { flex: none; height: auto; aspect-ratio: 4 / 5; } }
+  @media (min-width: 640px) and (max-width: 1023px) { #services { --h: 2; } #work .grid > .frame { grid-column: span 6; aspect-ratio: 4 / 5; } #services .frame--fill { flex: none; height: auto; aspect-ratio: 3 / 2; } }
   .areas a:hover { color: var(--action); }
 </style>
 
@@ -128,7 +131,7 @@
 
 <header class="nav">
   <div class="wrap nav__bar">
-    <a class="nav__logo" href="#top"><img src="assets/img/shield.png" alt="" width="18" height="28">Guardian Construction</a>
+    <a class="nav__logo" href="#top" aria-label="Guardian Construction home"><img src="assets/img/shield.png" alt="" width="18" height="28"><span class="nav__name">Guardian Construction</span></a>
     <nav class="nav__links" aria-label="Main">
       <div class="nav__item">
         <a class="nav__link" href="#services">Services <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -171,7 +174,6 @@
   <section class="hero hero--split" aria-labelledby="hero-h">
     <div class="wrap"><div class="hero-text grid hero__grid">
       <div class="hero__text span-6">
-        <p class="hero__kicker">Licensed Michigan builder since 2009</p>
         <h1 id="hero-h">Kitchens, baths &amp; basements in Metro Detroit</h1>
         <p class="hero__lead">Remodels planned by a team from water damage restoration, so every room stays dry. We also rebuild after leaks and work with your adjuster.</p>
         <div class="btn-row">
@@ -224,7 +226,6 @@
             <li><span class="rows__name">We meet your adjuster</span><p>On site, with a written scope and photos.</p></li>
             <li><span class="rows__name">We rebuild and document</span><p>Drywall to trim, with records for your claim.</p></li>
           </ul>
-          <p style="margin-top: var(--s-6)"><a class="link" href="#questions">Read insurance questions</a></p>
         </div>
         <div class="frame frame--photo frame--fill span-6 start-7">
           <img class="frame__img" src="assets/img/leak-detection.webp" alt="A ceiling stain beside the same corner on a thermal camera, showing cold, wet areas in blue" loading="lazy" data-source="client" data-subject="thermal leak detection">
