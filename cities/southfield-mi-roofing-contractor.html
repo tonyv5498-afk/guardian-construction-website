@@ -119,12 +119,6 @@
           }
         ]
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "147",
-        "bestRating": "5"
-      },
       "openingHoursSpecification": [
         {
           "@type": "OpeningHoursSpecification",
@@ -212,11 +206,12 @@
   .box-facts dd { margin: 0; font-weight: 500; }
   @media (max-width: 1279px), (max-height: 859px) { .box-facts { display: none; } }
   @media (min-width: 1024px) and (max-width: 1279px) { .hero--photo:not([data-box="none"]) .hero__text { padding: var(--s-6); } }
+  @media (min-width: 640px) and (max-width: 1023px) { #areas > .stack-4 { grid-column: 1 / -1; } #areas > .areas { grid-column: auto / span 4; } }
   .areas, .areas p { font-size: var(--t-small); line-height: 1.7; }
   .areas a { white-space: nowrap; }
   .areas a:hover { color: var(--action); }
   @media (max-width: 639px) { #rebuild .frame--fill { flex: none; height: auto; aspect-ratio: 4 / 5; } }
-  @media (min-width: 640px) and (max-width: 1023px) { #prevention .grid > .tile { grid-column: span 4; --tile-ratio: 3 / 4; } #rebuild { --h: 2; } #rebuild .frame--fill { flex: none; height: auto; aspect-ratio: 3 / 2; } }
+  @media (min-width: 640px) and (max-width: 1023px) { #prevention .grid > .tile { grid-column: span 4; --tile-ratio: 3 / 4; } #rebuild .frame--fill { flex: none; height: auto; aspect-ratio: 2 / 1; } }
   .crumbs { font-size: var(--t-small); color: var(--muted); margin-bottom: var(--s-4); }
   .crumbs a { color: var(--muted); }
   .crumbs a:hover { color: var(--ink); }
@@ -284,7 +279,7 @@
 
 <main id="top">
   <section class="hero hero--photo" data-calm="left" aria-labelledby="hero-h">
-    <img class="hero__bg" src="../assets/img/rebuild-drywall-1600.webp" srcset="../assets/img/rebuild-drywall-800.webp 800w, ../assets/img/rebuild-drywall-1600.webp 1600w" sizes="100vw" alt="A room mid-rebuild with new drywall and two new double-hung windows" style="--ly-pos: 70% 50%; --ly-pos-phone: 60% 50%" fetchpriority="high" data-source="client" data-subject="drywall rebuild">
+    <img class="hero__bg" src="../assets/img/rebuild-drywall-1600.webp" srcset="../assets/img/rebuild-drywall-800.webp 800w, ../assets/img/rebuild-drywall-1600.webp 1600w" sizes="(max-width: 1023px) 150vw, 100vw" alt="A room mid-rebuild with new drywall and two new double-hung windows" style="--ly-pos: 70% 50%; --ly-pos-phone: 60% 50%" fetchpriority="high" data-source="client" data-subject="drywall rebuild">
     <div class="wrap"><div class="hero-text">
       <div class="hero__text">
         <h1 id="hero-h">Post-mitigation reconstruction <span class="h1-place">in Southfield, MI</span></h1>
@@ -296,7 +291,7 @@
         <dl class="box-facts">
           <div><dt>Reply</dt><dd>Within 24 hours</dd></div>
           <div><dt>Insurance</dt><dd>We meet your adjuster</dd></div>
-          <div><dt>Google rating</dt><dd>4.9 from 147 reviews</dd></div>
+          <div><dt>Certification</dt><dd>IICRC certified and licensed</dd></div>
           <div><dt>Service area</dt><dd>Wayne, Oakland, Macomb</dd></div>
         </dl>
       </div>
@@ -377,7 +372,7 @@
       <div class="grid grid--top">
         <div class="span-6 section-head">
           <h2 id="questions-h">Questions</h2>
-          <p>Rated 4.9 on Google from 147 reviews.</p>
+          <p>IICRC certified and licensed.</p>
           <p class="t-small">Southfield is a major Oakland County city and employment hub with a diverse mix of residential neighborhoods and commercial corridors. With a population of approximately 78,000 residents.</p>
         </div>
         <div class="faq span-6 start-7">
