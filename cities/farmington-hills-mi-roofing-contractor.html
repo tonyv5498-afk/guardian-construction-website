@@ -213,6 +213,12 @@
   @media (min-width: 640px) and (max-width: 1023px) { .claim-grid > .frame { aspect-ratio: 16 / 9; } }
   @media (max-width: 1359px) { .nav__actions > .nav__link { display: none; } }
   @media (min-width: 1024px) and (max-width: 1099px) { .nav__name { display: none; } }
+  #rebuild { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
+  #rebuild > .wrap { height: auto; display: block; }
+  #rebuild > .wrap > .fill { flex: none; min-height: 0; }
+  #rebuild .grid { align-items: stretch; }
+  @media (min-width: 1024px) { #rebuild .frame--fill { height: auto; min-height: 420px; } }
+  @media (max-width: 639px) { #rebuild { padding: var(--s-8) 0; } }
   #reviews { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
   @media (max-width: 639px) { #reviews { padding: var(--s-8) 0; } }
   .claim-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin: 0; padding: var(--s-5); background: var(--surface); border-radius: var(--r-md); }
@@ -334,7 +340,8 @@
             <li><span class="rows__name">Drywall, insulation and paint</span><p>Hung, taped, finished and painted to match the room.</p></li>
             <li><span class="rows__name">Floors and subfloors</span><p>Plywood, tile, hardwood, vinyl plank and carpet.</p></li>
             <li><span class="rows__name">Cabinets, counters and trim</span><p>Kitchen and bath cabinetry rebuilt or replaced.</p></li>
-            <li><span class="rows__name">Lighting, plumbing and appliances</span><p>Fixtures reinstalled and appliances reset.</p></li>          </ul>
+            <li><span class="rows__name">Lighting, plumbing and appliances</span><p>Fixtures reinstalled and appliances reset.</p></li>
+            <li><span class="rows__name">Contents</span><p>Unpacked, reset and cleaned.</p></li>          </ul>
         </div>
         <div class="frame frame--photo frame--fill span-6 start-7">
           <img class="frame__img" src="../assets/img/crew-flooring.webp" alt="Two Guardian crew members patching a plywood subfloor in a bright front hall" loading="lazy" data-source="client" data-subject="crew at work">
@@ -358,7 +365,7 @@
           </ul>
         </div>
         <div class="claim-grid span-6 start-7">
-          <div class="frame frame--photo"><img class="frame__img" src="../assets/img/leak-detection.webp" alt="A ceiling stain beside the same corner on a thermal camera, showing cold, wet areas in blue" loading="lazy" data-source="client" data-subject="thermal leak detection"></div>
+          <div class="frame frame--photo"><img class="frame__img" src="../assets/img/claim-utility-flood.webp" alt="A flooded basement utility room with standing water around the water heater and softener tanks" loading="lazy" data-source="client" data-subject="flooded utility room"></div>
           <div class="frame frame--photo"><img class="frame__img" src="../assets/img/claim-flooded-carpet.webp" alt="A basement rec room with water-soaked carpet after a flood" loading="lazy" data-source="client" data-subject="flooded basement"></div>
           <div class="frame frame--photo"><img class="frame__img" src="../assets/img/claim-ceiling-opened.webp" alt="A two-story foyer ceiling opened to the joists after a leak" loading="lazy" data-source="client" data-subject="ceiling opened after a leak"></div>
           <div class="frame frame--photo"><img class="frame__img" src="../assets/img/claim-basement-demo.webp" alt="A basement bar with wet drywall cut out to the studs, ready for the rebuild" loading="lazy" data-source="client" data-subject="basement demolition before rebuild"></div>
