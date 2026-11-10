@@ -122,6 +122,12 @@
   #rebuild .grid { align-items: stretch; }
   @media (min-width: 1024px) { #rebuild .frame--fill { height: auto; min-height: 420px; } }
   @media (max-width: 639px) { #rebuild { padding: var(--s-8) 0; } }
+  #insurance { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
+  #insurance > .wrap { height: auto; display: block; }
+  #insurance > .wrap > .fill { flex: none; min-height: 0; }
+  #insurance .grid { align-items: stretch; }
+  @media (min-width: 1024px) { #insurance .claim-grid { min-height: 460px; } }
+  @media (max-width: 639px) { #insurance { padding: var(--s-8) 0; } #insurance .claim-grid > .frame { aspect-ratio: 1 / 1; } }
   #reviews { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
   @media (max-width: 639px) { #reviews { padding: var(--s-8) 0; } }
   .claim-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin: 0; padding: var(--s-5); background: var(--surface); border-radius: var(--r-md); }
@@ -260,9 +266,11 @@
             <p>We document the loss and the scope so your adjuster sees the whole rebuild.</p>
           </div>
           <ul class="rows">
-            <li><span class="rows__name">We find the source</span><p>Thermal imaging shows where water still sits.</p></li>
-            <li><span class="rows__name">We meet your adjuster</span><p>On site, with a written scope and photos.</p></li>
-            <li><span class="rows__name">We rebuild and document</span><p>Records for your claim at every stage.</p></li>
+            <li><span class="rows__name">We find the loss</span><p>Thermal imaging and moisture readings show where water sits.</p></li>
+            <li><span class="rows__name">We mitigate the damage</span><p>We dry it out and prevent secondary damage like mold.</p></li>
+            <li><span class="rows__name">We document everything</span><p>Photos, readings and a written scope for your claim.</p></li>
+            <li><span class="rows__name">We meet your adjuster</span><p>On site, walking the scope together.</p></li>
+            <li><span class="rows__name">We rebuild and reset</span><p>Back to pre-loss condition, contents reset.</p></li>
           </ul>
         </div>
         <div class="claim-grid span-6 start-7">
