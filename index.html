@@ -110,6 +110,30 @@
   @media (max-width: 1279px), (max-height: 859px) { .box-facts { display: none; } }
   @media (min-width: 1024px) and (max-width: 1279px) { .hero--photo:not([data-box="none"]) .hero__text { padding: var(--s-6); } }
   @media (min-width: 640px) and (max-width: 1023px) { #areas > .stack-4 { grid-column: 1 / -1; } #areas > .areas { grid-column: auto / span 4; } }
+  .claim-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: var(--s-4); align-self: stretch; min-height: 0; }
+  .claim-grid > .frame { position: relative; overflow: clip; border-radius: var(--r-lg); min-height: 0; }
+  @media (max-width: 1023px) { .claim-grid { grid-template-rows: none; margin-top: var(--s-6); } .claim-grid > .frame { aspect-ratio: 3 / 2; } }
+  @media (min-width: 640px) and (max-width: 1023px) { .claim-grid > .frame { aspect-ratio: 16 / 9; } }
+  @media (max-width: 1359px) { .nav__actions > .nav__link { display: none; } }
+  @media (min-width: 1024px) and (max-width: 1099px) { .nav__name { display: none; } }
+  #reviews { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
+  @media (max-width: 639px) { #reviews { padding: var(--s-8) 0; } }
+  .claim-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin: 0; padding: var(--s-5); background: var(--surface); border-radius: var(--r-md); }
+  .claim-figures dt { font-size: var(--t-small); color: var(--muted); }
+  .claim-figures dd { margin: var(--s-2) 0 0; font: var(--display-weight) var(--t-stat)/1.1 var(--font-display); letter-spacing: var(--display-tracking); }
+  .review { margin: 0; display: grid; gap: var(--s-5); }
+  .review__stars { color: var(--accent); font-size: var(--t-lead); letter-spacing: 0.1em; }
+  .review blockquote { margin: 0; display: grid; gap: var(--s-4); font-size: var(--t-body); line-height: 1.7; }
+  .review blockquote p:first-child { font: var(--display-weight) var(--t-lead)/1.45 var(--font-display); letter-spacing: var(--display-tracking); }
+  .review__by { font-weight: 500; padding-top: var(--s-4); border-top: 1px solid var(--line); }
+  .claim-figures { min-width: min(100%, 460px); }
+  #reviews .review { align-content: start; }
+  @media (max-width: 1023px) { #reviews .review + .review { margin-top: var(--s-7); } }
+  #questions { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0; }
+  @media (max-width: 639px) { #questions { padding: var(--s-8) 0; } }
+  footer.closing, footer.closing[style] { height: auto !important; min-height: 0 !important; padding: var(--s-9) 0 var(--s-6); }
+  footer.closing > .wrap { height: auto; grid-template-rows: auto auto; }
+  @media (max-width: 639px) { footer.closing { padding-top: var(--s-8); } }
   .areas, .areas p { font-size: var(--t-small); line-height: 1.7; }
   .areas a { white-space: nowrap; }
   .areas a:hover { color: var(--action); }
@@ -166,7 +190,7 @@
       </div>
       <div class="nav__item"><a class="nav__link" href="#insurance">Insurance</a></div>
       <div class="nav__item"><a class="nav__link" href="#prevention">Remodeling</a></div>
-      <div class="nav__item"><a class="nav__link" href="#questions">Questions</a></div>
+      <div class="nav__item"><a class="nav__link" href="#reviews">Reviews</a></div>
     </nav>
     <div class="nav__actions">
       <a class="nav__link" href="tel:+13132471064">(313) 247-1064</a>
@@ -191,7 +215,7 @@
         </div>
         <dl class="box-facts">
           <div><dt>Reply</dt><dd>Within 24 hours</dd></div>
-          <div><dt>Insurance</dt><dd>We meet your adjuster</dd></div>
+          <div><dt>Insurance</dt><dd>We work with your insurance carrier</dd></div>
           <div><dt>Certification</dt><dd>IICRC certified and licensed</dd></div>
           <div><dt>Service area</dt><dd>Wayne, Oakland, Macomb</dd></div>
         </dl>
@@ -208,11 +232,10 @@
             <p>One crew puts back everything the mitigation team removed.</p>
           </div>
           <ul class="rows">
-            <li><span class="rows__name">Drywall and insulation</span><p>Hung, taped and finished to match the room.</p></li>
-            <li><span class="rows__name">Floors and subfloors</span><p>Plywood, tile, hardwood and vinyl plank.</p></li>
+            <li><span class="rows__name">Drywall, insulation and paint</span><p>Hung, taped, finished and painted to match the room.</p></li>
+            <li><span class="rows__name">Floors and subfloors</span><p>Plywood, tile, hardwood, vinyl plank and carpet.</p></li>
             <li><span class="rows__name">Cabinets, counters and trim</span><p>Kitchen and bath cabinetry rebuilt or replaced.</p></li>
-            <li><span class="rows__name">Paint and final finish</span><p>Walls and ceilings matched, then a walkthrough.</p></li>
-          </ul>
+            <li><span class="rows__name">Lighting, plumbing and appliances</span><p>Fixtures reinstalled and appliances reset.</p></li>          </ul>
         </div>
         <div class="frame frame--photo frame--fill span-6 start-7">
           <img class="frame__img" src="assets/img/crew-flooring.webp" alt="Two Guardian crew members patching a plywood subfloor in a bright front hall" loading="lazy" data-source="client" data-subject="crew at work">
@@ -235,9 +258,53 @@
             <li><span class="rows__name">We rebuild and document</span><p>Records for your claim at every stage.</p></li>
           </ul>
         </div>
-        <div class="frame frame--photo frame--fill span-6 start-7">
-          <img class="frame__img" src="assets/img/leak-detection.webp" alt="A ceiling stain beside the same corner on a thermal camera, showing cold, wet areas in blue" loading="lazy" data-source="client" data-subject="thermal leak detection">
+        <div class="claim-grid span-6 start-7">
+          <div class="frame frame--photo"><img class="frame__img" src="assets/img/leak-detection.webp" alt="A ceiling stain beside the same corner on a thermal camera, showing cold, wet areas in blue" loading="lazy" data-source="client" data-subject="thermal leak detection"></div>
+          <div class="frame frame--photo"><img class="frame__img" src="assets/img/claim-flooded-carpet.webp" alt="A basement rec room with water-soaked carpet after a flood" loading="lazy" data-source="client" data-subject="flooded basement"></div>
+          <div class="frame frame--photo"><img class="frame__img" src="assets/img/claim-ceiling-opened.webp" alt="A two-story foyer ceiling opened to the joists after a leak" loading="lazy" data-source="client" data-subject="ceiling opened after a leak"></div>
+          <div class="frame frame--photo"><img class="frame__img" src="assets/img/claim-basement-demo.webp" alt="A basement bar with wet drywall cut out to the studs, ready for the rebuild" loading="lazy" data-source="client" data-subject="basement demolition before rebuild"></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="reviews" aria-labelledby="reviews-h">
+    <div class="wrap">
+      <div class="section-head section-head--row">
+        <div><h2 id="reviews-h">Reviews</h2><p>Homeowners on how we handled their water damage claims.</p></div>
+        <dl class="claim-figures">
+          <div><dt>Zeonica B.’s claim, first approved</dt><dd>$21,000</dd></div>
+          <div><dt>Approved after our scope</dt><dd>Over $57,000</dd></div>
+        </dl>
+      </div>
+      <div class="grid grid--top">
+        <figure class="review span-4">
+          <p class="review__stars" role="img" aria-label="5 out of 5 stars">★★★★★</p>
+          <blockquote>
+            <p>We had a major kitchen water damage loss, and our insurance company initially only approved around $21,000 for the repairs. We knew that amount wasn’t going to be enough to properly restore our kitchen.</p>
+            <p>Once we got Guardian Construction involved, everything changed. Their team thoroughly assessed the damage, put together detailed estimates and supporting documentation, and worked directly with our insurance adjuster to make sure the full scope of repairs was accounted for.</p>
+            <p>Thanks to their knowledge and persistence, our insurance company ended up approving over $57,000 for the repairs. Guardian really went above and beyond to advocate for us and make sure nothing was overlooked. They made a huge difference for us!</p>
+          </blockquote>
+          <figcaption class="review__by">Zeonica B.</figcaption>
+        </figure>
+        <figure class="review span-4">
+          <p class="review__stars" role="img" aria-label="5 out of 5 stars">★★★★★</p>
+          <blockquote>
+            <p>We discovered a hidden water leak in our home and were getting absolutely nowhere with our insurance company. It felt like we were constantly getting the runaround, and nobody wanted to take our concerns seriously.</p>
+            <p>Thankfully, we got Guardian Construction involved. Their team came out and performed a thorough inspection using thermal imaging cameras and moisture meters to identify and document the water damage that wasn’t even visible to the naked eye. They took detailed photos, gathered readings, and put together the documentation needed to support our claim.</p>
+            <p>What really stood out was how they advocated for us. When our insurance carrier gave us the cold shoulder, Guardian stepped up, communicated with the adjuster, and made sure our concerns weren’t ignored.</p>
+          </blockquote>
+          <figcaption class="review__by">Ashley L.</figcaption>
+        </figure>
+        <figure class="review span-4">
+          <p class="review__stars" role="img" aria-label="5 out of 5 stars">★★★★★</p>
+          <blockquote>
+            <p>Our basement flooded, and our insurance company initially only wanted to pay to have the carpet cleaned. We had a professional carpet cleaner come out, but even after the cleaning, there were still noticeable stains and a lingering smell. We knew the carpet wasn’t going to be the same, but we weren’t getting anywhere with our insurance company.</p>
+            <p>That’s when we reached out to Guardian Construction. They came out, thoroughly inspected the damage, and documented everything to show why simply cleaning the carpet wasn’t enough. They worked with our insurance adjuster and helped us get the claim properly addressed.</p>
+            <p>Thanks to Guardian’s help, our insurance company ultimately approved replacing all of our basement carpet, padding, and baseboards instead of just cleaning the carpet!</p>
+          </blockquote>
+          <figcaption class="review__by">Barb O.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -326,7 +393,7 @@
   </section>
 </main>
 
-<footer class="footer closing footer--dark ground-inverse" style="--hm: 2" id="contact" aria-labelledby="close-h">
+<footer class="footer closing footer--dark ground-inverse" id="contact" aria-labelledby="close-h">
   <div class="wrap">
     <div class="closing__cta close--word">
       <div class="section-head--split">
