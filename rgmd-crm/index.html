@@ -632,6 +632,13 @@
                 </div>
                 <div class="border border-gray-100 rounded-xl p-3">
                     <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-700">Mold Remediation Work Authorization</span>
+                        <span id="sig-pill-mold_wa" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                    </div>
+                    <div id="sig-status-mold_wa"></div>
+                </div>
+                <div class="border border-gray-100 rounded-xl p-3">
+                    <div class="flex items-center justify-between mb-2">
                         <span class="text-xs font-semibold text-gray-700">Reconstruction Work Authorization</span>
                         <span id="sig-pill-rwa" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
                     </div>
@@ -1514,6 +1521,7 @@ const STATUS = {
 // ────────────────────────────────────────────────────────────
 const DOC_TYPES = {
     wa:            { label: 'Service Authorization',                  tokenField: 'sigTokenWA',           hasAob: true,  simpleDoc: false },
+    mold_wa:       { label: 'Mold Remediation Work Authorization',    tokenField: 'sigTokenMoldWA',        hasAob: true,  simpleDoc: false },
     rwa:           { label: 'Reconstruction Work Authorization',      tokenField: 'sigTokenRWA',          hasAob: true,  simpleDoc: false },
     coc_mit:       { label: 'Certificate of Completion — Mitigation', tokenField: 'sigTokenCOCMit',       hasAob: false, simpleDoc: true  },
     coc_rebuild:   { label: 'Certificate of Completion — Rebuild',    tokenField: 'sigTokenCOCRebuild',   hasAob: false, simpleDoc: true  },
@@ -1549,6 +1557,25 @@ const RWA_PARAGRAPHS = [
     'This Contract contains the entire understanding of you and Restoration Group of Metro Detroit LLC concerning the Project. All prior written or oral understandings or agreements are merged into this Contract. This Contract may be altered only in writing signed by me (us) and Restoration Group of Metro Detroit LLC.',
     'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
 ];
+
+const MOLD_WA_PARAGRAPHS = [
+    'I (we) hereby authorize Restoration Group of Metro Detroit LLC to perform mold remediation services at my (our) property at the above address. All mold remediation work shall be performed in accordance with the IICRC S520 Standard and Reference Guide for Professional Mold Remediation (current edition), as well as all applicable federal, state, and local regulations. I (we) authorize and direct the Insurance Company listed above to communicate with Restoration Group of Metro Detroit LLC and to pay Restoration Group of Metro Detroit LLC directly for the work covered by insurance. If for any reason the payment should come to me (us), I (we) hereby agree to pay Restoration Group of Metro Detroit LLC immediately upon receipt of the payment from the insurance company.',
+    'I (we) understand that Restoration Group of Metro Detroit LLC is working for me (us) and not the insurance company, adjuster and/or agent. It is fully understood that I (we) am/are personally responsible for any and all deductible, depreciation or any other charges or costs not covered by insurance. I (we) agree to pay Restoration Group of Metro Detroit LLC directly for any amount not covered by insurance.',
+    'Scope of Work: Restoration Group of Metro Detroit LLC will perform mold remediation services as outlined in the signed estimate or scope of work, which may include, but is not limited to: containment of affected areas, air filtration with HEPA equipment, removal and disposal of mold-contaminated materials, application of antimicrobial treatments to affected surfaces, and post-remediation clearance verification procedures. All work shall be performed by trained personnel following IICRC S520 protocols.',
+    'Post-Remediation Air Quality Standard: Should post-remediation air quality testing be performed by a qualified environmental professional or industrial hygienist, Restoration Group of Metro Detroit LLC warrants that the remediated area(s) will meet an acceptable clearance standard. Acceptable clearance is defined as airborne mold spore concentrations in the remediated area(s) that are (a) at or below outside/ambient baseline levels, and/or (b) at or below 1,500 total spores per cubic meter (m³) as measured by air sampling analysis. Client acknowledges that post-remediation testing is not automatically included in this authorization and must be separately arranged and paid for unless otherwise agreed in writing.',
+    'Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. Seven (7) calendar days after Contractor completes its final Work, Client shall pay 100% of the total fee. Late fees past fifteen (15) days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.',
+    'Client grants work to begin and represents himself/herself as the proper authority to authorize the Work. Additional charges may be incurred to collect the debt. To include interest/finance charges, collection fees, attorney\'s fees, and any and all court costs. Client authorizes the said properties insurance company to issue the "claim check" directly to Restoration Group of Metro Detroit LLC and to be made payable in the name of and only Restoration Group of Metro Detroit LLC. If I (we) or my insurer fails to pay the balance owing to Restoration Group of Metro Detroit LLC within 30 days of job completion, I (we) agree that I (we) will pay to Restoration Group of Metro Detroit LLC the full amount owing, including the amount owed by my insurer.',
+    'Health and Safety: Client acknowledges that mold can present health risks. Client agrees to vacate or restrict access to the remediation work area(s) during the remediation process as directed by Restoration Group of Metro Detroit LLC. Restoration Group of Metro Detroit LLC is not liable for any health effects arising from pre-existing mold conditions prior to the commencement of remediation work. The liability of Restoration Group of Metro Detroit LLC is expressly limited to the total amount of the services authorized herein.',
+    'Restoration Group of Metro Detroit LLC reserves the right to place a lien on the said property(s) should "authorized agent" or Client granting the Work not pay full funds due. Work cost, job completion cost, and invoice to be determined solely by Restoration Group of Metro Detroit LLC and is not negotiable.',
+    'I (we) understand that I (we) have the right to cancel a home restoration contract within three (3) days of signing this form, but because of the emergency stated above I (we) waive that right to cancel and because any delay may cause further damage, I (we) direct Restoration Group of Metro Detroit LLC to begin remediation immediately.',
+    'Client acknowledges and agrees to execute the Certificate of Completion (COC) within three (3) calendar days from the last day of work performed at the property. If Client fails or refuses to execute the COC within this period, Restoration Group of Metro Detroit LLC reserves the right to issue a separate Contractor Certificate/Notice of Completion independently documenting that the contracted work has been substantially completed. Such contractor certification does not constitute or substitute for the Client\'s acceptance signature but shall serve as Restoration Group of Metro Detroit LLC\'s independent documentation of project completion for purposes of final payment obligations under this agreement.',
+];
+
+function moldWaPaymentClause(bd, lf) {
+    const bdNum = parseInt(bd) || 7;
+    const lfNum = parseInt(lf) || 15;
+    return `Payment shall be made to Restoration Group of Metro Detroit LLC as follows: At the time of signing this Agreement, Client is required to pay their home/auto/commercial insurance deductible, unless other arrangements have been made. ${bdNum} calendar day${bdNum===1?'':'s'} after Contractor completes its final Work, Client shall pay 100% of the total fee. Late fees past ${lfNum} days will be charged at $150 per day or the maximum amount the state allows. A lien may be placed on the said property(s) past thirty (30) days.`;
+}
 
 function waPaymentClause(bd, lf) {
     const bdNum = parseInt(bd) || 7;
@@ -1607,6 +1634,7 @@ async function initSigningPage(token) {
         // Set page title and signature label based on doc type
         const titles = {
             wa:             'Service Authorization Contract',
+            mold_wa:        'Mold Remediation Work Authorization',
             rwa:            'Reconstruction Work Authorization',
             coc_mit:        'Mitigation Certificate of Completion and Satisfaction',
             coc_rebuild:    'Rebuild Certificate of Completion and Satisfaction',
@@ -1616,6 +1644,7 @@ async function initSigningPage(token) {
         };
         const sigLabels = {
             wa:             'Signature — Service Authorization',
+            mold_wa:        'Signature — Mold Remediation Work Authorization',
             rwa:            'Signature — Reconstruction Work Authorization',
             coc_mit:        'Signature — Certificate of Completion',
             coc_rebuild:    'Signature — Certificate of Completion',
@@ -1627,6 +1656,7 @@ async function initSigningPage(token) {
         document.getElementById('sc-sig-label').textContent  = sigLabels[docType] || sigLabels.wa;
 
         const isSimple = (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'warranty' || docType === 'contractor_coc');
+
 
         // Populate fields
         document.getElementById('sc-customer').textContent = d.clientName || '';
@@ -1654,6 +1684,12 @@ async function initSigningPage(token) {
         if (docType === 'wa') {
             const wap = [...WA_PARAGRAPHS]; wap[3] = waPaymentClause(d.balanceDueDays, d.lateFeeDays);
             bodyEl.innerHTML = wap.map(p => `<p>${p}</p>`).join('');
+        } else if (docType === 'mold_wa') {
+            const moldp = [...MOLD_WA_PARAGRAPHS]; moldp[4] = moldWaPaymentClause(d.balanceDueDays, d.lateFeeDays);
+            const descBlock = d.workDescription
+                ? `<div style="background:#f0f4ff;border:1px solid #c7d4f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;"><p style="margin:0;font-size:0.8rem;font-weight:600;color:#4b5e8a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Description of Work</p><p style="margin:0;">${esc(d.workDescription)}</p></div>`
+                : '';
+            bodyEl.innerHTML = descBlock + moldp.map(p => `<p>${p}</p>`).join('');
         } else if (docType === 'rwa') {
             const rwap = [...RWA_PARAGRAPHS]; rwap[2] = rwaPaymentClause(d.balanceDueDays, d.lateFeeDays);
             const descBlock = d.workDescription
@@ -1888,8 +1924,8 @@ function initApp() {
         $('sig-req-rwa-cost-wrap').classList.toggle('hidden', docType !== 'rwa');
         $('sig-req-warranty-wrap').classList.toggle('hidden', docType !== 'warranty');
         $('sig-req-contractor-coc-wrap').classList.toggle('hidden', docType !== 'contractor_coc');
-        $('sig-req-payment-terms-wrap').classList.toggle('hidden', docType !== 'wa' && docType !== 'rwa');
-        $('sig-req-rwa-desc-wrap').classList.toggle('hidden', docType !== 'rwa');
+        $('sig-req-payment-terms-wrap').classList.toggle('hidden', docType !== 'wa' && docType !== 'rwa' && docType !== 'mold_wa');
+        $('sig-req-rwa-desc-wrap').classList.toggle('hidden', docType !== 'rwa' && docType !== 'mold_wa');
         $('sig-req-modal').classList.remove('hidden');
     }
 
@@ -1969,6 +2005,7 @@ function initApp() {
     function loadAllSigStatuses(job) {
         // sigToken is backward compat field for old WA-only records
         loadDocSigStatus(job, 'wa',            job.sigTokenWA           || job.sigToken || null);
+        loadDocSigStatus(job, 'mold_wa',       job.sigTokenMoldWA       || null);
         loadDocSigStatus(job, 'rwa',           job.sigTokenRWA          || null);
         loadDocSigStatus(job, 'coc_mit',       job.sigTokenCOCMit       || null);
         loadDocSigStatus(job, 'coc_rebuild',   job.sigTokenCOCRebuild   || null);
@@ -1992,10 +2029,10 @@ function initApp() {
         const contractorCompletionDate = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-completion-date').value.trim() : '';
         const datesRequested        = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-dates-requested').value.trim()  : '';
         const pmName                = currentSigDocType === 'contractor_coc' ? $('sig-req-contractor-pm-name').value.trim()         : '';
-        const isPaymentDoc          = currentSigDocType === 'wa' || currentSigDocType === 'rwa';
+        const isPaymentDoc          = currentSigDocType === 'wa' || currentSigDocType === 'rwa' || currentSigDocType === 'mold_wa';
         const balanceDueDays        = isPaymentDoc ? ($('sig-req-balance-due-days').value.trim() || '7')  : '';
         const lateFeeDays           = isPaymentDoc ? ($('sig-req-late-fee-days').value.trim()    || '15') : '';
-        const workDescription       = currentSigDocType === 'rwa'          ? $('sig-req-work-description').value.trim() : '';
+        const workDescription       = (currentSigDocType === 'rwa' || currentSigDocType === 'mold_wa') ? $('sig-req-work-description').value.trim() : '';
         const btn = $('sig-req-create-btn');
         btn.textContent = 'Creating…'; btn.disabled = true;
         try {
@@ -4035,6 +4072,7 @@ function generateSignedPDF(d) {
     if (docType === 'warranty')        return _generateWarrantyPDF(d);
     if (docType === 'contractor_coc')  return _generateContractorCOCPDF(d);
     if (docType === 'coc_mit' || docType === 'coc_rebuild' || docType === 'hold_harmless') return _generateCOCPDF(d, docType);
+    if (docType === 'mold_wa')         return _generateMoldWAPDF(d);
     return _generateAuthPDF(d, docType);
 }
 
@@ -4611,6 +4649,184 @@ function _generateRWACompactPDF(d) {
         doc.setDrawColor(175, 175, 175); doc.line(ml, y + 38, ml + 280, y + 38);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(140, 140, 140);
         doc.text('Signature — Reconstruction Work Authorization', ml, y + 44);
+    }
+
+    return doc;
+}
+
+function _generateMoldWAPDF(d) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const pw = 612, ph = 792, ml = 50, mr = 50, tw = pw - ml - mr;
+    let y = 0;
+
+    const signedDate = d.signedAt
+        ? new Date(d.signedAt.seconds * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    function newPageIfNeeded(needed) {
+        if (y + needed > ph - 40) { doc.addPage(); y = 50; }
+    }
+    function divider() {
+        newPageIfNeeded(16);
+        doc.setDrawColor(210, 210, 210);
+        doc.line(ml, y, pw - mr, y);
+        y += 10;
+    }
+    function bodyPara(text) {
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(40, 40, 40);
+        const lines = doc.splitTextToSize(text, tw);
+        for (let i = 0; i < lines.length; ) {
+            const avail = Math.floor((ph - 40 - y) / 9.5);
+            const batch = lines.slice(i, i + Math.max(1, avail));
+            newPageIfNeeded(batch.length * 9.5);
+            doc.text(batch, ml, y);
+            y += batch.length * 9.5;
+            i += batch.length;
+        }
+        y += 6;
+    }
+
+    // Header bar
+    doc.setFillColor(27, 58, 107); doc.rect(0, 0, pw, 64, 'F');
+    if (_logoDataURL) doc.addImage(_logoDataURL, 'PNG', ml, 8, 48, 48);
+    const hx = _logoDataURL ? ml + 56 : ml;
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+    doc.text('Mold Remediation Work Authorization', hx, 30);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text('Restoration Group of Metro Detroit LLC  ·  6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', hx, 48);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(7);
+    doc.text('Work performed in accordance with IICRC S520 Standard for Professional Mold Remediation', hx, 60);
+    doc.setTextColor(30, 30, 30);
+    y = 78;
+
+    // Info grid
+    const colW = (tw - 14) / 2;
+    const c2x  = ml + colW + 14;
+    const ROW_H = 16;
+    const rows = [
+        ['Customer',     d.clientName || '',    'Insurance Co.',    d.insCarrier || ''],
+        ['Address',      d.address    || '',    'Claim #',          d.insClaim   || ''],
+        ['Phone',        d.phone      || '',    'Policy #',         d.insPolicy  || ''],
+        ['Email',        d.email      || '',    'Ins. Agent',       d.insAdjusterName || ''],
+        ['Project Type', [d.projectType, d.subCategory].filter(Boolean).join(' — ') || '', 'Est. Start Date', d.dueDate || ''],
+    ];
+    rows.forEach(([ll, lv, rl, rv], i) => {
+        if (i > 0) { doc.setDrawColor(225, 225, 225); doc.line(ml, y - ROW_H + 5, pw - mr, y - ROW_H + 5); }
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+        doc.text(ll + ':', ml, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(String(lv).slice(0, 55), ml + doc.getTextWidth(ll + ': '), y);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+        doc.text(rl + ':', c2x, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(String(rv).slice(0, 55), c2x + doc.getTextWidth(rl + ': '), y);
+        y += ROW_H;
+    });
+    y += 4;
+    doc.setDrawColor(185, 185, 185); doc.line(ml, y, pw - mr, y); y += 10;
+
+    // Description of work block (if present)
+    if (d.workDescription) {
+        doc.setFillColor(240, 244, 255); doc.setDrawColor(199, 212, 240);
+        const descLines = doc.splitTextToSize(d.workDescription, tw - 20);
+        const blockH = 8 + descLines.length * 9.5 + 8;
+        newPageIfNeeded(blockH + 10);
+        doc.roundedRect(ml, y, tw, blockH, 4, 4, 'FD');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(75, 94, 138);
+        doc.text('DESCRIPTION OF WORK', ml + 10, y + 9);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(30, 30, 30);
+        doc.text(descLines, ml + 10, y + 18);
+        y += blockH + 8;
+    }
+
+    // Paragraphs
+    const moldParagraphs = [...MOLD_WA_PARAGRAPHS];
+    moldParagraphs[4] = moldWaPaymentClause(d.balanceDueDays, d.lateFeeDays);
+    moldParagraphs.forEach(p => bodyPara(p));
+
+    // Signature block
+    newPageIfNeeded(140);
+    divider();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
+    doc.text('Printed Name:', ml, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(d.signerName || '', ml + 88, y);
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 70);
+    doc.text('Date:', ml + 310, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+    doc.text(signedDate, ml + 340, y);
+    y += 18;
+
+    if (d.signatureDataURL) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+        doc.text('Signature — Mold Remediation Work Authorization', ml, y);
+        y += 8;
+        doc.addImage(d.signatureDataURL, 'PNG', ml, y, 300, 76);
+        y += 86;
+    }
+
+    // AOB page (if applicable)
+    if (d.includeAob) {
+        doc.addPage(); y = 0;
+        doc.setFillColor(27, 58, 107); doc.rect(0, 0, pw, 64, 'F');
+        if (_logoDataURL) doc.addImage(_logoDataURL, 'PNG', ml, 8, 48, 48);
+        const ax = _logoDataURL ? ml + 56 : ml;
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+        doc.text('Assignment of Insurance Benefits', ax, 32);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+        doc.text('Restoration Group of Metro Detroit LLC  ·  6632 Telegraph Rd. #116 Bloomfield Hills MI 48301', ax, 50);
+        doc.setTextColor(30, 30, 30);
+        y = 78;
+
+        const aobRows = [
+            ['Client/Insured', d.clientName, 'Claim Number', d.insClaim],
+            ['Policy Number',  d.insPolicy,  'Insurer',      d.insCarrier],
+            ['Address',        d.address,    'Phone',        d.phone],
+        ];
+        aobRows.forEach(([ll, lv, rl, rv], i) => {
+            if (i > 0) { doc.setDrawColor(225, 225, 225); doc.line(ml, y - ROW_H + 5, pw - mr, y - ROW_H + 5); }
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+            doc.text(ll + ':', ml, y);
+            doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+            doc.text(String(lv || '').slice(0, 55), ml + doc.getTextWidth(ll + ': '), y);
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(115, 115, 115);
+            doc.text(rl + ':', c2x, y);
+            doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+            doc.text(String(rv || '').slice(0, 55), c2x + doc.getTextWidth(rl + ': '), y);
+            y += ROW_H;
+        });
+        y += 4; doc.setDrawColor(185, 185, 185); doc.line(ml, y, pw - mr, y); y += 10;
+
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(20, 20, 20);
+        doc.text('I. ASSIGNMENT OF INSURANCE BENEFITS', ml, y); y += 13;
+        bodyPara('I, hereby, assign any and all insurance rights, benefits, proceeds and any causes of action under any applicable insurance policies to Restoration Group of Metro Detroit LLC (hereinafter referred to as "Company"), for mold remediation services rendered, or to be rendered by Company. In this regard, I waive my privacy rights. I make this assignment in consideration of Company\'s agreement to perform services and supply materials and otherwise perform its obligations under this contract, including not requiring full payment at the time of service. I also hereby direct my insurance carrier(s) to release any and all information requested by Company, its representative, and/or its Attorney for the direct purpose of obtaining actual benefits to be paid by my insurance carrier(s) for services rendered or to be rendered. I believe the appropriate insurance carrier to be ' + (d.insCarrier || '________________________') + '.');
+
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(20, 20, 20);
+        doc.text('II. DIRECT PAYMENT AUTHORIZATION', ml, y); y += 13;
+        bodyPara('I hereby authorize and unequivocally instruct direct payment of any benefits or proceeds to Company. The payment of any benefits or proceeds to Company must be sent directly to Company and payment made solely to Company. I understand that I am responsible for payment for any services provided by Company for which payment is not recoverable from my insurance company, including any applicable deductible.');
+
+        newPageIfNeeded(140);
+        divider();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(70, 70, 70);
+        doc.text('Print Name (Owner/Agent):', ml, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(d.signerName || '', ml + 140, y);
+        doc.setFont('helvetica', 'bold'); doc.setTextColor(70, 70, 70);
+        doc.text('Date:', ml + 310, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+        doc.text(signedDate, ml + 340, y);
+        y += 18;
+
+        if (d.aobSignatureDataURL) {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+            doc.text('Signature — Assignment of Insurance Benefits', ml, y);
+            y += 8;
+            doc.addImage(d.aobSignatureDataURL, 'PNG', ml, y, 260, 66);
+            y += 76;
+        }
     }
 
     return doc;
